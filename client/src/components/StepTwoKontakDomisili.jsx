@@ -26,7 +26,7 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
       <div>
         {/* Step Header */}
         <header className="mb-8">
-          <div className="text-xs font-semibold text-[#1E3A8A] uppercase tracking-wider mb-1.5">
+          <div className="text-xs font-semibold text-[#FF4081] uppercase tracking-wider mb-1.5">
             Langkah 2 • Saluran Komunikasi
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
@@ -46,7 +46,7 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
               <label htmlFor="whatsapp_number" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
                 Nomor WhatsApp <span className="text-[#FF4081]">*</span>
               </label>
-              <div className="flex rounded-lg border border-slate-300 bg-white overflow-hidden focus-within:border-[#1E3A8A] focus-within:ring-1 focus-within:ring-[#1E3A8A] transition-colors">
+              <div className="flex rounded-lg border border-slate-300 bg-white overflow-hidden focus-within:border-[#FF4081] focus-within:ring-1 focus-within:ring-[#FF4081] transition-colors">
                 <span className="inline-flex items-center px-3.5 border-r border-slate-200 bg-slate-50 text-slate-600 text-xs font-semibold select-none">
                   +62
                 </span>
@@ -78,7 +78,7 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
                   value={kontak_email}
                   onChange={(e) => updateFormData({ kontak_email: e.target.value })}
                   placeholder="hendra.pratama@email.com"
-                  className="block w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                  className="block w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081] transition-colors"
                 />
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
               value={alamat}
               onChange={(e) => updateFormData({ alamat: e.target.value })}
               placeholder="Contoh: Jl. Melati Raya No. 45, RT 03 / RW 07, Kel. Sukamaju, Kec. Cilodong"
-              className="block w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors resize-none leading-relaxed"
+              className="block w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081] transition-colors resize-none leading-relaxed"
             />
           </div>
 
@@ -111,7 +111,7 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
                   id="province_select"
                   value={provinsi}
                   onChange={(e) => updateFormData({ provinsi: e.target.value })}
-                  className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2.5 pl-3.5 pr-10 text-sm text-slate-900 font-medium focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                  className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2.5 pl-3.5 pr-10 text-sm text-slate-900 font-medium focus:outline-none focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081] transition-colors"
                 >
                   <option value="Jawa Barat">Jawa Barat</option>
                   <option value="DKI Jakarta">DKI Jakarta</option>
@@ -136,7 +136,7 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
                   id="city_select"
                   value={kota}
                   onChange={(e) => updateFormData({ kota: e.target.value })}
-                  className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2.5 pl-3.5 pr-10 text-sm text-slate-900 font-medium focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                  className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2.5 pl-3.5 pr-10 text-sm text-slate-900 font-medium focus:outline-none focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081] transition-colors"
                 >
                   <option value="Kota Depok">Kota Depok</option>
                   <option value="Kota Bogor">Kota Bogor</option>
@@ -167,7 +167,7 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
             </button>
             <button
               type="submit"
-              className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#1E3A8A] hover:bg-[#152a65] text-white font-medium text-sm transition-colors shadow-sm"
+              className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#FF4081] hover:bg-[#E02868] text-white font-medium text-sm transition-all shadow-sm active:scale-[0.99]"
             >
               <span>Lanjutkan ke Konfirmasi</span>
               <ArrowRight className="w-4 h-4 ml-2" />

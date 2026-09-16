@@ -25,8 +25,9 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
       <div>
         {/* Brand identity */}
         <div className="flex items-center space-x-3 mb-6 sm:mb-8">
-          <div className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider">
-            IKY
+          <div className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider relative shadow-sm">
+            <span>IKY</span>
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#FF4081]" />
           </div>
           <div>
             <div className="font-bold text-sm tracking-tight text-slate-900 leading-none">
@@ -73,13 +74,13 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
                     }
                   }}
                 >
-                  {/* Step Marker */}
+                  {/* Step Marker: Completed = Navy, Active = Pink, Inactive = Neutral */}
                   <div
                     className={`relative z-10 flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 transition-all ${
-                      isCompleted
+                      isActive
+                        ? 'bg-[#FF4081] text-white ring-4 ring-pink-100/70 shadow-sm'
+                        : isCompleted
                         ? 'bg-[#1E3A8A] text-white'
-                        : isActive
-                        ? 'bg-[#1E3A8A] text-white ring-4 ring-blue-50'
                         : 'bg-white border border-slate-300 text-slate-400'
                     }`}
                   >
@@ -95,7 +96,7 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
                     <span
                       className={`block text-xs sm:text-sm font-semibold tracking-tight transition-colors ${
                         isActive
-                          ? 'text-slate-900'
+                          ? 'text-slate-900 font-bold'
                           : isCompleted
                           ? 'text-slate-700'
                           : 'text-slate-400'
@@ -120,10 +121,10 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
           href="https://wa.me/6281234567890"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center text-slate-500 hover:text-slate-900 transition-colors group"
+          className="inline-flex items-center text-slate-500 hover:text-[#FF4081] transition-colors group"
         >
           <span>Bantuan pendaftaran partner</span>
-          <ArrowUpRight className="w-3 h-3 ml-1 text-slate-400 group-hover:text-slate-700 transition-colors" />
+          <ArrowUpRight className="w-3 h-3 ml-1 text-slate-400 group-hover:text-[#FF4081] transition-colors" />
         </a>
       </div>
     </aside>

@@ -25,7 +25,7 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
       <div>
         {/* Step Header */}
         <header className="mb-8">
-          <div className="text-xs font-semibold text-[#1E3A8A] uppercase tracking-wider mb-1.5">
+          <div className="text-xs font-semibold text-[#FF4081] uppercase tracking-wider mb-1.5">
             Langkah 3 • Verifikasi &amp; Penerbitan
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
@@ -45,7 +45,7 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
             <button
               type="button"
               onClick={onEdit}
-              className="text-xs font-semibold text-[#1E3A8A] hover:underline flex items-center gap-1.5 transition-colors"
+              className="text-xs font-semibold text-[#FF4081] hover:underline flex items-center gap-1.5 transition-colors"
             >
               <Edit3 className="w-3.5 h-3.5" />
               <span>Ubah Data</span>
@@ -125,8 +125,8 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
                 </span>
               </div>
 
-              <div className="text-[10px] text-slate-500 uppercase tracking-widest font-medium mb-3">
-                Sertifikat Kemitraan Keluarga
+              <div className="text-[10px] text-[#FF4081] uppercase tracking-widest font-semibold mb-3">
+                Platform Pengembangan Diri Berbasis STIFIn
               </div>
 
               {/* Title in Authentic Serif */}
@@ -142,9 +142,9 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
                 Dengan bangga diberikan kepada:
               </p>
 
-              {/* Recipient Name in Prominent Serif */}
+              {/* Recipient Name in Prominent Serif with Pink underline accent */}
               <div className="my-2 sm:my-3">
-                <span className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 inline-block border-b-2 border-[#1E3A8A] pb-1 px-4 sm:px-6">
+                <span className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 inline-block border-b-2 border-[#FF4081] pb-1 px-4 sm:px-6">
                   {nama_kepala_keluarga || 'Nama Kepala Keluarga'}
                 </span>
               </div>
@@ -162,7 +162,7 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
                 
                 {/* Official Circular Stamp */}
                 <div className="border-2 border-[#1E3A8A]/40 rounded-full w-12 h-12 flex flex-col items-center justify-center text-[7px] font-bold text-[#1E3A8A] leading-tight select-none opacity-85">
-                  <span>IKY</span>
+                  <span className="text-[#FF4081]">IKY</span>
                   <span className="text-[6px] tracking-tighter">VERIFIED</span>
                 </div>
 
@@ -191,7 +191,7 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
             type="button"
             onClick={onSubmit}
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#1E3A8A] hover:bg-[#152a65] text-white font-medium text-sm transition-colors shadow-sm disabled:opacity-60 cursor-pointer"
+            className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#FF4081] hover:bg-[#E02868] text-white font-medium text-sm transition-all shadow-sm active:scale-[0.99] disabled:opacity-60 cursor-pointer"
           >
             {isSubmitting ? (
               <>

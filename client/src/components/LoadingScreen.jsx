@@ -32,12 +32,15 @@ export default function LoadingScreen({ onFinish }) {
       <div className="flex flex-col items-center w-full max-w-xs px-6">
         {/* Minimalist Brand Mark & Geometric Spinner */}
         <div className="relative flex items-center justify-center mb-8">
-          {/* Subtle Hairline Spinner */}
-          <div className="w-16 h-16 rounded-full border-[1.5px] border-slate-200 border-t-[#1E3A8A] animate-spin" style={{ animationDuration: '0.9s' }} />
+          {/* Subtle Hairline Spinner (Navy + Pink) */}
+          <div
+            className="w-16 h-16 rounded-full border-[1.5px] border-slate-200 border-t-[#FF4081] border-r-[#1E3A8A] animate-spin"
+            style={{ animationDuration: '0.9s' }}
+          />
           
           {/* Typographic Monogram */}
           <span className="absolute font-mono font-extrabold text-xs tracking-wider text-[#1E3A8A]">
-            IKY
+            IKY<span className="text-[#FF4081]">.</span>
           </span>
         </div>
 
@@ -54,7 +57,7 @@ export default function LoadingScreen({ onFinish }) {
         {/* Minimal Hairline Progress */}
         <div className="w-full bg-slate-200/70 h-[2px] rounded-full overflow-hidden mb-3">
           <div
-            className="h-full bg-[#1E3A8A] transition-all duration-75 ease-out"
+            className="h-full bg-gradient-to-r from-[#1E3A8A] to-[#FF4081] transition-all duration-75 ease-out"
             style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>

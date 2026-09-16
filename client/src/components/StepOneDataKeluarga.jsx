@@ -28,7 +28,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
       <div>
         {/* Step Header */}
         <header className="mb-8">
-          <div className="text-xs font-semibold text-[#1E3A8A] uppercase tracking-wider mb-1.5">
+          <div className="text-xs font-semibold text-[#FF4081] uppercase tracking-wider mb-1.5">
             Langkah 1 • Identitas Mitra
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
@@ -57,7 +57,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
                 value={nama_kepala_keluarga}
                 onChange={(e) => updateFormData({ nama_kepala_keluarga: e.target.value })}
                 placeholder="Contoh: Hendra Pratama, S.T."
-                className="block w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                className="block w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081] transition-colors"
               />
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
                   id="partnership-category"
                   value={kategori_kemitraan}
                   onChange={(e) => updateFormData({ kategori_kemitraan: e.target.value })}
-                  className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2.5 pl-3.5 pr-10 text-sm text-slate-900 font-medium focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                  className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2.5 pl-3.5 pr-10 text-sm text-slate-900 font-medium focus:outline-none focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081] transition-colors"
                 >
                   <option value="Partner Mandiri (Pribadi)">Partner Mandiri (Pribadi)</option>
                   <option value="Partner Komunitas / Rayon">Partner Komunitas / Rayon</option>
@@ -128,7 +128,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
               value={nama_pasangan}
               onChange={(e) => updateFormData({ nama_pasangan: e.target.value })}
               placeholder="Contoh: Siti Nurhaliza"
-              className="block w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+              className="block w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081] transition-colors"
             />
           </div>
 
@@ -136,7 +136,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
           <div className="pt-6 border-t border-slate-200 flex justify-end">
             <button
               type="submit"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#1E3A8A] hover:bg-[#152a65] text-white font-medium text-sm transition-colors shadow-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#FF4081] hover:bg-[#E02868] text-white font-medium text-sm transition-all shadow-sm active:scale-[0.99]"
             >
               <span>Lanjutkan ke Kontak &amp; Domisili</span>
               <ArrowRight className="w-4 h-4 ml-2" />

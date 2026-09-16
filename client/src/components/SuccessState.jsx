@@ -41,7 +41,7 @@ export default function SuccessState({ resultData, onReset }) {
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             Nomor Seri Sertifikat
           </span>
-          <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+          <span className="text-[11px] font-semibold text-[#FF4081] bg-pink-50 px-2.5 py-0.5 rounded-full border border-pink-200">
             Resmi Terdaftar
           </span>
         </div>
@@ -68,7 +68,7 @@ export default function SuccessState({ resultData, onReset }) {
           target="_blank"
           rel="noopener noreferrer"
           download
-          className="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#1E3A8A] hover:bg-[#152a65] text-white font-medium text-sm transition-colors mb-4 gap-2 shadow-sm"
+          className="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#FF4081] hover:bg-[#E02868] text-white font-medium text-sm transition-all mb-4 gap-2 shadow-sm active:scale-[0.99]"
         >
           <Download className="w-4 h-4" />
           <span>Unduh Berkas Sertifikat (PDF)</span>
@@ -87,7 +87,7 @@ export default function SuccessState({ resultData, onReset }) {
       <button
         type="button"
         onClick={onReset}
-        className="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors gap-1.5"
+        className="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-slate-600 hover:text-[#FF4081] transition-colors gap-1.5"
       >
         <RotateCcw className="w-3.5 h-3.5" />
         <span>Daftarkan keluarga lainnya</span>
