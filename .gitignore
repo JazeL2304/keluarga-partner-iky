@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Production builds
+dist/
+dist-ssr/
+*/dist/
+build/
+
+# Environment variables & secrets (jangan pernah push .env dengan credentials)
+.env
+.env.local
+.env.*.local
+server/.env
+client/.env
+!server/.env.example
+!client/.env.example
+
+# AI Agent Skills & Toolings (Skills yang baru diinstall lewat npx skills)
+.agents/
+skills-lock.json
+.codemaker/
+.gemini/
+.claude/
+.cursor/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# System & Editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
