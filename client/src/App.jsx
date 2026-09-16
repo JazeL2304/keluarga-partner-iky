@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import gsap from 'gsap';
 import LoadingScreen from './components/LoadingScreen';
@@ -22,6 +22,92 @@ const INITIAL_FORM_DATA = {
   kota: 'Kota Depok',
 };
 
+// Komponen Pembungkus Form Portal dengan Animasi Pop-Up Sekali di Awal
+function PortalContainer({ step, setStep, formData, updateFormData, onNext, onPrev, onReset, onSubmit, isSubmitting, submitError, resultData }) {
+  const mainCardRef = useRef(null);
+
+  // Animasi pop-up berjalan TEPAT saat komponen portal pertama kali muncul (Mount)
+  useEffect(() => {
+    if (mainCardRef.current) {
+      gsap.fromTo(
+        mainCardRef.current,
+        {
+          opacity: 0,
+          scale: 0.90,
+          y: 45,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.65,
+          ease: 'back.out(1.4)', // Efek pop-up membal interaktif yang dinamis & fresh
+        }
+      );
+    }
+  }, []); // Hanya 1x saat portal muncul
+
+  return (
+    <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-2.5 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
+      <main
+        ref={mainCardRef}
+        className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px]"
+      >
+        {/* Sidebar Stepper (Selalu Muncul Utuh) */}
+        <SidebarRail
+          currentStep={step}
+          setStep={(s) => setStep(s)}
+          isSubmitted={step === 4}
+        />
+
+        {/* Right Form Canvas */}
+        <section className="flex-1 bg-white p-4 sm:p-8 lg:p-12 flex flex-col justify-between overflow-y-auto">
+          {submitError && (
+            <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <span>{submitError}</span>
+            </div>
+          )}
+
+          {step === 1 && (
+            <StepOneDataKeluarga
+              formData={formData}
+              updateFormData={updateFormData}
+              onNext={onNext}
+            />
+          )}
+
+          {step === 2 && (
+            <StepTwoKontakDomisili
+              formData={formData}
+              updateFormData={updateFormData}
+              onNext={onNext}
+              onPrev={onPrev}
+            />
+          )}
+
+          {step === 3 && (
+            <StepThreeKonfirmasi
+              formData={formData}
+              onPrev={onPrev}
+              onEdit={() => setStep(1)}
+              onSubmit={onSubmit}
+              isSubmitting={isSubmitting}
+            />
+          )}
+
+          {step === 4 && (
+            <SuccessState
+              resultData={resultData}
+              onReset={onReset}
+            />
+          )}
+        </section>
+      </main>
+    </div>
+  );
+}
+
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [step, setStep] = useState(1);
@@ -29,34 +115,6 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [resultData, setResultData] = useState(null);
-
-  const mainCardRef = useRef(null);
-  const hasAnimatedRef = useRef(false);
-
-  // Animasi pop-up interaktif langsung aktif begitu loading selesai (Hanya 1x di awal)
-  const handleLoadingFinish = () => {
-    setIsLoading(false);
-    requestAnimationFrame(() => {
-      if (mainCardRef.current && !hasAnimatedRef.current) {
-        hasAnimatedRef.current = true;
-        gsap.fromTo(
-          mainCardRef.current,
-          {
-            opacity: 0,
-            scale: 0.92,
-            y: 40,
-          },
-          {
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            duration: 0.7,
-            ease: 'back.out(1.35)', // Efek pop up membal interaktif yang dinamis & fresh
-          }
-        );
-      }
-    });
-  };
 
   const updateFormData = (fields) => {
     setFormData((prev) => ({ ...prev, ...fields }));
@@ -127,69 +185,25 @@ export default function App() {
     setStep(1);
   };
 
+  // 1. Fase Pertama: Loading Screen 2 Detik murni
+  if (isLoading) {
+    return <LoadingScreen onFinish={() => setIsLoading(false)} />;
+  }
+
+  // 2. Fase Kedua: Begitu loading kelar, langsung pop-up portalnya, seterusnya stabil
   return (
-    <>
-      {/* 1. Loading Screen Interaktif 2 Detik */}
-      {isLoading && <LoadingScreen onFinish={handleLoadingFinish} />}
-
-      {/* 2. Main Portal App: Pop-up interaktif sekali di awal, stabil seterusnya */}
-      <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-2.5 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
-        <main
-          ref={mainCardRef}
-          className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px]"
-        >
-          {/* Sidebar Stepper */}
-          <SidebarRail
-            currentStep={step}
-            setStep={(s) => setStep(s)}
-            isSubmitted={step === 4}
-          />
-
-          {/* Right Form Canvas */}
-          <section className="flex-1 bg-white p-4 sm:p-8 lg:p-12 flex flex-col justify-between overflow-y-auto">
-            {submitError && (
-              <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
-                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-                <span>{submitError}</span>
-              </div>
-            )}
-
-            {step === 1 && (
-              <StepOneDataKeluarga
-                formData={formData}
-                updateFormData={updateFormData}
-                onNext={handleNext}
-              />
-            )}
-
-            {step === 2 && (
-              <StepTwoKontakDomisili
-                formData={formData}
-                updateFormData={updateFormData}
-                onNext={handleNext}
-                onPrev={handlePrev}
-              />
-            )}
-
-            {step === 3 && (
-              <StepThreeKonfirmasi
-                formData={formData}
-                onPrev={handlePrev}
-                onEdit={() => setStep(1)}
-                onSubmit={handleSubmit}
-                isSubmitting={isSubmitting}
-              />
-            )}
-
-            {step === 4 && (
-              <SuccessState
-                resultData={resultData}
-                onReset={handleReset}
-              />
-            )}
-          </section>
-        </main>
-      </div>
-    </>
+    <PortalContainer
+      step={step}
+      setStep={setStep}
+      formData={formData}
+      updateFormData={updateFormData}
+      onNext={handleNext}
+      onPrev={handlePrev}
+      onReset={handleReset}
+      onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+      submitError={submitError}
+      resultData={resultData}
+    />
   );
 }
