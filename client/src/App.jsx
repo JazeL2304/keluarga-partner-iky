@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import gsap from 'gsap';
+import LoadingScreen from './components/LoadingScreen';
 import SidebarRail from './components/SidebarRail';
 import StepOneDataKeluarga from './components/StepOneDataKeluarga';
 import StepTwoKontakDomisili from './components/StepTwoKontakDomisili';
@@ -22,6 +23,7 @@ const INITIAL_FORM_DATA = {
 };
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,51 +33,27 @@ export default function App() {
   const mainCardRef = useRef(null);
   const formAreaRef = useRef(null);
 
-  // 1. Initial Page Load Entrance Animation (GSAP)
+  // Animasi halus saat portal selesai loading (Splash screen -> Portal)
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Main Card Fade & Slide Up Entrance
-      gsap.from(mainCardRef.current, {
-        y: 30,
-        autoAlpha: 0,
-        scale: 0.985,
-        duration: 0.8,
-        ease: 'power3.out',
-      });
-
-      // Desktop Sidebar Staggered Reveal
-      gsap.from('.sidebar-brand, .sidebar-title, .stepper-item, .sidebar-support', {
-        x: -16,
-        autoAlpha: 0,
-        stagger: 0.07,
-        duration: 0.6,
-        ease: 'power2.out',
-        delay: 0.15,
-      });
-
-      // Initial Form Elements Entrance
-      gsap.from('.step-content', {
-        y: 18,
-        autoAlpha: 0,
-        duration: 0.55,
-        ease: 'power2.out',
-        delay: 0.3,
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
-
-  // 2. Smooth Transition Animation when changing steps
-  useEffect(() => {
-    if (formAreaRef.current) {
+    if (!isLoading && mainCardRef.current) {
       gsap.fromTo(
-        formAreaRef.current,
-        { y: 14, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.4, ease: 'power2.out' }
+        mainCardRef.current,
+        { opacity: 0, y: 24, scale: 0.99 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.65, ease: 'power3.out' }
       );
     }
-  }, [step]);
+  }, [isLoading]);
+
+  // Animasi lembut saat berpindah langkah (Step 1 -> 2 -> 3)
+  useEffect(() => {
+    if (!isLoading && formAreaRef.current) {
+      gsap.fromTo(
+        formAreaRef.current,
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
+      );
+    }
+  }, [step, isLoading]);
 
   const updateFormData = (fields) => {
     setFormData((prev) => ({ ...prev, ...fields }));
@@ -147,66 +125,71 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-2.5 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
-      {/* Main Multi-Step Card with GSAP Ref */}
-      <main
-        ref={mainCardRef}
-        className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px] transition-all"
-      >
-        {/* Navigation Sidebar (Adaptive Mobile & Desktop) */}
-        <SidebarRail
-          currentStep={step}
-          setStep={(s) => setStep(s)}
-          isSubmitted={step === 4}
-        />
+    <>
+      {/* 1. Loading Screen Interaktif ~3 Detik */}
+      {isLoading && <LoadingScreen onFinish={() => setIsLoading(false)} />}
 
-        {/* Right Form Canvas */}
-        <section
-          ref={formAreaRef}
-          className="flex-1 bg-white p-4 sm:p-8 lg:p-12 flex flex-col justify-between overflow-y-auto"
+      {/* 2. Main Portal App */}
+      <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-2.5 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
+        <main
+          ref={mainCardRef}
+          className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px]"
         >
-          {submitError && (
-            <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-              <span>{submitError}</span>
-            </div>
-          )}
+          {/* Sidebar Stepper (Kerangka 3 Langkah Selalu Muncul Utuh) */}
+          <SidebarRail
+            currentStep={step}
+            setStep={(s) => setStep(s)}
+            isSubmitted={step === 4}
+          />
 
-          {step === 1 && (
-            <StepOneDataKeluarga
-              formData={formData}
-              updateFormData={updateFormData}
-              onNext={handleNext}
-            />
-          )}
+          {/* Right Form Canvas */}
+          <section
+            ref={formAreaRef}
+            className="flex-1 bg-white p-4 sm:p-8 lg:p-12 flex flex-col justify-between overflow-y-auto"
+          >
+            {submitError && (
+              <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>{submitError}</span>
+              </div>
+            )}
 
-          {step === 2 && (
-            <StepTwoKontakDomisili
-              formData={formData}
-              updateFormData={updateFormData}
-              onNext={handleNext}
-              onPrev={handlePrev}
-            />
-          )}
+            {step === 1 && (
+              <StepOneDataKeluarga
+                formData={formData}
+                updateFormData={updateFormData}
+                onNext={handleNext}
+              />
+            )}
 
-          {step === 3 && (
-            <StepThreeKonfirmasi
-              formData={formData}
-              onPrev={handlePrev}
-              onEdit={() => setStep(1)}
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-            />
-          )}
+            {step === 2 && (
+              <StepTwoKontakDomisili
+                formData={formData}
+                updateFormData={updateFormData}
+                onNext={handleNext}
+                onPrev={handlePrev}
+              />
+            )}
 
-          {step === 4 && (
-            <SuccessState
-              resultData={resultData}
-              onReset={handleReset}
-            />
-          )}
-        </section>
-      </main>
-    </div>
+            {step === 3 && (
+              <StepThreeKonfirmasi
+                formData={formData}
+                onPrev={handlePrev}
+                onEdit={() => setStep(1)}
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+              />
+            )}
+
+            {step === 4 && (
+              <SuccessState
+                resultData={resultData}
+                onReset={handleReset}
+              />
+            )}
+          </section>
+        </main>
+      </div>
+    </>
   );
 }

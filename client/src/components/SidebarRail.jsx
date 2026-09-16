@@ -20,192 +20,114 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
     },
   ];
 
-  const activeStepObj = steps.find((s) => s.number === currentStep) || steps[0];
-
   return (
-    <>
-      {/* ========================================================================= */}
-      {/* MOBILE HEADER (< 1024px): Compact, Space-saving & Thumb-friendly          */}
-      {/* ========================================================================= */}
-      <div className="lg:hidden w-full bg-white border-b border-brand-border p-4 sm:p-5 flex flex-col gap-3">
+    <aside className="w-full lg:w-[320px] xl:w-[350px] bg-white border-b lg:border-b-0 lg:border-r border-brand-border p-5 sm:p-7 lg:p-9 flex flex-col justify-between shrink-0">
+      <div>
         {/* Brand identity */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-navy flex items-center justify-center text-white font-bold text-xs tracking-wider shadow-sm">
-              IKY
+        <div className="flex items-center space-x-3 mb-5 sm:mb-8">
+          <div className="w-10 h-10 rounded-xl bg-brand-navy flex items-center justify-center text-white font-bold tracking-tight shadow-md shadow-blue-900/20">
+            <span className="text-sm font-extrabold tracking-wider">IKY</span>
+          </div>
+          <div>
+            <div className="font-bold text-base tracking-tight text-brand-slate leading-none">
+              I Know You
             </div>
-            <div>
-              <div className="font-bold text-sm text-brand-slate leading-none">
-                I Know You
-              </div>
-              <div className="text-[10px] font-semibold text-brand-muted tracking-wide uppercase mt-0.5">
-                Family Partner Portal
-              </div>
+            <div className="text-[11px] font-semibold text-brand-muted tracking-wide mt-1 uppercase">
+              Partner Family Portal
             </div>
           </div>
-
-          {/* Step Pill on Mobile */}
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-pink-50 text-brand-pink border border-pink-100">
-            {isSubmitted ? 'Selesai' : `Langkah ${currentStep} / 3`}
-          </span>
         </div>
 
-        {/* Compact Horizontal Step Dots Bar on Mobile */}
-        <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
-          {steps.map((step) => {
-            const isActive = currentStep === step.number;
-            const isCompleted = currentStep > step.number || isSubmitted;
+        {/* Section Title */}
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-bold text-brand-slate tracking-tight">
+            Registrasi Keluarga Partner
+          </h2>
+          <p className="text-xs text-brand-muted mt-1.5 leading-relaxed font-normal">
+            Lengkapi 3 langkah mudah untuk pendataan dan penerbitan sertifikat digital resmi.
+          </p>
+        </div>
 
-            return (
-              <button
-                key={step.number}
-                type="button"
-                disabled={isSubmitted || (!isCompleted && !isActive)}
-                onClick={() => {
-                  if (!isSubmitted && step.number < currentStep) {
-                    setStep(step.number);
-                  }
-                }}
-                className={`flex-1 flex items-center gap-2 p-2 rounded-xl text-left transition-all ${
-                  isActive
-                    ? 'bg-blue-50/80 border border-blue-200'
-                    : isCompleted
-                    ? 'bg-slate-50 border border-slate-200 opacity-90'
-                    : 'bg-transparent border border-transparent opacity-40'
-                }`}
-              >
-                <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
-                    isCompleted
-                      ? 'bg-brand-pink text-white'
-                      : isActive
-                      ? 'bg-brand-navy text-white'
-                      : 'bg-slate-200 text-slate-500'
+        {/* ================================================================= */}
+        {/* Kerangka Stepper 3 Langkah (Selalu Muncul di Mobile & Desktop)   */}
+        {/* ================================================================= */}
+        <nav aria-label="Progress Steps" className="relative my-2 sm:my-4">
+          {/* Vertical continuous guideline */}
+          <div
+            aria-hidden="true"
+            className="absolute left-[18px] top-4 bottom-5 w-[2px] bg-slate-100"
+          />
+
+          <ul className="space-y-5 sm:space-y-6 relative">
+            {steps.map((step) => {
+              const isActive = currentStep === step.number;
+              const isCompleted = currentStep > step.number || isSubmitted;
+
+              return (
+                <li
+                  key={step.number}
+                  className={`flex items-start group transition-all duration-200 ${
+                    isSubmitted ? 'opacity-90' : 'cursor-pointer'
                   }`}
+                  onClick={() => {
+                    if (!isSubmitted && step.number < currentStep) {
+                      setStep(step.number);
+                    }
+                  }}
                 >
-                  {isCompleted ? <Check className="w-3 h-3 stroke-[3]" /> : step.number}
-                </div>
-                <div className="min-w-0 hidden sm:block">
-                  <span className="block text-xs font-bold text-brand-slate truncate leading-tight">
-                    {step.title}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* DESKTOP SIDEBAR (>= 1024px): Full Structural Navigation Rail              */}
-      {/* ========================================================================= */}
-      <aside className="hidden lg:flex w-[320px] xl:w-[350px] bg-white border-r border-brand-border p-7 sm:p-9 flex-col justify-between shrink-0 sidebar-rail-desktop">
-        {/* Top Section: Brand & Stepper */}
-        <div>
-          {/* Brand identity */}
-          <div className="flex items-center space-x-3 mb-8 sidebar-brand">
-            <div className="w-10 h-10 rounded-xl bg-brand-navy flex items-center justify-center text-white font-bold tracking-tight shadow-md shadow-blue-900/20">
-              <span className="text-sm font-extrabold tracking-wider">IKY</span>
-            </div>
-            <div>
-              <div className="font-bold text-base tracking-tight text-brand-slate leading-none">
-                I Know You
-              </div>
-              <div className="text-[11px] font-semibold text-brand-muted tracking-wide mt-1 uppercase">
-                Partner Family Portal
-              </div>
-            </div>
-          </div>
-
-          {/* Section Title */}
-          <div className="mb-8 sidebar-title">
-            <h2 className="text-lg sm:text-xl font-bold text-brand-slate tracking-tight">
-              Registrasi Keluarga Partner
-            </h2>
-            <p className="text-xs text-brand-muted mt-1.5 leading-relaxed font-normal">
-              Lengkapi 3 langkah mudah untuk pendataan dan penerbitan sertifikat digital resmi.
-            </p>
-          </div>
-
-          {/* Stepper Navigation */}
-          <nav aria-label="Progress Steps" className="relative sidebar-nav">
-            {/* Vertical continuous guideline */}
-            <div
-              aria-hidden="true"
-              className="absolute left-[18px] top-4 bottom-5 w-[2px] bg-slate-100"
-            />
-
-            <ul className="space-y-6 relative">
-              {steps.map((step) => {
-                const isActive = currentStep === step.number;
-                const isCompleted = currentStep > step.number || isSubmitted;
-
-                return (
-                  <li
-                    key={step.number}
-                    className={`flex items-start group transition-all stepper-item ${
-                      isSubmitted ? 'opacity-80' : 'cursor-pointer'
+                  {/* Step Icon / Circle */}
+                  <div
+                    className={`relative z-10 flex items-center justify-center w-9 h-9 rounded-full text-sm font-bold shrink-0 ring-4 ring-white transition-all duration-300 ${
+                      isCompleted
+                        ? 'bg-brand-pink text-white shadow-md shadow-pink-500/20'
+                        : isActive
+                        ? 'bg-brand-navy text-white shadow-md shadow-blue-950/25 ring-blue-50'
+                        : 'bg-white border-2 border-slate-200 text-slate-400'
                     }`}
-                    onClick={() => {
-                      if (!isSubmitted && step.number < currentStep) {
-                        setStep(step.number);
-                      }
-                    }}
                   >
-                    {/* Step Icon / Circle */}
-                    <div
-                      className={`relative z-10 flex items-center justify-center w-9 h-9 rounded-full text-sm font-bold shrink-0 ring-4 ring-white transition-all duration-300 ${
-                        isCompleted
-                          ? 'bg-brand-pink text-white shadow-md shadow-pink-500/20'
-                          : isActive
-                          ? 'bg-brand-navy text-white shadow-md shadow-blue-950/25 ring-blue-50'
-                          : 'bg-white border-2 border-slate-200 text-slate-400'
+                    {isCompleted ? (
+                      <Check className="w-4 h-4 stroke-[3]" />
+                    ) : (
+                      step.number
+                    )}
+                  </div>
+
+                  {/* Step Label & Subtitle */}
+                  <div className="ml-3.5 sm:ml-4 pt-0.5">
+                    <span
+                      className={`block text-xs sm:text-sm font-bold tracking-tight transition-colors ${
+                        isActive
+                          ? 'text-brand-slate'
+                          : isCompleted
+                          ? 'text-slate-700'
+                          : 'text-slate-400'
                       }`}
                     >
-                      {isCompleted ? (
-                        <Check className="w-4 h-4 stroke-[3]" />
-                      ) : (
-                        step.number
-                      )}
-                    </div>
+                      {step.title}
+                    </span>
+                    <span className="block text-[11px] sm:text-xs text-brand-muted mt-0.5 font-medium">
+                      {step.subtitle}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </div>
 
-                    {/* Step Label */}
-                    <div className="ml-4 pt-0.5">
-                      <span
-                        className={`block text-sm font-bold tracking-tight transition-colors ${
-                          isActive
-                            ? 'text-brand-slate'
-                            : isCompleted
-                            ? 'text-slate-700'
-                            : 'text-slate-400'
-                        }`}
-                      >
-                        {step.title}
-                      </span>
-                      <span className="block text-xs text-brand-muted mt-0.5 font-medium">
-                        {step.subtitle}
-                      </span>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        </div>
-
-        {/* Bottom Support Link */}
-        <div className="pt-6 mt-8 border-t border-slate-100 text-xs text-brand-muted sidebar-support">
-          <a
-            href="https://wa.me/6281234567890"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-slate-500 hover:text-brand-navy transition-colors font-medium group"
-          >
-            <span>Butuh bantuan? Hubungi Admin IKY</span>
-            <ArrowUpRight className="w-3.5 h-3.5 ml-1 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </a>
-        </div>
-      </aside>
-    </>
+      {/* Bottom Support Link */}
+      <div className="pt-4 sm:pt-6 mt-6 sm:mt-8 border-t border-slate-100 text-xs text-brand-muted">
+        <a
+          href="https://wa.me/6281234567890"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-slate-500 hover:text-brand-navy transition-colors font-medium group"
+        >
+          <span>Butuh bantuan? Hubungi Admin IKY</span>
+          <ArrowUpRight className="w-3.5 h-3.5 ml-1 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        </a>
+      </div>
+    </aside>
   );
 }
