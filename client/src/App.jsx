@@ -48,12 +48,12 @@ function PortalContainer({ step, setStep, formData, updateFormData, onNext, onPr
   }, []); // Hanya 1x saat portal muncul
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-2.5 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-3 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
       <main
         ref={mainCardRef}
-        className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px]"
+        className="w-full max-w-5xl bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[640px] lg:min-h-[680px]"
       >
-        {/* Sidebar Stepper (Selalu Muncul Utuh) */}
+        {/* Sidebar Stepper */}
         <SidebarRail
           currentStep={step}
           setStep={(s) => setStep(s)}
@@ -61,9 +61,9 @@ function PortalContainer({ step, setStep, formData, updateFormData, onNext, onPr
         />
 
         {/* Right Form Canvas */}
-        <section className="flex-1 bg-white p-4 sm:p-8 lg:p-12 flex flex-col justify-between overflow-y-auto">
+        <section className="flex-1 bg-white p-5 sm:p-8 lg:p-10 flex flex-col justify-between overflow-y-auto">
           {submitError && (
-            <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
+            <div className="mb-5 p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
               <span>{submitError}</span>
             </div>

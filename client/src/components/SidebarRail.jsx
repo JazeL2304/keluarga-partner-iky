@@ -6,59 +6,57 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
     {
       number: 1,
       title: 'Data Keluarga',
-      subtitle: 'Informasi kepala & anggota',
+      subtitle: 'Kepala keluarga & anggota',
     },
     {
       number: 2,
       title: 'Kontak & Domisili',
-      subtitle: 'No. HP, email & domisili',
+      subtitle: 'WhatsApp, email & alamat',
     },
     {
       number: 3,
-      title: 'Konfirmasi & Sertifikat',
-      subtitle: 'Generate & unduh PDF resmi',
+      title: 'Konfirmasi Dokumen',
+      subtitle: 'Pratinjau sertifikat resmi',
     },
   ];
 
   return (
-    <aside className="w-full lg:w-[320px] xl:w-[350px] bg-white border-b lg:border-b-0 lg:border-r border-brand-border p-5 sm:p-7 lg:p-9 flex flex-col justify-between shrink-0">
+    <aside className="w-full lg:w-[300px] xl:w-[320px] bg-[#FAFBFD] border-b lg:border-b-0 lg:border-r border-slate-200/80 p-6 sm:p-8 flex flex-col justify-between shrink-0">
       <div>
         {/* Brand identity */}
-        <div className="flex items-center space-x-3 mb-5 sm:mb-8">
-          <div className="w-10 h-10 rounded-xl bg-brand-navy flex items-center justify-center text-white font-bold tracking-tight shadow-md shadow-blue-900/20">
-            <span className="text-sm font-extrabold tracking-wider">IKY</span>
+        <div className="flex items-center space-x-3 mb-6 sm:mb-8">
+          <div className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider">
+            IKY
           </div>
           <div>
-            <div className="font-bold text-base tracking-tight text-brand-slate leading-none">
+            <div className="font-bold text-sm tracking-tight text-slate-900 leading-none">
               I Know You
             </div>
-            <div className="text-[11px] font-semibold text-brand-muted tracking-wide mt-1 uppercase">
-              Partner Family Portal
+            <div className="text-[11px] font-medium text-slate-500 mt-1">
+              Portal Keluarga Partner
             </div>
           </div>
         </div>
 
-        {/* Section Title */}
+        {/* Section Heading */}
         <div className="mb-6 sm:mb-8">
-          <h2 className="text-lg sm:text-xl font-bold text-brand-slate tracking-tight">
-            Registrasi Keluarga Partner
+          <h2 className="text-base sm:text-lg font-semibold text-slate-900 tracking-tight">
+            Pendaftaran Partner
           </h2>
-          <p className="text-xs text-brand-muted mt-1.5 leading-relaxed font-normal">
-            Lengkapi 3 langkah mudah untuk pendataan dan penerbitan sertifikat digital resmi.
+          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            Formulir resmi pendataan keluarga dan penerbitan piagam sertifikat kemitraan.
           </p>
         </div>
 
-        {/* ================================================================= */}
-        {/* Kerangka Stepper 3 Langkah (Selalu Muncul di Mobile & Desktop)   */}
-        {/* ================================================================= */}
+        {/* Vertical Stepper */}
         <nav aria-label="Progress Steps" className="relative my-2 sm:my-4">
-          {/* Vertical continuous guideline */}
+          {/* Hairline guide rule */}
           <div
             aria-hidden="true"
-            className="absolute left-[18px] top-4 bottom-5 w-[2px] bg-slate-100"
+            className="absolute left-[15px] top-3 bottom-4 w-[1px] bg-slate-200"
           />
 
-          <ul className="space-y-5 sm:space-y-6 relative">
+          <ul className="space-y-6 relative">
             {steps.map((step) => {
               const isActive = currentStep === step.number;
               const isCompleted = currentStep > step.number || isSubmitted;
@@ -66,8 +64,8 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
               return (
                 <li
                   key={step.number}
-                  className={`flex items-start group transition-all duration-200 ${
-                    isSubmitted ? 'opacity-90' : 'cursor-pointer'
+                  className={`flex items-start group select-none transition-colors ${
+                    !isSubmitted && step.number < currentStep ? 'cursor-pointer' : ''
                   }`}
                   onClick={() => {
                     if (!isSubmitted && step.number < currentStep) {
@@ -75,29 +73,29 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
                     }
                   }}
                 >
-                  {/* Step Icon / Circle */}
+                  {/* Step Marker */}
                   <div
-                    className={`relative z-10 flex items-center justify-center w-9 h-9 rounded-full text-sm font-bold shrink-0 ring-4 ring-white transition-all duration-300 ${
+                    className={`relative z-10 flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold shrink-0 transition-all ${
                       isCompleted
-                        ? 'bg-brand-pink text-white shadow-md shadow-pink-500/20'
+                        ? 'bg-[#1E3A8A] text-white'
                         : isActive
-                        ? 'bg-brand-navy text-white shadow-md shadow-blue-950/25 ring-blue-50'
-                        : 'bg-white border-2 border-slate-200 text-slate-400'
+                        ? 'bg-[#1E3A8A] text-white ring-4 ring-blue-50'
+                        : 'bg-white border border-slate-300 text-slate-400'
                     }`}
                   >
                     {isCompleted ? (
-                      <Check className="w-4 h-4 stroke-[3]" />
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                     ) : (
                       step.number
                     )}
                   </div>
 
-                  {/* Step Label & Subtitle */}
-                  <div className="ml-3.5 sm:ml-4 pt-0.5">
+                  {/* Step Label */}
+                  <div className="ml-3.5 pt-0.5">
                     <span
-                      className={`block text-xs sm:text-sm font-bold tracking-tight transition-colors ${
+                      className={`block text-xs sm:text-sm font-semibold tracking-tight transition-colors ${
                         isActive
-                          ? 'text-brand-slate'
+                          ? 'text-slate-900'
                           : isCompleted
                           ? 'text-slate-700'
                           : 'text-slate-400'
@@ -105,7 +103,7 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
                     >
                       {step.title}
                     </span>
-                    <span className="block text-[11px] sm:text-xs text-brand-muted mt-0.5 font-medium">
+                    <span className="block text-[11px] text-slate-500 mt-0.5">
                       {step.subtitle}
                     </span>
                   </div>
@@ -116,16 +114,16 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
         </nav>
       </div>
 
-      {/* Bottom Support Link */}
-      <div className="pt-4 sm:pt-6 mt-6 sm:mt-8 border-t border-slate-100 text-xs text-brand-muted">
+      {/* Footer Meta */}
+      <div className="pt-6 mt-6 border-t border-slate-200/80 text-[11px] text-slate-500">
         <a
           href="https://wa.me/6281234567890"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center text-slate-500 hover:text-brand-navy transition-colors font-medium group"
+          className="inline-flex items-center text-slate-500 hover:text-slate-900 transition-colors group"
         >
-          <span>Butuh bantuan? Hubungi Admin IKY</span>
-          <ArrowUpRight className="w-3.5 h-3.5 ml-1 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          <span>Bantuan pendaftaran partner</span>
+          <ArrowUpRight className="w-3 h-3 ml-1 text-slate-400 group-hover:text-slate-700 transition-colors" />
         </a>
       </div>
     </aside>

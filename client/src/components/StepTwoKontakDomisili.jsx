@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Shield, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Mail, ChevronDown, ArrowLeft, ArrowRight } from 'lucide-react';
 
 export default function StepTwoKontakDomisili({ formData, updateFormData, onNext, onPrev }) {
   const { kontak_wa, kontak_email, alamat, provinsi, kota } = formData;
@@ -22,39 +22,32 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between step-content">
+    <div className="flex-1 flex flex-col justify-between">
       <div>
-        {/* Top Horizontal Progress Bar */}
-        <header className="mb-6 sm:mb-8">
-          <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4 sm:mb-6">
-            <div className="bg-brand-pink h-full rounded-full w-2/3 transition-all duration-500 ease-out" />
+        {/* Step Header */}
+        <header className="mb-8">
+          <div className="text-xs font-semibold text-[#1E3A8A] uppercase tracking-wider mb-1.5">
+            Langkah 2 • Saluran Komunikasi
           </div>
-
-          <div className="inline-block px-2.5 py-1 rounded-full bg-pink-50 text-brand-pink font-bold text-[11px] tracking-wider uppercase mb-2 border border-pink-100">
-            Langkah 2 Dari 3
-          </div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-brand-slate tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             Informasi Kontak &amp; Domisili
           </h1>
-          <p className="text-xs sm:text-sm text-brand-muted mt-1.5 sm:mt-2 max-w-2xl leading-relaxed">
-            Pastikan nomor WhatsApp dan email aktif untuk pengiriman salinan tautan sertifikat resmi.
+          <p className="text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
+            Tautan berkas sertifikat digital dan arsip kemitraan akan dikirimkan ke kontak terdaftar.
           </p>
         </header>
 
-        {/* Form Body Fields */}
-        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-          {/* Row 1: WhatsApp & Email (2-Column Grid) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-            {/* Left Column: WhatsApp Input */}
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Grid: WhatsApp & Email */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Field: WhatsApp */}
             <div>
-              <div className="flex justify-between items-center mb-1.5 sm:mb-2">
-                <label htmlFor="whatsapp_number" className="text-xs sm:text-sm font-bold text-brand-slate">
-                  Nomor WhatsApp / HP <span className="text-brand-pink">*</span>
-                </label>
-                <span className="text-[11px] text-slate-400 font-medium">(Wajib diisi)</span>
-              </div>
-              <div className="relative flex rounded-xl border border-brand-border bg-white shadow-sm focus-within:ring-2 focus-within:ring-brand-pink/20 focus-within:border-brand-pink transition-all overflow-hidden min-h-[44px]">
-                <span className="inline-flex items-center px-3.5 border-r border-brand-border bg-slate-50 text-slate-600 text-xs sm:text-sm font-semibold select-none">
+              <label htmlFor="whatsapp_number" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+                Nomor WhatsApp <span className="text-[#FF4081]">*</span>
+              </label>
+              <div className="flex rounded-lg border border-slate-300 bg-white overflow-hidden focus-within:border-[#1E3A8A] focus-within:ring-1 focus-within:ring-[#1E3A8A] transition-colors">
+                <span className="inline-flex items-center px-3.5 border-r border-slate-200 bg-slate-50 text-slate-600 text-xs font-semibold select-none">
                   +62
                 </span>
                 <input
@@ -64,23 +57,17 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
                   value={kontak_wa}
                   onChange={(e) => updateFormData({ kontak_wa: e.target.value })}
                   placeholder="812-3456-7890"
-                  className="flex-1 min-w-0 block w-full px-3.5 py-3 sm:py-2.5 text-sm text-brand-slate placeholder-slate-400 border-0 focus:ring-0 focus:outline-none min-h-[44px]"
+                  className="flex-1 block w-full px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 border-0 focus:ring-0 focus:outline-none"
                 />
               </div>
-              <p className="text-[11px] text-brand-muted mt-1.5">
-                Link sertifikat digital dan konfirmasi akan dikirimkan ke nomor ini.
-              </p>
             </div>
 
-            {/* Right Column: Email Input */}
+            {/* Field: Email */}
             <div>
-              <div className="flex justify-between items-center mb-1.5 sm:mb-2">
-                <label htmlFor="email_address" className="text-xs sm:text-sm font-bold text-brand-slate">
-                  Alamat Email Aktif <span className="text-brand-pink">*</span>
-                </label>
-                <span className="text-[11px] text-slate-400 font-medium">(Wajib diisi)</span>
-              </div>
-              <div className="relative flex items-center rounded-xl border border-brand-border bg-white shadow-sm focus-within:ring-2 focus-within:ring-brand-pink/20 focus-within:border-brand-pink transition-all overflow-hidden min-h-[44px]">
+              <label htmlFor="email_address" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+                Alamat Email <span className="text-[#FF4081]">*</span>
+              </label>
+              <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Mail className="w-4 h-4" />
                 </div>
@@ -91,23 +78,17 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
                   value={kontak_email}
                   onChange={(e) => updateFormData({ kontak_email: e.target.value })}
                   placeholder="hendra.pratama@email.com"
-                  className="flex-1 min-w-0 block w-full pl-10 pr-3.5 py-3 sm:py-2.5 text-sm text-brand-slate placeholder-slate-400 border-0 focus:ring-0 focus:outline-none min-h-[44px]"
+                  className="block w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
                 />
               </div>
-              <p className="text-[11px] text-brand-muted mt-1.5">
-                Salinan berkas PDF resmi juga akan diarsipkan via email.
-              </p>
             </div>
           </div>
 
-          {/* Row 2: Alamat Lengkap Domisili (Full Width Textarea) */}
+          {/* Field: Alamat Lengkap Domisili */}
           <div>
-            <div className="flex justify-between items-center mb-1.5 sm:mb-2">
-              <label htmlFor="domicile_address" className="text-xs sm:text-sm font-bold text-brand-slate">
-                Alamat Lengkap Domisili <span className="text-brand-pink">*</span>
-              </label>
-              <span className="text-[11px] text-slate-400 font-medium">(Wajib diisi)</span>
-            </div>
+            <label htmlFor="domicile_address" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+              Alamat Lengkap Domisili <span className="text-[#FF4081]">*</span>
+            </label>
             <textarea
               id="domicile_address"
               rows={3}
@@ -115,84 +96,78 @@ export default function StepTwoKontakDomisili({ formData, updateFormData, onNext
               value={alamat}
               onChange={(e) => updateFormData({ alamat: e.target.value })}
               placeholder="Contoh: Jl. Melati Raya No. 45, RT 03 / RW 07, Kel. Sukamaju, Kec. Cilodong"
-              className="block w-full px-3.5 py-3 sm:py-2.5 text-sm bg-white border border-brand-border rounded-xl text-brand-slate placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink transition-all resize-none"
+              className="block w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors resize-none leading-relaxed"
             />
-            <p className="text-[11px] text-brand-muted mt-1.5">
-              Alamat domisili saat ini untuk basis pendataan keluarga partner.
-            </p>
           </div>
 
-          {/* Row 3: Provinsi & Kota / Kabupaten (2-Column Grid) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+          {/* Grid: Provinsi & Kota / Kabupaten */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label htmlFor="province_select" className="block text-xs sm:text-sm font-bold text-brand-slate mb-1.5 sm:mb-2">
-                Provinsi <span className="text-brand-pink">*</span>
+              <label htmlFor="province_select" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+                Provinsi <span className="text-[#FF4081]">*</span>
               </label>
-              <select
-                id="province_select"
-                value={provinsi}
-                onChange={(e) => updateFormData({ provinsi: e.target.value })}
-                className="block w-full bg-white border border-brand-border rounded-xl py-3 sm:py-2.5 px-3.5 text-sm text-brand-slate font-medium focus:outline-none focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink transition-all min-h-[44px]"
-              >
-                <option value="Jawa Barat">Jawa Barat</option>
-                <option value="DKI Jakarta">DKI Jakarta</option>
-                <option value="Banten">Banten</option>
-                <option value="Jawa Tengah">Jawa Tengah</option>
-                <option value="D.I. Yogyakarta">D.I. Yogyakarta</option>
-                <option value="Jawa Timur">Jawa Timur</option>
-                <option value="Lainnya">Lainnya</option>
-              </select>
+              <div className="relative">
+                <select
+                  id="province_select"
+                  value={provinsi}
+                  onChange={(e) => updateFormData({ provinsi: e.target.value })}
+                  className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2.5 pl-3.5 pr-10 text-sm text-slate-900 font-medium focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                >
+                  <option value="Jawa Barat">Jawa Barat</option>
+                  <option value="DKI Jakarta">DKI Jakarta</option>
+                  <option value="Banten">Banten</option>
+                  <option value="Jawa Tengah">Jawa Tengah</option>
+                  <option value="D.I. Yogyakarta">D.I. Yogyakarta</option>
+                  <option value="Jawa Timur">Jawa Timur</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
             </div>
 
             <div>
-              <label htmlFor="city_select" className="block text-xs sm:text-sm font-bold text-brand-slate mb-1.5 sm:mb-2">
-                Kota / Kabupaten <span className="text-brand-pink">*</span>
+              <label htmlFor="city_select" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+                Kota / Kabupaten <span className="text-[#FF4081]">*</span>
               </label>
-              <select
-                id="city_select"
-                value={kota}
-                onChange={(e) => updateFormData({ kota: e.target.value })}
-                className="block w-full bg-white border border-brand-border rounded-xl py-3 sm:py-2.5 px-3.5 text-sm text-brand-slate font-medium focus:outline-none focus:ring-2 focus:ring-brand-pink/20 focus:border-brand-pink transition-all min-h-[44px]"
-              >
-                <option value="Kota Depok">Kota Depok</option>
-                <option value="Kota Bogor">Kota Bogor</option>
-                <option value="Kabupaten Bogor">Kabupaten Bogor</option>
-                <option value="Kota Bekasi">Kota Bekasi</option>
-                <option value="Kota Bandung">Kota Bandung</option>
-                <option value="Jakarta Selatan">Jakarta Selatan</option>
-                <option value="Jakarta Timur">Jakarta Timur</option>
-                <option value="Tangerang Selatan">Tangerang Selatan</option>
-                <option value="Kota Lainnya">Kota Lainnya</option>
-              </select>
+              <div className="relative">
+                <select
+                  id="city_select"
+                  value={kota}
+                  onChange={(e) => updateFormData({ kota: e.target.value })}
+                  className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2.5 pl-3.5 pr-10 text-sm text-slate-900 font-medium focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                >
+                  <option value="Kota Depok">Kota Depok</option>
+                  <option value="Kota Bogor">Kota Bogor</option>
+                  <option value="Kabupaten Bogor">Kabupaten Bogor</option>
+                  <option value="Kota Bekasi">Kota Bekasi</option>
+                  <option value="Kota Bandung">Kota Bandung</option>
+                  <option value="Jakarta Selatan">Jakarta Selatan</option>
+                  <option value="Jakarta Timur">Jakarta Timur</option>
+                  <option value="Tangerang Selatan">Tangerang Selatan</option>
+                  <option value="Kota Lainnya">Kota Lainnya</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Row 4: Callout Banner (Security & Privacy) */}
-          <div className="bg-[#EFF6FF] border border-blue-100 rounded-2xl p-3.5 sm:p-4 flex items-start space-x-3">
-            <div className="text-brand-navy shrink-0 mt-0.5">
-              <Shield className="w-5 h-5 text-brand-navy" />
-            </div>
-            <div className="text-xs leading-relaxed text-slate-700">
-              <span className="font-bold text-brand-navy block mb-0.5">
-                Privasi &amp; Kerahasiaan Data Terjamin:
-              </span>
-              Data kontak dan alamat keluarga Anda disimpan dengan aman dan hanya digunakan untuk kepentingan verifikasi kemitraan resmi I Know You.
-            </div>
-          </div>
-
-          {/* Navigation Buttons: Responsive stacking on mobile */}
-          <div className="pt-5 sm:pt-6 border-t border-slate-100 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
+          {/* Action Row */}
+          <div className="pt-6 border-t border-slate-200 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
             <button
               type="button"
               onClick={onPrev}
-              className="inline-flex items-center justify-center px-5 py-3 sm:py-2.5 rounded-xl border border-brand-border bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm transition-all min-h-[44px]"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               <span>Kembali</span>
             </button>
             <button
               type="submit"
-              className="inline-flex items-center justify-center px-6 py-3.5 sm:py-3 rounded-xl bg-brand-pink hover:bg-brand-pink-hover text-white font-semibold text-sm shadow-md shadow-pink-500/25 transition-all transform active:scale-98 min-h-[44px]"
+              className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#1E3A8A] hover:bg-[#152a65] text-white font-medium text-sm transition-colors shadow-sm"
             >
               <span>Lanjutkan ke Konfirmasi</span>
               <ArrowRight className="w-4 h-4 ml-2" />

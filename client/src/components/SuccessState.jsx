@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { CheckCircle2, Download, RotateCcw, Award, FileCheck2 } from 'lucide-react';
+import { Check, Download, RotateCcw, FileText } from 'lucide-react';
 
 export default function SuccessState({ resultData, onReset }) {
   useEffect(() => {
-    // Trigger celebratory confetti on mount
     try {
       confetti({
-        particleCount: 100,
-        spread: 70,
+        particleCount: 60,
+        spread: 60,
         origin: { y: 0.6 },
-        colors: ['#1E3A8A', '#FF4081', '#10B981', '#F59E0B'],
+        colors: ['#1E3A8A', '#FF4081', '#334155'],
       });
     } catch (e) {
       console.log('Confetti trigger skipped');
@@ -22,88 +21,76 @@ export default function SuccessState({ resultData, onReset }) {
   const downloadUrl = resultData?.url_sertifikat;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center text-center p-6 sm:p-10">
-      {/* Big Animated Icon */}
-      <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/20 ring-8 ring-emerald-50">
-        <CheckCircle2 className="w-10 h-10 stroke-[2.5]" />
+    <div className="flex-1 flex flex-col items-center justify-center text-center p-6 sm:p-10 max-w-lg mx-auto">
+      {/* Icon */}
+      <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-5">
+        <Check className="w-7 h-7 stroke-[2.5]" />
       </div>
 
-      <div className="inline-block px-3.5 py-1 rounded-full bg-emerald-50 text-emerald-800 font-bold text-xs tracking-wider uppercase mb-3 border border-emerald-200">
-        Registrasi Berhasil Disimpan
-      </div>
-
-      <h1 className="text-2xl sm:text-3xl font-bold text-brand-slate tracking-tight mb-2">
-        Selamat, Keluarga Partner Terdaftar!
+      <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-2">
+        Pendaftaran Berhasil Disimpan
       </h1>
 
-      <p className="text-sm text-brand-muted max-w-md mx-auto leading-relaxed mb-6">
-        Data kemitraan untuk <strong className="text-brand-slate">{headName}</strong> telah berhasil disimpan secara permanen ke database resmi I Know You.
+      <p className="text-sm text-slate-500 max-w-md leading-relaxed mb-6">
+        Data kemitraan untuk <strong className="font-semibold text-slate-800">{headName}</strong> telah tercatat resmi dan piagam sertifikat kemitraan telah diterbitkan.
       </p>
 
-      {/* Official Certificate Number Card */}
-      <div className="w-full max-w-md bg-white border border-brand-border rounded-2xl p-6 shadow-sm mb-6 text-left">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
-          <div className="flex items-center space-x-2">
-            <Award className="w-5 h-5 text-brand-pink" />
-            <span className="text-xs font-bold text-brand-slate uppercase tracking-wider">
-              Nomor Seri Sertifikat
-            </span>
-          </div>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-brand-navy border border-blue-200">
-            Resmi Terbit
+      {/* Certificate Number Card */}
+      <div className="w-full bg-white border border-slate-200 rounded-lg p-5 mb-6 text-left shadow-sm">
+        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Nomor Seri Sertifikat
+          </span>
+          <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+            Resmi Terdaftar
           </span>
         </div>
 
-        <div className="bg-slate-50 rounded-xl p-4 text-center border border-slate-200">
-          <div className="text-2xl sm:text-3xl font-mono font-extrabold text-brand-navy tracking-wider">
+        <div className="py-2 text-center">
+          <div className="text-3xl font-mono font-bold text-[#1E3A8A] tracking-wider">
             {certificateNumber}
           </div>
-          <div className="text-[11px] text-brand-muted mt-1">
-            Alokasi unik nomor sertifikat kemitraan I Know You
+          <div className="text-[11px] text-slate-400 mt-1">
+            Nomor registrasi unik mitra I Know You
           </div>
         </div>
 
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-brand-muted">
-          <span>Status Database:</span>
-          <span className="font-semibold text-emerald-700 flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            Tersimpan di Supabase
-          </span>
+        <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <span>Status Database</span>
+          <span className="font-medium text-slate-700">Tersimpan di Supabase</span>
         </div>
       </div>
 
-      {/* Download Certificate Section */}
+      {/* Certificate Download Action */}
       {downloadUrl ? (
-        <div className="w-full max-w-md mb-6">
-          <a
-            href={downloadUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-            className="w-full inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-brand-pink hover:bg-brand-pink-hover text-white font-bold text-sm shadow-lg shadow-pink-500/25 transition-all transform active:scale-95 gap-2"
-          >
-            <Download className="w-4 h-4" />
-            <span>Unduh Berkas Sertifikat PDF</span>
-          </a>
-        </div>
+        <a
+          href={downloadUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          download
+          className="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#1E3A8A] hover:bg-[#152a65] text-white font-medium text-sm transition-colors mb-4 gap-2 shadow-sm"
+        >
+          <Download className="w-4 h-4" />
+          <span>Unduh Berkas Sertifikat (PDF)</span>
+        </a>
       ) : (
-        <div className="w-full max-w-md mb-6 p-4 rounded-xl bg-blue-50/80 border border-blue-100 text-xs text-brand-navy text-left flex items-start gap-3">
-          <FileCheck2 className="w-5 h-5 text-brand-navy shrink-0 mt-0.5" />
+        <div className="w-full mb-5 p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600 text-left flex items-start gap-2.5">
+          <FileText className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold block mb-0.5">Integrasi PDF Sertifikat:</span>
-            Penerbitan link unduh langsung akan aktif secara penuh pada tahapan integrasi PDF Storage (Step 5 &amp; 6).
+            <span className="font-semibold text-slate-800 block mb-0.5">Integrasi Berkas PDF:</span>
+            Penerbitan link unduh langsung akan aktif secara penuh pada integrasi PDF Storage (Step 5 &amp; 6).
           </div>
         </div>
       )}
 
-      {/* Reset / Register Another Button */}
+      {/* Secondary Action */}
       <button
         type="button"
         onClick={onReset}
-        className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border border-brand-border bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm transition-all gap-2"
+        className="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors gap-1.5"
       >
-        <RotateCcw className="w-4 h-4" />
-        <span>Daftarkan Keluarga Lainnya</span>
+        <RotateCcw className="w-3.5 h-3.5" />
+        <span>Daftarkan keluarga lainnya</span>
       </button>
     </div>
   );
