@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
+import gsap from 'gsap';
 import LoadingScreen from './components/LoadingScreen';
 import SidebarRail from './components/SidebarRail';
 import StepOneDataKeluarga from './components/StepOneDataKeluarga';
@@ -28,6 +29,34 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [resultData, setResultData] = useState(null);
+
+  const mainCardRef = useRef(null);
+  const hasAnimatedRef = useRef(false);
+
+  // Animasi pop-up interaktif langsung aktif begitu loading selesai (Hanya 1x di awal)
+  const handleLoadingFinish = () => {
+    setIsLoading(false);
+    requestAnimationFrame(() => {
+      if (mainCardRef.current && !hasAnimatedRef.current) {
+        hasAnimatedRef.current = true;
+        gsap.fromTo(
+          mainCardRef.current,
+          {
+            opacity: 0,
+            scale: 0.92,
+            y: 40,
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.7,
+            ease: 'back.out(1.35)', // Efek pop up membal interaktif yang dinamis & fresh
+          }
+        );
+      }
+    });
+  };
 
   const updateFormData = (fields) => {
     setFormData((prev) => ({ ...prev, ...fields }));
@@ -100,12 +129,15 @@ export default function App() {
 
   return (
     <>
-      {/* 1. Loading Screen Interaktif 2 Detik (Fade out langsung tanpa jeda) */}
-      {isLoading && <LoadingScreen onFinish={() => setIsLoading(false)} />}
+      {/* 1. Loading Screen Interaktif 2 Detik */}
+      {isLoading && <LoadingScreen onFinish={handleLoadingFinish} />}
 
-      {/* 2. Main Portal App: Selalu siap dan stabil, tanpa pop-up animasi berulang */}
+      {/* 2. Main Portal App: Pop-up interaktif sekali di awal, stabil seterusnya */}
       <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-2.5 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
-        <main className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px]">
+        <main
+          ref={mainCardRef}
+          className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px]"
+        >
           {/* Sidebar Stepper */}
           <SidebarRail
             currentStep={step}
