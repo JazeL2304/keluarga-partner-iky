@@ -5,59 +5,58 @@ export default function LoadingScreen({ onFinish }) {
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
-    const duration = 1800; // 1.8 detik untuk isi progres, total 2.0 detik selesai
-    const intervalTime = 25;
-    const stepIncrement = 100 / (duration / intervalTime);
+    const totalDuration = 2000; // Tepat 2 detik
+    const startTime = performance.now();
+    let animFrame;
 
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + stepIncrement;
-        if (next >= 100) {
-          clearInterval(timer);
-          return 100;
-        }
-        return next;
-      });
-    }, intervalTime);
+    const animateProgress = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const pct = Math.min(100, (elapsed / totalDuration) * 100);
+      setProgress(pct);
 
-    // Fade out dimulai pada detik ke 1.8
-    const fadeTimer = setTimeout(() => {
-      setIsFadingOut(true);
-    }, 1800);
+      if (elapsed < totalDuration) {
+        animFrame = requestAnimationFrame(animateProgress);
+      } else {
+        // Tepat di detik 2, langsung fade-out mulus tanpa jeda
+        setIsFadingOut(true);
+        setTimeout(() => {
+          onFinish();
+        }, 250);
+      }
+    };
 
-    // Redirect / unmount tepat pada detik ke 2.0
-    const completeTimer = setTimeout(() => {
-      onFinish();
-    }, 2050);
+    animFrame = requestAnimationFrame(animateProgress);
 
     return () => {
-      clearInterval(timer);
-      clearTimeout(fadeTimer);
-      clearTimeout(completeTimer);
+      if (animFrame) cancelAnimationFrame(animFrame);
     };
   }, [onFinish]);
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-white via-slate-50 to-[#EFF6FF] transition-opacity duration-300 ${
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-white via-slate-50 to-[#EFF6FF] transition-opacity duration-300 ease-out ${
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
       <div className="relative flex flex-col items-center max-w-sm px-6 text-center">
-        {/* ========================================================= */}
-        {/* ANIMASI BULAT (Circular Spinner Ring + Logo Center)      */}
-        {/* ========================================================= */}
+        {/* Circular Spinner Ring + Logo Center */}
         <div className="relative mb-6 flex items-center justify-center">
           {/* Outer Glow Effect */}
           <div className="absolute -inset-3 rounded-full bg-gradient-to-r from-brand-navy via-brand-pink to-blue-500 opacity-20 blur-xl animate-pulse" />
 
-          {/* Circular Spinner Ring 1 (Putaran Searah Jarum Jam) */}
-          <div className="w-28 h-28 rounded-full border-4 border-slate-100 border-t-brand-navy border-r-brand-pink animate-spin" style={{ animationDuration: '1.2s' }} />
+          {/* Circular Spinner Ring 1 */}
+          <div
+            className="w-28 h-28 rounded-full border-4 border-slate-100 border-t-brand-navy border-r-brand-pink animate-spin"
+            style={{ animationDuration: '1.2s' }}
+          />
 
-          {/* Circular Spinner Ring 2 (Putaran Berlawanan - Halus) */}
-          <div className="absolute w-24 h-24 rounded-full border-2 border-dashed border-brand-pink/50 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '3s' }} />
+          {/* Circular Spinner Ring 2 */}
+          <div
+            className="absolute w-24 h-24 rounded-full border-2 border-dashed border-brand-pink/50 animate-spin"
+            style={{ animationDirection: 'reverse', animationDuration: '3s' }}
+          />
 
-          {/* Logo Badge di Tengah Lingkaran */}
+          {/* Logo Badge */}
           <div className="absolute w-16 h-16 rounded-2xl bg-brand-navy flex items-center justify-center text-white shadow-xl shadow-blue-950/30">
             <span className="text-xl font-black tracking-wider">IKY</span>
           </div>
@@ -71,7 +70,7 @@ export default function LoadingScreen({ onFinish }) {
           Partner Family Portal
         </div>
 
-        {/* Loading Spinner Icon Kecil + Teks Status */}
+        {/* Loading Spinner Icon + Teks Status */}
         <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-brand-navy">
           <svg
             className="w-4 h-4 animate-spin text-brand-pink"

@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import gsap from 'gsap';
 import LoadingScreen from './components/LoadingScreen';
 import SidebarRail from './components/SidebarRail';
 import StepOneDataKeluarga from './components/StepOneDataKeluarga';
@@ -29,31 +28,6 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [resultData, setResultData] = useState(null);
-
-  const mainCardRef = useRef(null);
-  const formAreaRef = useRef(null);
-
-  // Animasi halus saat portal selesai loading (Splash screen -> Portal)
-  useEffect(() => {
-    if (!isLoading && mainCardRef.current) {
-      gsap.fromTo(
-        mainCardRef.current,
-        { opacity: 0, y: 24, scale: 0.99 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.65, ease: 'power3.out' }
-      );
-    }
-  }, [isLoading]);
-
-  // Animasi lembut saat berpindah langkah (Step 1 -> 2 -> 3)
-  useEffect(() => {
-    if (!isLoading && formAreaRef.current) {
-      gsap.fromTo(
-        formAreaRef.current,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
-      );
-    }
-  }, [step, isLoading]);
 
   const updateFormData = (fields) => {
     setFormData((prev) => ({ ...prev, ...fields }));
@@ -126,16 +100,13 @@ export default function App() {
 
   return (
     <>
-      {/* 1. Loading Screen Interaktif ~3 Detik */}
+      {/* 1. Loading Screen Interaktif 2 Detik (Fade out langsung tanpa jeda) */}
       {isLoading && <LoadingScreen onFinish={() => setIsLoading(false)} />}
 
-      {/* 2. Main Portal App */}
+      {/* 2. Main Portal App: Selalu siap dan stabil, tanpa pop-up animasi berulang */}
       <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-2.5 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
-        <main
-          ref={mainCardRef}
-          className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px]"
-        >
-          {/* Sidebar Stepper (Kerangka 3 Langkah Selalu Muncul Utuh) */}
+        <main className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px]">
+          {/* Sidebar Stepper */}
           <SidebarRail
             currentStep={step}
             setStep={(s) => setStep(s)}
@@ -143,10 +114,7 @@ export default function App() {
           />
 
           {/* Right Form Canvas */}
-          <section
-            ref={formAreaRef}
-            className="flex-1 bg-white p-4 sm:p-8 lg:p-12 flex flex-col justify-between overflow-y-auto"
-          >
+          <section className="flex-1 bg-white p-4 sm:p-8 lg:p-12 flex flex-col justify-between overflow-y-auto">
             {submitError && (
               <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
                 <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
