@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import gsap from 'gsap';
 import SidebarRail from './components/SidebarRail';
 import StepOneDataKeluarga from './components/StepOneDataKeluarga';
 import StepTwoKontakDomisili from './components/StepTwoKontakDomisili';
@@ -27,6 +28,55 @@ export default function App() {
   const [submitError, setSubmitError] = useState(null);
   const [resultData, setResultData] = useState(null);
 
+  const mainCardRef = useRef(null);
+  const formAreaRef = useRef(null);
+
+  // 1. Initial Page Load Entrance Animation (GSAP)
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Main Card Fade & Slide Up Entrance
+      gsap.from(mainCardRef.current, {
+        y: 30,
+        autoAlpha: 0,
+        scale: 0.985,
+        duration: 0.8,
+        ease: 'power3.out',
+      });
+
+      // Desktop Sidebar Staggered Reveal
+      gsap.from('.sidebar-brand, .sidebar-title, .stepper-item, .sidebar-support', {
+        x: -16,
+        autoAlpha: 0,
+        stagger: 0.07,
+        duration: 0.6,
+        ease: 'power2.out',
+        delay: 0.15,
+      });
+
+      // Initial Form Elements Entrance
+      gsap.from('.step-content', {
+        y: 18,
+        autoAlpha: 0,
+        duration: 0.55,
+        ease: 'power2.out',
+        delay: 0.3,
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  // 2. Smooth Transition Animation when changing steps
+  useEffect(() => {
+    if (formAreaRef.current) {
+      gsap.fromTo(
+        formAreaRef.current,
+        { y: 14, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.4, ease: 'power2.out' }
+      );
+    }
+  }, [step]);
+
   const updateFormData = (fields) => {
     setFormData((prev) => ({ ...prev, ...fields }));
   };
@@ -46,7 +96,6 @@ export default function App() {
     setSubmitError(null);
 
     try {
-      // Format payload sesuai schema tabel keluarga_partner
       const fullContact = formData.kontak_wa
         ? `+62 ${formData.kontak_wa} / ${formData.kontak_email}`
         : formData.kontak_email;
@@ -98,10 +147,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-3 sm:p-6 md:p-8 font-sans antialiased">
-      {/* Main Multi-Step Card */}
-      <main className="w-full max-w-6xl bg-white rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[720px] transition-all duration-300">
-        {/* Left Navigation Sidebar */}
+    <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-2.5 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
+      {/* Main Multi-Step Card with GSAP Ref */}
+      <main
+        ref={mainCardRef}
+        className="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[680px] lg:min-h-[720px] transition-all"
+      >
+        {/* Navigation Sidebar (Adaptive Mobile & Desktop) */}
         <SidebarRail
           currentStep={step}
           setStep={(s) => setStep(s)}
@@ -109,9 +161,12 @@ export default function App() {
         />
 
         {/* Right Form Canvas */}
-        <section className="flex-1 bg-white p-6 sm:p-10 lg:p-12 flex flex-col justify-between overflow-y-auto">
+        <section
+          ref={formAreaRef}
+          className="flex-1 bg-white p-4 sm:p-8 lg:p-12 flex flex-col justify-between overflow-y-auto"
+        >
           {submitError && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
+            <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
               <span>{submitError}</span>
             </div>
