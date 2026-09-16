@@ -1,122 +1,157 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import axios from 'axios';
+import SidebarRail from './components/SidebarRail';
+import StepOneDataKeluarga from './components/StepOneDataKeluarga';
+import StepTwoKontakDomisili from './components/StepTwoKontakDomisili';
+import StepThreeKonfirmasi from './components/StepThreeKonfirmasi';
+import SuccessState from './components/SuccessState';
+import { AlertCircle } from 'lucide-react';
 
-function App() {
-  const [count, setCount] = useState(0)
+const INITIAL_FORM_DATA = {
+  nama_kepala_keluarga: 'Hendra Pratama, S.T.',
+  jumlah_anggota: 4,
+  kategori_kemitraan: 'Partner Mandiri (Pribadi)',
+  nama_pasangan: 'Siti Nurhaliza',
+  auto_cert: true,
+  kontak_wa: '812-3456-7890',
+  kontak_email: 'hendra.pratama@email.com',
+  alamat: 'Jl. Melati Raya No. 45, RT 03 / RW 07, Kel. Sukamaju, Kec. Cilodong',
+  provinsi: 'Jawa Barat',
+  kota: 'Kota Depok',
+};
+
+export default function App() {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [resultData, setResultData] = useState(null);
+
+  const updateFormData = (fields) => {
+    setFormData((prev) => ({ ...prev, ...fields }));
+  };
+
+  const handleNext = () => {
+    setSubmitError(null);
+    setStep((prev) => Math.min(prev + 1, 3));
+  };
+
+  const handlePrev = () => {
+    setSubmitError(null);
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      // Format payload sesuai schema tabel keluarga_partner
+      const fullContact = formData.kontak_wa
+        ? `+62 ${formData.kontak_wa} / ${formData.kontak_email}`
+        : formData.kontak_email;
+
+      const fullAddress = formData.alamat
+        ? `${formData.alamat}, ${formData.kota}, ${formData.provinsi}`
+        : '';
+
+      const payload = {
+        nama_kepala_keluarga: formData.nama_kepala_keluarga,
+        jumlah_anggota: Number(formData.jumlah_anggota),
+        kontak: fullContact,
+        alamat: fullAddress,
+      };
+
+      const res = await axios.post('/api/keluarga', payload);
+
+      if (res.data && res.data.success) {
+        setResultData(res.data.data);
+        setStep(4); // 4 = Success screen
+      } else {
+        throw new Error(res.data?.message || 'Terjadi kesalahan saat memproses data.');
+      }
+    } catch (err) {
+      console.error('Submission error:', err);
+      const msg = err.response?.data?.message || err.message || 'Gagal menghubungi server.';
+      setSubmitError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReset = () => {
+    setFormData({
+      nama_kepala_keluarga: '',
+      jumlah_anggota: 1,
+      kategori_kemitraan: 'Partner Mandiri (Pribadi)',
+      nama_pasangan: '',
+      auto_cert: true,
+      kontak_wa: '',
+      kontak_email: '',
+      alamat: '',
+      provinsi: 'Jawa Barat',
+      kota: 'Kota Depok',
+    });
+    setResultData(null);
+    setSubmitError(null);
+    setStep(1);
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen bg-[#F1F5F9] text-brand-slate flex items-center justify-center p-3 sm:p-6 md:p-8 font-sans antialiased">
+      {/* Main Multi-Step Card */}
+      <main className="w-full max-w-6xl bg-white rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[720px] transition-all duration-300">
+        {/* Left Navigation Sidebar */}
+        <SidebarRail
+          currentStep={step}
+          setStep={(s) => setStep(s)}
+          isSubmitted={step === 4}
+        />
 
-      <div className="ticks"></div>
+        {/* Right Form Canvas */}
+        <section className="flex-1 bg-white p-6 sm:p-10 lg:p-12 flex flex-col justify-between overflow-y-auto">
+          {submitError && (
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <span>{submitError}</span>
+            </div>
+          )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {step === 1 && (
+            <StepOneDataKeluarga
+              formData={formData}
+              updateFormData={updateFormData}
+              onNext={handleNext}
+            />
+          )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          {step === 2 && (
+            <StepTwoKontakDomisili
+              formData={formData}
+              updateFormData={updateFormData}
+              onNext={handleNext}
+              onPrev={handlePrev}
+            />
+          )}
+
+          {step === 3 && (
+            <StepThreeKonfirmasi
+              formData={formData}
+              onPrev={handlePrev}
+              onEdit={() => setStep(1)}
+              onSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+            />
+          )}
+
+          {step === 4 && (
+            <SuccessState
+              resultData={resultData}
+              onReset={handleReset}
+            />
+          )}
+        </section>
+      </main>
+    </div>
+  );
 }
-
-export default App
