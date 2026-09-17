@@ -4,22 +4,26 @@ import gsap from 'gsap';
 import LoadingScreen from './components/LoadingScreen';
 import SidebarRail from './components/SidebarRail';
 import StepOneDataKeluarga from './components/StepOneDataKeluarga';
-import StepTwoKontakDomisili from './components/StepTwoKontakDomisili';
+import StepTwoProfilAnak from './components/StepTwoProfilAnak';
 import StepThreeKonfirmasi from './components/StepThreeKonfirmasi';
 import SuccessState from './components/SuccessState';
 import { AlertCircle } from 'lucide-react';
 
 const INITIAL_FORM_DATA = {
-  nama_kepala_keluarga: 'Hendra Pratama, S.T.',
-  jumlah_anggota: 4,
-  kategori_kemitraan: 'Partner Mandiri (Pribadi)',
-  nama_pasangan: 'Siti Nurhaliza',
-  auto_cert: true,
-  kontak_wa: '812-3456-7890',
-  kontak_email: 'hendra.pratama@email.com',
-  alamat: 'Jl. Melati Raya No. 45, RT 03 / RW 07, Kel. Sukamaju, Kec. Cilodong',
-  provinsi: 'Jawa Barat',
-  kota: 'Kota Depok',
+  pribadi_instansi: 'Pribadi',
+  nama_instansi_custom: '',
+  nama_keluarga: 'Keluarga Hendra Pratama',
+  nama_ayah: 'Hendra Pratama',
+  stifin_ayah: 'Thinking Introvert',
+  golongan_darah_ayah: 'O',
+  nama_ibu: 'Siti Nurhaliza',
+  stifin_ibu: 'Feeling Extrovert',
+  golongan_darah_ibu: 'A',
+  jumlah_anak: 2,
+  anak: [
+    { nama: 'Ahmad Dani Pratama', stifin: 'Sensing Extrovert', golongan_darah: 'O' },
+    { nama: 'Aisyah Putri Pratama', stifin: 'Intuiting Introvert', golongan_darah: 'A' },
+  ],
 };
 
 // Komponen Pembungkus Form Portal dengan Animasi Pop-Up Sekali di Awal
@@ -78,7 +82,7 @@ function PortalContainer({ step, setStep, formData, updateFormData, onNext, onPr
           )}
 
           {step === 2 && (
-            <StepTwoKontakDomisili
+            <StepTwoProfilAnak
               formData={formData}
               updateFormData={updateFormData}
               onNext={onNext}
@@ -135,19 +139,21 @@ export default function App() {
     setSubmitError(null);
 
     try {
-      const fullContact = formData.kontak_wa
-        ? `+62 ${formData.kontak_wa} / ${formData.kontak_email}`
-        : formData.kontak_email;
-
-      const fullAddress = formData.alamat
-        ? `${formData.alamat}, ${formData.kota}, ${formData.provinsi}`
-        : '';
+      const instansiLabel = formData.pribadi_instansi === 'Instansi' && formData.nama_instansi_custom?.trim()
+        ? `Instansi: ${formData.nama_instansi_custom.trim()}`
+        : 'Pribadi';
 
       const payload = {
-        nama_kepala_keluarga: formData.nama_kepala_keluarga,
-        jumlah_anggota: Number(formData.jumlah_anggota),
-        kontak: fullContact,
-        alamat: fullAddress,
+        nama_keluarga: formData.nama_keluarga,
+        pribadi_instansi: instansiLabel,
+        nama_ayah: formData.nama_ayah,
+        stifin_ayah: formData.stifin_ayah,
+        golongan_darah_ayah: formData.golongan_darah_ayah,
+        nama_ibu: formData.nama_ibu,
+        stifin_ibu: formData.stifin_ibu,
+        golongan_darah_ibu: formData.golongan_darah_ibu,
+        jumlah_anak: Number(formData.jumlah_anak || 0),
+        anak: Array.isArray(formData.anak) ? formData.anak : [],
       };
 
       const res = await axios.post('/api/keluarga', payload);
@@ -169,16 +175,17 @@ export default function App() {
 
   const handleReset = () => {
     setFormData({
-      nama_kepala_keluarga: '',
-      jumlah_anggota: 1,
-      kategori_kemitraan: 'Partner Mandiri (Pribadi)',
-      nama_pasangan: '',
-      auto_cert: true,
-      kontak_wa: '',
-      kontak_email: '',
-      alamat: '',
-      provinsi: 'Jawa Barat',
-      kota: 'Kota Depok',
+      pribadi_instansi: 'Pribadi',
+      nama_instansi_custom: '',
+      nama_keluarga: '',
+      nama_ayah: '',
+      stifin_ayah: '',
+      golongan_darah_ayah: '',
+      nama_ibu: '',
+      stifin_ibu: '',
+      golongan_darah_ibu: '',
+      jumlah_anak: 0,
+      anak: [],
     });
     setResultData(null);
     setSubmitError(null);
@@ -207,3 +214,4 @@ export default function App() {
     />
   );
 }
+

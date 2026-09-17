@@ -17,7 +17,7 @@ export default function SuccessState({ resultData, onReset }) {
   }, []);
 
   const certificateNumber = resultData?.nomor_sertifikat || 'IKY-0001';
-  const headName = resultData?.nama_kepala_keluarga || 'Keluarga Partner';
+  const headName = resultData?.nama_keluarga || resultData?.nama_kepala_keluarga || 'Keluarga Partner';
   const downloadUrl = resultData?.url_sertifikat;
 
   return (

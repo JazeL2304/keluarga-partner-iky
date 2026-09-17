@@ -3,12 +3,13 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 /**
  * Menghasilkan buffer dokumen PDF Sertifikat Kemitraan Keluarga Partner I Know You
  * @param {Object} data
- * @param {string} data.nama_kepala_keluarga
+ * @param {string} data.nama_keluarga
+ * @param {string} [data.nama_kepala_keluarga]
  * @param {string} data.nomor_sertifikat
  * @param {string} data.tanggal_submit
  * @returns {Promise<Uint8Array>} PDF byte buffer
  */
-export async function generateCertificatePdf({ nama_kepala_keluarga, nomor_sertifikat, tanggal_submit }) {
+export async function generateCertificatePdf({ nama_keluarga, nama_kepala_keluarga, nomor_sertifikat, tanggal_submit }) {
   const pdfDoc = await PDFDocument.create();
   
   // Format sertifikat lanskap: A4 (841.89 x 595.28 pt)
@@ -78,7 +79,7 @@ export async function generateCertificatePdf({ nama_kepala_keluarga, nomor_serti
   });
 
   // 3. Judul Sertifikat
-  const titleText = 'SERTIFIKAT KEMITRAAN';
+  const titleText = 'PIAGAM KEMITRAAN KELUARGA';
   page.drawText(titleText, {
     x: width / 2 - (fontBold.widthOfTextAtSize(titleText, 22) / 2),
     y: height - 160,
@@ -98,7 +99,7 @@ export async function generateCertificatePdf({ nama_kepala_keluarga, nomor_serti
   });
 
   // Subtitle
-  const subText = 'Dengan bangga piagam ini diberikan sebagai apresiasi kemitraan resmi kepada:';
+  const subText = 'Dengan bangga piagam ini dianugerahkan sebagai apresiasi kemitraan resmi kepada:';
   page.drawText(subText, {
     x: width / 2 - (fontOblique.widthOfTextAtSize(subText, 12) / 2),
     y: height - 230,
@@ -107,8 +108,8 @@ export async function generateCertificatePdf({ nama_kepala_keluarga, nomor_serti
     color: slateColor,
   });
 
-  // 4. Nama Kepala Keluarga (Paling Menonjol)
-  const namaPenerima = nama_kepala_keluarga || 'Nama Keluarga Partner';
+  // 4. Nama Keluarga (Paling Menonjol)
+  const namaPenerima = nama_keluarga || nama_kepala_keluarga || 'Keluarga Mitra IKY';
   page.drawText(namaPenerima, {
     x: width / 2 - (fontBold.widthOfTextAtSize(namaPenerima, 28) / 2),
     y: height - 280,

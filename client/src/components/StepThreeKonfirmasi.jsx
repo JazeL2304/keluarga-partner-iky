@@ -1,18 +1,23 @@
 import React from 'react';
-import { Edit3, ArrowLeft, Send, Loader2 } from 'lucide-react';
+import { Edit3, ArrowLeft, Send, Loader2, UserCircle2, Baby, Building2, User } from 'lucide-react';
 
 export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit, isSubmitting }) {
   const {
-    nama_kepala_keluarga,
-    jumlah_anggota,
-    kategori_kemitraan,
-    nama_pasangan,
-    kontak_wa,
-    kontak_email,
-    alamat,
-    provinsi,
-    kota,
+    pribadi_instansi,
+    nama_instansi_custom,
+    nama_keluarga,
+    nama_ayah,
+    stifin_ayah,
+    golongan_darah_ayah,
+    nama_ibu,
+    stifin_ibu,
+    golongan_darah_ibu,
+    jumlah_anak,
+    anak,
   } = formData;
+
+  const isInstansi = pribadi_instansi === 'Instansi';
+  const anakList = Array.isArray(anak) ? anak : [];
 
   const todayFormatted = new Date().toLocaleDateString('id-ID', {
     day: 'numeric',
@@ -29,75 +34,137 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
             Langkah 3 • Verifikasi &amp; Penerbitan
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Konfirmasi Data &amp; Sertifikat
+            Konfirmasi Data &amp; Pratinjau Sertifikat
           </h1>
           <p className="text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
-            Periksa ketepatan data Anda sebelum nomor registrasi resmi diterbitkan dan dicatat ke sistem.
+            Periksa ketepatan profil genetika keluarga Anda sebelum nomor registrasi resmi diterbitkan dan dicatat ke sistem.
           </p>
         </header>
 
-        {/* Part 1: Data Summary Table */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 mb-6">
-          <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+        {/* Part 1: Data Summary Box */}
+        <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-6 shadow-sm space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              Ringkasan Data Pendaftaran
+              Ringkasan Data Kemitraan Keluarga
             </h2>
             <button
               type="button"
               onClick={onEdit}
-              className="text-xs font-semibold text-[#FF4081] hover:underline flex items-center gap-1.5 transition-colors"
+              className="text-xs font-semibold text-[#FF4081] hover:underline flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Edit3 className="w-3.5 h-3.5" />
               <span>Ubah Data</span>
             </button>
           </div>
 
-          <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-xs">
+          {/* Kategori & Nama Keluarga */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-slate-100 text-xs">
             <div>
-              <dt className="text-slate-500">Nama Kepala Keluarga</dt>
-              <dd className="font-semibold text-slate-900 text-sm mt-0.5">
-                {nama_kepala_keluarga || '—'}
-              </dd>
+              <span className="text-slate-500 block">Kategori Pendaftaran</span>
+              <div className="font-semibold text-slate-900 text-sm mt-0.5 flex items-center gap-1.5">
+                {isInstansi ? (
+                  <>
+                    <Building2 className="w-4 h-4 text-[#FF4081]" />
+                    <span>Instansi: {nama_instansi_custom || '—'}</span>
+                  </>
+                ) : (
+                  <>
+                    <User className="w-4 h-4 text-[#FF4081]" />
+                    <span>Pribadi</span>
+                  </>
+                )}
+              </div>
             </div>
+
             <div>
-              <dt className="text-slate-500">Jumlah Anggota</dt>
-              <dd className="font-semibold text-slate-900 mt-0.5">
-                {jumlah_anggota} Orang
-              </dd>
+              <span className="text-slate-500 block">Nama Keluarga (Dicetak di Piagam)</span>
+              <div className="font-bold text-slate-900 text-sm mt-0.5">
+                {nama_keluarga || '—'}
+              </div>
             </div>
-            <div>
-              <dt className="text-slate-500">Kategori Kemitraan</dt>
-              <dd className="font-medium text-slate-900 mt-0.5">
-                {kategori_kemitraan}
-              </dd>
+          </div>
+
+          {/* Profil Orang Tua: Ayah & Ibu */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Ayah */}
+            <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+              <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-[#1E3A8A] mb-2 pb-1.5 border-b border-slate-200">
+                <UserCircle2 className="w-4 h-4" />
+                <span>Profil Ayah</span>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Nama:</span>
+                  <span className="font-semibold text-slate-900 text-right">{nama_ayah || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">STIFIn:</span>
+                  <span className="font-medium text-[#1E3A8A] text-right">{stifin_ayah || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Gol. Darah:</span>
+                  <span className="font-mono font-semibold text-slate-900 text-right">{golongan_darah_ayah || '—'}</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <dt className="text-slate-500">Nomor WhatsApp</dt>
-              <dd className="font-mono text-slate-900 mt-0.5">
-                +62 {kontak_wa || '—'}
-              </dd>
+
+            {/* Ibu */}
+            <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+              <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-[#FF4081] mb-2 pb-1.5 border-b border-slate-200">
+                <UserCircle2 className="w-4 h-4" />
+                <span>Profil Ibu</span>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Nama:</span>
+                  <span className="font-semibold text-slate-900 text-right">{nama_ibu || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">STIFIn:</span>
+                  <span className="font-medium text-[#FF4081] text-right">{stifin_ibu || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Gol. Darah:</span>
+                  <span className="font-mono font-semibold text-slate-900 text-right">{golongan_darah_ibu || '—'}</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <dt className="text-slate-500">Alamat Email</dt>
-              <dd className="text-slate-900 mt-0.5 break-all">
-                {kontak_email || '—'}
-              </dd>
+          </div>
+
+          {/* Profil Anak-Anak */}
+          <div>
+            <div className="flex items-center justify-between mb-3 pt-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">
+                <Baby className="w-4 h-4 text-[#FF4081]" />
+                <span>Profil Genetika Anak ({jumlah_anak || 0} Anak)</span>
+              </div>
             </div>
-            {nama_pasangan && (
-              <div>
-                <dt className="text-slate-500">Nama Pasangan / Wakil</dt>
-                <dd className="text-slate-900 mt-0.5">
-                  {nama_pasangan}
-                </dd>
+
+            {anakList.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {anakList.map((ch, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-white border border-slate-200 text-xs shadow-2xs">
+                    <div className="flex items-center justify-between pb-1 mb-1.5 border-b border-slate-100">
+                      <span className="font-bold text-[#1E3A8A]">Anak ke-{idx + 1}</span>
+                      <span className="font-mono text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-semibold">
+                        Gol. {ch.golongan_darah || '—'}
+                      </span>
+                    </div>
+                    <div className="font-semibold text-slate-900 truncate mb-1">
+                      {ch.nama || `Anak ke-${idx + 1}`}
+                    </div>
+                    <div className="text-[11px] text-[#FF4081] font-medium">
+                      {ch.stifin || 'STIFIn belum dipilih'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-500 text-center">
+                Belum ada data anak yang didaftarkan (Jumlah Anak: 0).
               </div>
             )}
-            <div className="sm:col-span-2 lg:col-span-3 pt-2 border-t border-slate-100">
-              <dt className="text-slate-500">Alamat Domisili</dt>
-              <dd className="text-slate-900 mt-0.5 leading-relaxed">
-                {alamat ? `${alamat}, ${kota}, ${provinsi}` : '—'}
-              </dd>
-            </div>
-          </dl>
+          </div>
         </div>
 
         {/* Part 2: Authentic Certificate Document Preview */}
@@ -112,9 +179,9 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
           </div>
 
           {/* Realistic Physical Certificate Canvas */}
-          <div className="bg-[#FAF9F5] border border-slate-300 rounded-lg p-5 sm:p-8 text-center relative overflow-hidden shadow-sm">
+          <div className="bg-[#FAF9F5] border border-slate-300 rounded-xl p-5 sm:p-8 text-center relative overflow-hidden shadow-sm">
             {/* Fine Double Rule Border */}
-            <div className="border border-[#1E3A8A]/30 p-4 sm:p-6 rounded bg-white relative">
+            <div className="border border-[#1E3A8A]/30 p-4 sm:p-6 rounded-lg bg-white relative">
               {/* Header Crest */}
               <div className="flex items-center justify-center space-x-2 mb-2">
                 <span className="w-6 h-6 rounded bg-[#1E3A8A] text-white text-[10px] font-bold flex items-center justify-center tracking-wider">
@@ -131,7 +198,7 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
 
               {/* Title in Authentic Serif */}
               <h3 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-[0.15em] text-[#1E3A8A] mb-1">
-                PIAGAM KEMITRAAN
+                PIAGAM KEMITRAAN KELUARGA
               </h3>
               
               <div className="text-[11px] font-mono text-slate-400 mb-4">
@@ -139,18 +206,18 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
               </div>
 
               <p className="font-serif italic text-xs sm:text-sm text-slate-600 mb-2">
-                Dengan bangga diberikan kepada:
+                Dengan bangga dianugerahkan kepada:
               </p>
 
               {/* Recipient Name in Prominent Serif with Pink underline accent */}
               <div className="my-2 sm:my-3">
                 <span className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 inline-block border-b-2 border-[#FF4081] pb-1 px-4 sm:px-6">
-                  {nama_kepala_keluarga || 'Nama Kepala Keluarga'}
+                  {nama_keluarga || 'Keluarga Mitra IKY'}
                 </span>
               </div>
 
               <p className="text-xs text-slate-600 max-w-md mx-auto mt-3 leading-relaxed">
-                Sebagai Keluarga Partner resmi I Know You dalam komitmen bersama membangun kesadaran potensi genetik berbasis STIFIn.
+                Sebagai Keluarga Partner resmi I Know You dalam komitmen bersama membangun kesadaran potensi genetik keluarga berbasis STIFIn.
               </p>
 
               {/* Document Sign-off */}
@@ -181,7 +248,7 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
             type="button"
             onClick={onPrev}
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm transition-colors disabled:opacity-50"
+            className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm transition-colors disabled:opacity-50 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             <span>Kembali</span>
@@ -210,3 +277,4 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
     </div>
   );
 }
+

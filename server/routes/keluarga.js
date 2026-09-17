@@ -1,5 +1,6 @@
 import express from 'express';
 import { supabase } from '../lib/supabase.js';
+import { generateCertificatePdf } from '../lib/generatePdf.js';
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ function formatCertificateNumber(count) {
 
 /**
  * GET /api/keluarga
- * Mengambil daftar keluarga partner (untuk verifikasi / debugging)
+ * Mengambil daftar keluarga partner beserta data anak (relasi 1-to-many)
  */
 router.get('/', async (req, res) => {
   try {
@@ -27,8 +28,8 @@ router.get('/', async (req, res) => {
     }
 
     const { data, error } = await supabase
-      .from('keluarga_partner')
-      .select('*')
+      .from('keluarga')
+      .select('*, anak(*)')
       .order('tanggal_submit', { ascending: false });
 
     if (error) throw error;
@@ -48,79 +49,195 @@ router.get('/', async (req, res) => {
 });
 
 /**
+ * GET /api/keluarga/:id/pdf
+ * Mengunduh langsung berkas PDF sertifikat resmi berdasarkan ID keluarga
+ */
+router.get('/:id/pdf', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!supabase) {
+      return res.status(503).json({ success: false, message: 'Supabase belum dikonfigurasi' });
+    }
+
+    const { data: keluarga, error } = await supabase
+      .from('keluarga')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !keluarga) {
+      return res.status(404).json({ success: false, message: 'Data keluarga tidak ditemukan' });
+    }
+
+    const pdfBuffer = await generateCertificatePdf({
+      nama_keluarga: keluarga.nama_keluarga,
+      nomor_sertifikat: keluarga.nomor_sertifikat,
+      tanggal_submit: keluarga.tanggal_submit
+    });
+
+    const safeFilename = `Sertifikat-${(keluarga.nomor_sertifikat || 'IKY').replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
+    return res.send(Buffer.from(pdfBuffer));
+  } catch (error) {
+    console.error('Error streaming PDF certificate:', error);
+    return res.status(500).json({ success: false, message: 'Gagal membuat file PDF sertifikat' });
+  }
+});
+
+/**
  * POST /api/keluarga
- * Menerima submission form pendataan keluarga partner
+ * Menerima submission kuesioner asli "Well Identified Family I Know You":
+ * 1. Insert ke tabel keluarga
+ * 2. Ambil id keluarga
+ * 3. Insert batch ke tabel anak dengan keluarga_id
+ * 4. Generate nomor sertifikat unik
+ * 5. Generate berkas PDF sertifikat via pdf-lib
+ * 6. Upload PDF ke Supabase Storage (bucket 'sertifikat') & update url_sertifikat
  */
 router.post('/', async (req, res) => {
   try {
-    const { nama_kepala_keluarga, jumlah_anggota, kontak, alamat } = req.body;
+    const {
+      nama_keluarga,
+      pribadi_instansi,
+      nama_ayah,
+      stifin_ayah,
+      golongan_darah_ayah,
+      nama_ibu,
+      stifin_ibu,
+      golongan_darah_ibu,
+      jumlah_anak,
+      anak
+    } = req.body;
 
-    // 1. Validasi input dasar
-    if (!nama_kepala_keluarga || typeof nama_kepala_keluarga !== 'string' || !nama_kepala_keluarga.trim()) {
+    // 1. Validasi input wajib
+    if (!nama_keluarga || typeof nama_keluarga !== 'string' || !nama_keluarga.trim()) {
       return res.status(400).json({
         success: false,
-        message: 'Nama Kepala Keluarga wajib diisi'
+        message: 'Nama Keluarga wajib diisi (digunakan untuk penerbitan sertifikat)'
       });
     }
 
-    if (!kontak || typeof kontak !== 'string' || !kontak.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Kontak (No HP / Email) wajib diisi'
-      });
-    }
-
-    const parsedJumlahAnggota = parseInt(jumlah_anggota, 10);
-    if (isNaN(parsedJumlahAnggota) || parsedJumlahAnggota < 1) {
-      return res.status(400).json({
-        success: false,
-        message: 'Jumlah anggota keluarga minimal 1 orang'
-      });
-    }
+    const parsedJumlahAnak = Math.max(0, parseInt(jumlah_anak, 10) || 0);
 
     // 2. Cek konfigurasi Supabase
     if (!supabase) {
       return res.status(503).json({
         success: false,
-        message: 'Koneksi Supabase belum dikonfigurasi. Silakan lengkapi SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY di server/.env'
+        message: 'Koneksi Supabase belum dikonfigurasi. Periksa SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY di server/.env'
       });
     }
 
-    // 3. Generate nomor sertifikat otomatis (format: IKY-000X)
+    // 3. Generate nomor sertifikat unik (format: IKY-000X)
     const { count, error: countError } = await supabase
-      .from('keluarga_partner')
+      .from('keluarga')
       .select('*', { count: 'exact', head: true });
 
     if (countError) {
-      console.warn('Gagal menghitung jumlah row, menggunakan default timestamp sequence:', countError.message);
+      console.warn('Gagal menghitung jumlah row keluarga:', countError.message);
     }
 
     const nomor_sertifikat = formatCertificateNumber(count || 0);
 
-    // 4. Insert data awal ke database Supabase
-    const payload = {
-      nama_kepala_keluarga: nama_kepala_keluarga.trim(),
-      jumlah_anggota: parsedJumlahAnggota,
-      kontak: kontak.trim(),
-      alamat: alamat ? alamat.trim() : '',
+    // 4. Step 1: Insert 1 row ke tabel keluarga
+    const keluargaPayload = {
+      nama_keluarga: nama_keluarga.trim(),
+      pribadi_instansi: pribadi_instansi ? String(pribadi_instansi).trim() : null,
+      nama_ayah: nama_ayah ? String(nama_ayah).trim() : null,
+      stifin_ayah: stifin_ayah ? String(stifin_ayah).trim() : null,
+      golongan_darah_ayah: golongan_darah_ayah ? String(golongan_darah_ayah).trim() : null,
+      nama_ibu: nama_ibu ? String(nama_ibu).trim() : null,
+      stifin_ibu: stifin_ibu ? String(stifin_ibu).trim() : null,
+      golongan_darah_ibu: golongan_darah_ibu ? String(golongan_darah_ibu).trim() : null,
+      jumlah_anak: parsedJumlahAnak,
       nomor_sertifikat,
       url_sertifikat: null
     };
 
-    const { data: insertedData, error: insertError } = await supabase
-      .from('keluarga_partner')
-      .insert([payload])
+    const { data: insertedKeluarga, error: keluargaError } = await supabase
+      .from('keluarga')
+      .insert([keluargaPayload])
       .select()
       .single();
 
-    if (insertError) {
-      throw insertError;
+    if (keluargaError) {
+      throw keluargaError;
     }
 
+    // 5. Step 2 & 3: Ambil ID keluarga baru dan insert data anak jika ada
+    let insertedAnak = [];
+    if (Array.isArray(anak) && anak.length > 0) {
+      const anakPayload = anak.map((a) => ({
+        keluarga_id: insertedKeluarga.id,
+        nama: a.nama ? String(a.nama).trim() : '',
+        stifin: a.stifin ? String(a.stifin).trim() : null,
+        golongan_darah: a.golongan_darah ? String(a.golongan_darah).trim() : null
+      }));
+
+      const { data: anakData, error: anakError } = await supabase
+        .from('anak')
+        .insert(anakPayload)
+        .select();
+
+      if (anakError) {
+        console.error('Peringatan: Gagal menyimpan data anak:', anakError);
+      } else {
+        insertedAnak = anakData || [];
+      }
+    }
+
+    // 6. Step 4 & 5: Generate PDF Sertifikat & Upload ke Supabase Storage
+    let finalCertificateUrl = `/api/keluarga/${insertedKeluarga.id}/pdf`;
+
+    try {
+      const pdfBuffer = await generateCertificatePdf({
+        nama_keluarga: insertedKeluarga.nama_keluarga,
+        nomor_sertifikat: insertedKeluarga.nomor_sertifikat,
+        tanggal_submit: insertedKeluarga.tanggal_submit
+      });
+
+      const fileName = `${insertedKeluarga.nomor_sertifikat}.pdf`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('sertifikat')
+        .upload(fileName, pdfBuffer, {
+          contentType: 'application/pdf',
+          upsert: true
+        });
+
+      if (!uploadError && uploadData) {
+        const { data: publicUrlData } = supabase.storage
+          .from('sertifikat')
+          .getPublicUrl(fileName);
+
+        if (publicUrlData?.publicUrl) {
+          finalCertificateUrl = publicUrlData.publicUrl;
+        }
+      } else if (uploadError) {
+        console.warn('Storage upload note:', uploadError.message);
+      }
+
+      // Update url_sertifikat pada row keluarga di database
+      await supabase
+        .from('keluarga')
+        .update({ url_sertifikat: finalCertificateUrl })
+        .eq('id', insertedKeluarga.id);
+
+      insertedKeluarga.url_sertifikat = finalCertificateUrl;
+    } catch (pdfErr) {
+      console.error('Gagal generate/upload PDF sertifikat:', pdfErr);
+    }
+
+    // 7. Return response sukses relasional
     return res.status(201).json({
       success: true,
-      message: 'Data keluarga partner berhasil disimpan',
-      data: insertedData
+      message: 'Data keluarga, profil genetika, dan sertifikat berhasil diproses',
+      data: {
+        ...insertedKeluarga,
+        url_sertifikat: finalCertificateUrl,
+        anak: insertedAnak
+      }
     });
   } catch (error) {
     console.error('Error saat menyimpan keluarga partner:', error);
@@ -132,3 +249,4 @@ router.post('/', async (req, res) => {
 });
 
 export default router;
+

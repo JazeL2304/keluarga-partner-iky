@@ -5,13 +5,13 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
   const steps = [
     {
       number: 1,
-      title: 'Data Keluarga',
-      subtitle: 'Kepala keluarga & anggota',
+      title: 'Profil Orang Tua',
+      subtitle: 'Kategori, ayah & ibu',
     },
     {
       number: 2,
-      title: 'Kontak & Domisili',
-      subtitle: 'WhatsApp, email & alamat',
+      title: 'Profil Genetika Anak',
+      subtitle: 'Data STIFIn anak dinamis',
     },
     {
       number: 3,
