@@ -167,78 +167,44 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
           </div>
         </div>
 
-        {/* Part 2: Authentic Certificate Document Preview */}
+        {/* Part 2: Authentic Certificate Document Preview 1:1 */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              Pratinjau Sertifikat Resmi
+              Pratinjau Piagam Apresiasi Resmi
             </h2>
             <span className="text-[11px] text-slate-500 font-mono">
-              Dokumen A4 Landscape (PDF)
+              Dokumen A4 Landscape (1:1 Template Resmi)
             </span>
           </div>
 
-          {/* Realistic Physical Certificate Canvas */}
-          <div className="bg-[#FAF9F5] border border-slate-300 rounded-xl p-5 sm:p-8 text-center relative overflow-hidden shadow-sm">
-            {/* Fine Double Rule Border */}
-            <div className="border border-[#1E3A8A]/30 p-4 sm:p-6 rounded-lg bg-white relative">
-              {/* Header Crest */}
-              <div className="flex items-center justify-center space-x-2 mb-2">
-                <span className="w-6 h-6 rounded bg-[#1E3A8A] text-white text-[10px] font-bold flex items-center justify-center tracking-wider">
-                  IKY
+          {/* Realistic Physical Certificate Canvas using Clean Official Template */}
+          <div className="bg-slate-100/80 border border-slate-300 rounded-xl p-3 sm:p-5 shadow-sm">
+            <div className="relative w-full max-w-2xl mx-auto overflow-hidden rounded-lg shadow-md border border-slate-300 select-none aspect-[1024/723]">
+              {/* Background Template Master Resmi */}
+              <img
+                src="/certificate_template.png"
+                alt="Piagam Apresiasi Well Identified Family I Know You"
+                className="w-full h-full object-cover block pointer-events-none"
+              />
+
+              {/* Dynamic Family Name Overlay di Panel Merah Marun Kiri */}
+              <div className="absolute left-[13.7%] top-[52.8%] -translate-x-1/2 -translate-y-1/2 w-[24%] text-center pointer-events-none flex flex-col items-center justify-center">
+                <span className="font-black italic uppercase tracking-wide text-[#D4AF37] text-[10px] sm:text-[13px] md:text-[16px] lg:text-[18px] leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] break-words">
+                  {(() => {
+                    const raw = nama_keluarga || 'Keluarga Partner';
+                    return raw.toUpperCase().replace(/^KELUARGA\s+/i, '').replace(/\s+FAMILY$/i, '').trim() || 'KELUARGA';
+                  })()}
                 </span>
-                <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#1E3A8A]">
-                  I Know You Indonesia
+                <span className="font-black italic uppercase tracking-widest text-[#D4AF37] text-[10px] sm:text-[13px] md:text-[16px] lg:text-[18px] leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] mt-0.5">
+                  FAMILY
                 </span>
-              </div>
-
-              <div className="text-[10px] text-[#FF4081] uppercase tracking-widest font-semibold mb-3">
-                Platform Pengembangan Diri Berbasis STIFIn
-              </div>
-
-              {/* Title in Authentic Serif */}
-              <h3 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-[0.15em] text-[#1E3A8A] mb-1">
-                PIAGAM KEMITRAAN KELUARGA
-              </h3>
-              
-              <div className="text-[11px] font-mono text-slate-400 mb-4">
-                Nomor: IKY-XXXX (Dialokasikan Otomatis)
-              </div>
-
-              <p className="font-serif italic text-xs sm:text-sm text-slate-600 mb-2">
-                Dengan bangga dianugerahkan kepada:
-              </p>
-
-              {/* Recipient Name in Prominent Serif with Pink underline accent */}
-              <div className="my-2 sm:my-3">
-                <span className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 inline-block border-b-2 border-[#FF4081] pb-1 px-4 sm:px-6">
-                  {nama_keluarga || 'Keluarga Mitra IKY'}
-                </span>
-              </div>
-
-              <p className="text-xs text-slate-600 max-w-md mx-auto mt-3 leading-relaxed">
-                Sebagai Keluarga Partner resmi I Know You dalam komitmen bersama membangun kesadaran potensi genetik keluarga berbasis STIFIn.
-              </p>
-
-              {/* Document Sign-off */}
-              <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
-                <div className="text-left">
-                  <span className="block text-[10px] uppercase text-slate-400">Tanggal Terbit</span>
-                  <span className="font-medium text-slate-700">{todayFormatted}</span>
-                </div>
-                
-                {/* Official Circular Stamp */}
-                <div className="border-2 border-[#1E3A8A]/40 rounded-full w-12 h-12 flex flex-col items-center justify-center text-[7px] font-bold text-[#1E3A8A] leading-tight select-none opacity-85">
-                  <span className="text-[#FF4081]">IKY</span>
-                  <span className="text-[6px] tracking-tighter">VERIFIED</span>
-                </div>
-
-                <div className="text-right">
-                  <span className="block text-[10px] uppercase text-slate-400">Pengesahan</span>
-                  <span className="font-semibold text-[#1E3A8A]">I Know You Indonesia</span>
-                </div>
               </div>
             </div>
+
+            <p className="text-[11px] text-slate-500 text-center mt-2.5">
+              Desain piagam resmi Well Identified Family I Know You dengan cetak nama keluarga otomatis.
+            </p>
           </div>
         </div>
 
