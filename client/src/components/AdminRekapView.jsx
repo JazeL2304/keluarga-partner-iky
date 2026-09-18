@@ -17,9 +17,10 @@ import {
   ArrowLeft,
   CheckCircle2,
   ShieldCheck,
+  LogOut,
 } from 'lucide-react';
 
-export default function AdminRekapView({ onBackToForm }) {
+export default function AdminRekapView({ onBackToForm, onLogout }) {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -141,24 +142,38 @@ export default function AdminRekapView({ onBackToForm }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={fetchData}
             disabled={isLoading}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all shadow-sm active:scale-95 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all shadow-sm active:scale-95 disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-[#FF4081]' : 'text-slate-500'}`} />
-            <span>{isLoading ? 'Memuat...' : 'Perbarui Data'}</span>
+            <span>{isLoading ? 'Memuat...' : 'Perbarui'}</span>
           </button>
+
           <button
             type="button"
             onClick={onBackToForm}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-[#FF4081] hover:bg-[#E02868] text-white transition-all shadow-sm active:scale-95"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all shadow-sm active:scale-95 cursor-pointer"
+            title="Buka Halaman Formulir Pendaftaran Mitra"
           >
-            <User className="w-3.5 h-3.5" />
-            <span>Formulir Baru</span>
+            <User className="w-3.5 h-3.5 text-[#FF4081]" />
+            <span>Portal Partner</span>
           </button>
+
+          {onLogout && (
+            <button
+              type="button"
+              onClick={onLogout}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 border border-slate-200 hover:border-rose-200 transition-all shadow-sm active:scale-95 cursor-pointer"
+              title="Kunci sesi admin dan keluar"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Keluar</span>
+            </button>
+          )}
         </div>
       </div>
 

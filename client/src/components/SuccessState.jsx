@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { Check, Download, RotateCcw, FileText, Copy, CheckCheck, Share2 } from 'lucide-react';
+import QRCode from 'qrcode';
+import { Check, Download, RotateCcw, FileText, Copy, CheckCheck, Share2, QrCode as QrIcon, Smartphone } from 'lucide-react';
 
-export default function SuccessState({ resultData, onReset, onViewRekap }) {
+export default function SuccessState({ resultData, onReset }) {
   const [copied, setCopied] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   useEffect(() => {
     try {
@@ -21,6 +23,21 @@ export default function SuccessState({ resultData, onReset, onViewRekap }) {
   const certificateNumber = resultData?.nomor_sertifikat || 'IKY-0001';
   const headName = resultData?.nama_keluarga || resultData?.nama_kepala_keluarga || 'Keluarga Partner';
   const downloadUrl = resultData?.url_sertifikat;
+
+  // Generate QR Code data URL whenever downloadUrl is available
+  useEffect(() => {
+    const target = downloadUrl || `https://stifiniknowyou.com/sertifikat/${certificateNumber}`;
+    QRCode.toDataURL(target, {
+      margin: 1,
+      width: 200,
+      color: {
+        dark: '#1E293B',
+        light: '#FFFFFF'
+      }
+    })
+      .then((url) => setQrCodeUrl(url))
+      .catch((err) => console.error('Error generating QR code in success screen:', err));
+  }, [downloadUrl, certificateNumber]);
 
   const handleCopyLink = async () => {
     if (!downloadUrl) return;
@@ -41,7 +58,7 @@ export default function SuccessState({ resultData, onReset, onViewRekap }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center p-6 sm:p-10 max-w-lg mx-auto">
       {/* Icon */}
-      <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-5">
+      <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-4">
         <Check className="w-7 h-7 stroke-[2.5]" />
       </div>
 
@@ -54,7 +71,7 @@ export default function SuccessState({ resultData, onReset, onViewRekap }) {
       </p>
 
       {/* Certificate Number Card */}
-      <div className="w-full bg-white border border-slate-200 rounded-lg p-5 mb-5 text-left shadow-sm">
+      <div className="w-full bg-white border border-slate-200 rounded-xl p-5 mb-5 text-left shadow-sm">
         <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             Nomor Seri Sertifikat
@@ -78,6 +95,24 @@ export default function SuccessState({ resultData, onReset, onViewRekap }) {
           <span className="font-medium text-slate-700">Tersimpan di Supabase</span>
         </div>
       </div>
+
+      {/* QR Code Scan Card for Smartphone */}
+      {qrCodeUrl && (
+        <div className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 flex items-center gap-4 text-left">
+          <div className="p-1.5 bg-white rounded-lg border border-slate-200 shadow-xs shrink-0">
+            <img src={qrCodeUrl} alt="QR Code Piagam" className="w-20 h-20 block" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">
+              <Smartphone className="w-3.5 h-3.5 text-[#1E3A8A]" />
+              <span>Pindai Lewat Ponsel</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              Arahkan kamera smartphone Anda ke QR code ini untuk langsung membuka dan menyimpan berkas piagam di HP.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="w-full space-y-3 mb-5">
@@ -137,29 +172,15 @@ export default function SuccessState({ resultData, onReset, onViewRekap }) {
         )}
       </div>
 
-      {/* Tertiary Actions */}
-      <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-        <button
-          type="button"
-          onClick={onReset}
-          className="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-slate-600 hover:text-[#FF4081] transition-colors gap-1.5 cursor-pointer"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Daftarkan keluarga lainnya</span>
-        </button>
-
-        {onViewRekap && (
-          <button
-            type="button"
-            onClick={onViewRekap}
-            className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-[#1E3A8A] hover:bg-blue-50/80 rounded-lg transition-colors gap-1.5 cursor-pointer"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Lihat Rekap Data Mitra &rarr;</span>
-          </button>
-        )}
-      </div>
+      {/* Tertiary Action: Register another family */}
+      <button
+        type="button"
+        onClick={onReset}
+        className="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-slate-600 hover:text-[#FF4081] transition-colors gap-1.5 cursor-pointer"
+      >
+        <RotateCcw className="w-3.5 h-3.5" />
+        <span>Daftarkan keluarga lainnya</span>
+      </button>
     </div>
   );
 }
-

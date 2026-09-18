@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
+import QRCode from 'qrcode';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,9 +37,16 @@ function formatFamilyName(rawName) {
  * @param {Object} data
  * @param {string} data.nama_keluarga
  * @param {string} [data.nama_kepala_keluarga]
+ * @param {string} [data.nomor_sertifikat]
+ * @param {string} [data.verification_url]
  * @returns {Promise<Uint8Array>} PDF byte buffer
  */
-export async function generateCertificatePdf({ nama_keluarga, nama_kepala_keluarga }) {
+export async function generateCertificatePdf({
+  nama_keluarga,
+  nama_kepala_keluarga,
+  nomor_sertifikat = 'IKY-0001',
+  verification_url,
+}) {
   const pdfDoc = await PDFDocument.create();
   pdfDoc.registerFontkit(fontkit);
   
@@ -104,8 +112,50 @@ export async function generateCertificatePdf({ nama_keluarga, nama_kepala_keluar
     color: exactColor,
   });
 
+  // 4. Generate & Embed QR Code Verifikasi Keaslian Resmi
+  try {
+    const qrTargetUrl = verification_url || `https://stifiniknowyou.com/sertifikat/${nomor_sertifikat}`;
+    const qrBuffer = await QRCode.toBuffer(qrTargetUrl, {
+      type: 'png',
+      margin: 1,
+      width: 250,
+      errorCorrectionLevel: 'M',
+      color: {
+        dark: '#1E293B',
+        light: '#FFFFFF'
+      }
+    });
+
+    const qrImage = await pdfDoc.embedPng(qrBuffer);
+    const qrSize = 64; // Ukuran proporsional di panel marun
+    const qrX = panelCenterX - (qrSize / 2);
+    const qrY = 135;
+
+    // Gambar QR Code pada panel marun
+    page.drawImage(qrImage, {
+      x: qrX,
+      y: qrY,
+      width: qrSize,
+      height: qrSize,
+    });
+
+    // Label teks kecil penjelas di bawah QR Code
+    const labelText = 'VERIFIKASI RESMI';
+    const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const labelSize = 5.5;
+    const labelWidth = helveticaBold.widthOfTextAtSize(labelText, labelSize);
+
+    page.drawText(labelText, {
+      x: panelCenterX - (labelWidth / 2),
+      y: qrY - 8,
+      size: labelSize,
+      font: helveticaBold,
+      color: exactColor,
+    });
+  } catch (qrErr) {
+    console.warn('Peringatan: Gagal menambahkan QR code ke sertifikat:', qrErr.message);
+  }
+
   const pdfBytes = await pdfDoc.save();
   return pdfBytes;
 }
-
-

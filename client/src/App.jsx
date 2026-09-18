@@ -8,7 +8,8 @@ import StepTwoProfilAnak from './components/StepTwoProfilAnak';
 import StepThreeKonfirmasi from './components/StepThreeKonfirmasi';
 import SuccessState from './components/SuccessState';
 import AdminRekapView from './components/AdminRekapView';
-import { AlertCircle, FileText, LayoutDashboard, Sparkles } from 'lucide-react';
+import AdminAuthGate from './components/AdminAuthGate';
+import { AlertCircle, ShieldCheck } from 'lucide-react';
 
 const INITIAL_FORM_DATA = {
   pribadi_instansi: 'Pribadi',
@@ -40,7 +41,6 @@ function PortalContainer({
   isSubmitting,
   submitError,
   resultData,
-  onViewRekap,
 }) {
   const mainCardRef = useRef(null);
 
@@ -118,7 +118,6 @@ function PortalContainer({
             <SuccessState
               resultData={resultData}
               onReset={onReset}
-              onViewRekap={onViewRekap}
             />
           )}
         </section>
@@ -129,12 +128,30 @@ function PortalContainer({
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('FORM'); // 'FORM' | 'ADMIN'
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const [isAdminAuthed, setIsAdminAuthed] = useState(() => {
+    return sessionStorage.getItem('iky_admin_auth') === 'true';
+  });
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [resultData, setResultData] = useState(null);
+
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
+      setIsAdminAuthed(sessionStorage.getItem('iky_admin_auth') === 'true');
+    };
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
+  }, []);
+
+  const navigateTo = (path) => {
+    window.history.pushState({}, '', path);
+    setCurrentPath(path);
+  };
 
   const updateFormData = (fields) => {
     setFormData((prev) => ({ ...prev, ...fields }));
@@ -213,10 +230,32 @@ export default function App() {
     return <LoadingScreen onFinish={() => setIsLoading(false)} />;
   }
 
-  // 2. Fase Kedua: Begitu loading kelar, tampilkan portal / admin view dengan top navigation
+  // 2. RUTE INTERNAL ADMIN (/admin) dengan Proteksi Password
+  if (currentPath === '/admin') {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
+        {!isAdminAuthed ? (
+          <AdminAuthGate
+            onSuccess={() => setIsAdminAuthed(true)}
+            onBackToHome={() => navigateTo('/')}
+          />
+        ) : (
+          <AdminRekapView
+            onBackToForm={() => navigateTo('/')}
+            onLogout={() => {
+              sessionStorage.removeItem('iky_admin_auth');
+              setIsAdminAuthed(false);
+            }}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // 3. RUTE PUBLIK UTAMA (/) - MURNI UNTUK USER PARTNER
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
-      {/* Universal Top App Header */}
+      {/* Universal Top App Header untuk Mitra Partner */}
       <header className="w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 px-4 py-2.5 sm:px-8 flex items-center justify-between shadow-2xs">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#1E3A8A] to-[#FF4081] flex items-center justify-center text-white font-bold text-xs shadow-xs tracking-wider">
@@ -232,56 +271,30 @@ export default function App() {
           </div>
         </div>
 
-        {/* Navigation Tabs Toggle */}
-        <nav className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/80">
-          <button
-            type="button"
-            onClick={() => setActiveTab('FORM')}
-            className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeTab === 'FORM'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5 text-[#FF4081]" />
-            <span>Formulir</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('ADMIN')}
-            className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeTab === 'ADMIN'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5 text-[#1E3A8A]" />
-            <span>Rekap Data</span>
-          </button>
-        </nav>
+        {/* Badge Status Resmi Mitra */}
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Portal Resmi Mitra</span>
+          </span>
+        </div>
       </header>
 
-      {/* Main Tab Content */}
+      {/* Main Partner Form Canvas */}
       <div className="flex-1 flex flex-col">
-        {activeTab === 'FORM' ? (
-          <PortalContainer
-            step={step}
-            setStep={setStep}
-            formData={formData}
-            updateFormData={updateFormData}
-            onNext={handleNext}
-            onPrev={handlePrev}
-            onReset={handleReset}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-            submitError={submitError}
-            resultData={resultData}
-            onViewRekap={() => setActiveTab('ADMIN')}
-          />
-        ) : (
-          <AdminRekapView onBackToForm={() => setActiveTab('FORM')} />
-        )}
+        <PortalContainer
+          step={step}
+          setStep={setStep}
+          formData={formData}
+          updateFormData={updateFormData}
+          onNext={handleNext}
+          onPrev={handlePrev}
+          onReset={handleReset}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          submitError={submitError}
+          resultData={resultData}
+        />
       </div>
     </div>
   );

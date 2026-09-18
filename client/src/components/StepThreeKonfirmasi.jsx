@@ -1,5 +1,6 @@
-import React from 'react';
-import { Edit3, ArrowLeft, Send, Loader2, UserCircle2, Baby, Building2, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import QRCode from 'qrcode';
+import { Edit3, ArrowLeft, Send, Loader2, UserCircle2, Baby, Building2, User, QrCode as QrIcon } from 'lucide-react';
 
 export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit, isSubmitting }) {
   const {
@@ -15,6 +16,23 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
     jumlah_anak,
     anak,
   } = formData;
+
+  const [qrDataUrl, setQrDataUrl] = useState('');
+
+  useEffect(() => {
+    const rawName = nama_keluarga || 'Keluarga Partner';
+    const verifyTarget = `https://stifiniknowyou.com/sertifikat?keluarga=${encodeURIComponent(rawName)}`;
+    QRCode.toDataURL(verifyTarget, {
+      margin: 1,
+      width: 140,
+      color: {
+        dark: '#1E293B',
+        light: '#FFFFFF'
+      }
+    })
+      .then((url) => setQrDataUrl(url))
+      .catch((err) => console.error('Error generating preview QR:', err));
+  }, [nama_keluarga]);
 
   const isInstansi = pribadi_instansi === 'Instansi';
   const anakList = Array.isArray(anak) ? anak : [];
@@ -203,6 +221,22 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
                   FAMILY
                 </span>
               </div>
+
+              {/* Dynamic QR Code Verifikasi Keaslian di Panel Marun */}
+              {qrDataUrl && (
+                <div className="absolute left-[13.7%] top-[77.2%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none select-none">
+                  <div className="p-0.5 sm:p-1 bg-white rounded shadow-xs border border-[#C4A36B]/40">
+                    <img
+                      src={qrDataUrl}
+                      alt="QR Code Verifikasi"
+                      className="w-7 h-7 sm:w-10 sm:h-10 md:w-13 md:h-13 block"
+                    />
+                  </div>
+                  <span className="text-[5px] sm:text-[6.5px] md:text-[7.5px] font-bold tracking-wider text-[#C4A36B] uppercase mt-0.5 whitespace-nowrap">
+                    Verifikasi Resmi
+                  </span>
+                </div>
+              )}
             </div>
 
             <p className="text-[11px] text-slate-500 text-center mt-2.5">

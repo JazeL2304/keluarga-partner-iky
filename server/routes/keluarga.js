@@ -70,10 +70,11 @@ router.get('/:id/pdf', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Data keluarga tidak ditemukan' });
     }
 
+    const publicUrl = keluarga.url_sertifikat || (process.env.SUPABASE_URL ? `${process.env.SUPABASE_URL}/storage/v1/object/public/sertifikat/${keluarga.nomor_sertifikat || 'IKY'}.pdf` : undefined);
     const pdfBuffer = await generateCertificatePdf({
       nama_keluarga: keluarga.nama_keluarga,
       nomor_sertifikat: keluarga.nomor_sertifikat,
-      tanggal_submit: keluarga.tanggal_submit
+      verification_url: publicUrl,
     });
 
     const safeFilename = `Sertifikat-${(keluarga.nomor_sertifikat || 'IKY').replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
@@ -188,17 +189,21 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // 6. Step 4 & 5: Generate PDF Sertifikat & Upload ke Supabase Storage
     let finalCertificateUrl = `/api/keluarga/${insertedKeluarga.id}/pdf`;
+    const fileName = `${insertedKeluarga.nomor_sertifikat}.pdf`;
+    let targetVerificationUrl = finalCertificateUrl;
+
+    if (process.env.SUPABASE_URL) {
+      targetVerificationUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/sertifikat/${fileName}`;
+    }
 
     try {
       const pdfBuffer = await generateCertificatePdf({
         nama_keluarga: insertedKeluarga.nama_keluarga,
         nomor_sertifikat: insertedKeluarga.nomor_sertifikat,
-        tanggal_submit: insertedKeluarga.tanggal_submit
+        verification_url: targetVerificationUrl,
       });
 
-      const fileName = `${insertedKeluarga.nomor_sertifikat}.pdf`;
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('sertifikat')
         .upload(fileName, pdfBuffer, {
