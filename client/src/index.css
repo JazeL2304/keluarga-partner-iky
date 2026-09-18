@@ -11,34 +11,39 @@
 }
 
 :root {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   color-scheme: light;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #F1F5F9;
-  color: #0F172A;
+  background-color: #FAF8F5;
+  color: #1F1A1B;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar for better polish */
+/* Subtle, dignified scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: #FAF8F5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #DDD4C4;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #C4A36B;
+}
+
+/* Gentle input focus style */
+input, select, textarea {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }

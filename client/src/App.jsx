@@ -9,7 +9,7 @@ import StepThreeKonfirmasi from './components/StepThreeKonfirmasi';
 import SuccessState from './components/SuccessState';
 import AdminRekapView from './components/AdminRekapView';
 import AdminAuthGate from './components/AdminAuthGate';
-import { AlertCircle, ShieldCheck } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 const INITIAL_FORM_DATA = {
   pribadi_instansi: 'Pribadi',
@@ -28,7 +28,6 @@ const INITIAL_FORM_DATA = {
   ],
 };
 
-// Komponen Pembungkus Form Portal dengan Animasi Pop-Up Sekali di Awal
 function PortalContainer({
   step,
   setStep,
@@ -44,45 +43,44 @@ function PortalContainer({
 }) {
   const mainCardRef = useRef(null);
 
-  // Animasi pop-up berjalan TEPAT saat komponen portal pertama kali muncul (Mount)
   useEffect(() => {
     if (mainCardRef.current) {
       gsap.fromTo(
         mainCardRef.current,
         {
           opacity: 0,
-          scale: 0.90,
-          y: 45,
+          scale: 0.94,
+          y: 35,
         },
         {
           opacity: 1,
           scale: 1,
           y: 0,
-          duration: 0.65,
-          ease: 'back.out(1.4)', // Efek pop-up membal interaktif yang dinamis & fresh
+          duration: 0.7,
+          ease: 'power3.out',
         }
       );
     }
-  }, []); // Hanya 1x saat portal muncul
+  }, []);
 
   return (
     <div className="flex-1 flex items-center justify-center p-3 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
       <main
         ref={mainCardRef}
-        className="w-full max-w-5xl bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[640px] lg:min-h-[680px]"
+        className="w-full max-w-5xl bg-white rounded-2xl border border-[#EAE3D7] shadow-warm-lg overflow-hidden flex flex-col lg:flex-row min-h-[640px] lg:min-h-[680px]"
       >
-        {/* Sidebar Stepper */}
+        {/* Sidebar Stepper - Bespoke Deep Maroon Panel */}
         <SidebarRail
           currentStep={step}
           setStep={(s) => setStep(s)}
           isSubmitted={step === 4}
         />
 
-        {/* Right Form Canvas */}
-        <section className="flex-1 bg-white p-5 sm:p-8 lg:p-10 flex flex-col justify-between overflow-y-auto">
+        {/* Right Form Canvas - Warm Ivory Paper */}
+        <section className="flex-1 bg-white p-6 sm:p-9 lg:p-11 flex flex-col justify-between overflow-y-auto">
           {submitError && (
-            <div className="mb-5 p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2.5">
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <div className="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-700 shrink-0" />
               <span>{submitError}</span>
             </div>
           )}
@@ -193,7 +191,7 @@ export default function App() {
 
       if (res.data && res.data.success) {
         setResultData(res.data.data);
-        setStep(4); // 4 = Success screen
+        setStep(4);
       } else {
         throw new Error(res.data?.message || 'Terjadi kesalahan saat memproses data.');
       }
@@ -225,15 +223,14 @@ export default function App() {
     setStep(1);
   };
 
-  // 1. Fase Pertama: Loading Screen 2 Detik murni
   if (isLoading) {
     return <LoadingScreen onFinish={() => setIsLoading(false)} />;
   }
 
-  // 2. RUTE INTERNAL ADMIN (/admin) dengan Proteksi Password
+  // RUTE INTERNAL ADMIN (/admin)
   if (currentPath === '/admin') {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
+      <div className="min-h-screen bg-[#FAF8F5] text-[#1F1A1B] flex flex-col font-sans antialiased">
         {!isAdminAuthed ? (
           <AdminAuthGate
             onSuccess={() => setIsAdminAuthed(true)}
@@ -252,30 +249,28 @@ export default function App() {
     );
   }
 
-  // 3. RUTE PUBLIK UTAMA (/) - MURNI UNTUK USER PARTNER
+  // RUTE PUBLIK UTAMA (/) - MURNI UNTUK USER PARTNER
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
-      {/* Universal Top App Header untuk Mitra Partner */}
-      <header className="w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 px-4 py-2.5 sm:px-8 flex items-center justify-between shadow-2xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#1E3A8A] to-[#FF4081] flex items-center justify-center text-white font-bold text-xs shadow-xs tracking-wider">
+    <div className="min-h-screen bg-[#FAF8F5] text-[#1F1A1B] flex flex-col font-sans antialiased">
+      {/* Editorial Top Navigation Header */}
+      <header className="w-full bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#EAE3D7] sticky top-0 z-40 px-5 py-3 sm:px-8 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-[#58121A] border border-[#C4A36B]/40 flex items-center justify-center text-[#C4A36B] font-serif font-bold text-sm tracking-wider shadow-warm-sm">
             IKY
           </div>
           <div>
-            <span className="font-bold text-sm tracking-tight text-slate-900 block leading-tight">
-              Keluarga Partner <span className="text-[#FF4081]">I Know You</span>
+            <span className="font-serif font-bold text-base tracking-tight text-[#1F1A1B] block leading-tight">
+              I Know You <span className="font-sans font-normal text-xs text-[#8A827E]">· Portal Kemitraan</span>
             </span>
-            <span className="text-[10px] text-slate-400 hidden sm:block leading-none">
-              Sistem Otomatisasi Sertifikasi &amp; Pemetaan Genetika STIFIn
+            <span className="text-[11px] text-[#C4A36B] font-serif italic block leading-none mt-0.5">
+              Well Identified Family by misshiday
             </span>
           </div>
         </div>
 
-        {/* Badge Status Resmi Mitra */}
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Portal Resmi Mitra</span>
+          <span className="text-xs font-serif italic text-[#8A827E] hidden sm:inline">
+            Formulir Resmi Kemitraan STIFIn
           </span>
         </div>
       </header>

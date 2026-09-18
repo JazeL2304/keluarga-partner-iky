@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, KeyRound, Eye, EyeOff, ShieldCheck, ArrowLeft, AlertCircle, Sparkles } from 'lucide-react';
+import { Lock, KeyRound, Eye, EyeOff, ShieldCheck, ArrowLeft, AlertCircle } from 'lucide-react';
 
 const DEFAULT_ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'adminiky2026';
 
@@ -33,31 +33,33 @@ export default function AdminAuthGate({ onSuccess, onBackToHome }) {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden animate-fadeIn">
-        {/* Header Ribbon */}
-        <div className="bg-gradient-to-r from-[#1E3A8A] via-[#2A489D] to-[#FF4081] p-6 text-white text-center relative overflow-hidden">
-          <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mx-auto mb-3 shadow-sm">
-            <Lock className="w-6 h-6 text-white" />
+    <div className="min-h-[85vh] flex items-center justify-center p-4 bg-[#FAF8F5]">
+      <div className="w-full max-w-md bg-white rounded-2xl border border-[#EAE3D7] shadow-warm-lg overflow-hidden animate-fadeIn">
+        {/* Header Ribbon - Deep Maroon with Gold Badge */}
+        <div className="bg-[#58121A] p-7 text-[#FAF8F5] text-center relative overflow-hidden border-b border-[#C4A36B]/30">
+          <div className="w-12 h-12 rounded-full bg-[#420D13] border border-[#C4A36B]/50 flex items-center justify-center mx-auto mb-3 shadow-inner">
+            <Lock className="w-5 h-5 text-[#C4A36B]" />
           </div>
-          <span className="inline-block text-[10px] font-bold tracking-widest uppercase bg-white/20 text-white px-2.5 py-0.5 rounded-full mb-1">
-            Internal Staff Only
+          <span className="inline-block text-[10px] font-serif font-bold tracking-widest uppercase bg-[#C4A36B]/20 text-[#C4A36B] px-3 py-0.5 rounded-full mb-1.5 border border-[#C4A36B]/30">
+            Internal I Know You
           </span>
-          <h1 className="text-xl font-bold tracking-tight">Supervisi &amp; Rekap Mitra</h1>
-          <p className="text-xs text-white/80 mt-1">
-            Sistem Otomasi Sertifikasi STIFIn I Know You
+          <h1 className="font-serif text-2xl font-bold tracking-tight text-[#FAF8F5]">
+            Portal Supervisi &amp; Rekap
+          </h1>
+          <p className="text-xs text-[#FAF8F5]/70 mt-1 font-sans">
+            Sistem Arsip &amp; Penerbitan Piagam STIFIn
           </p>
         </div>
 
         {/* Login Form Body */}
-        <div className="p-6 sm:p-8">
+        <div className="p-6 sm:p-8 bg-white">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="admin-pass" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
-                Kata Sandi Internal
+              <label htmlFor="admin-pass" className="block text-xs font-semibold text-[#1F1A1B] tracking-wide mb-1.5">
+                Kata Sandi Administrator
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8A827E]">
                   <KeyRound className="w-4 h-4" />
                 </div>
                 <input
@@ -68,18 +70,18 @@ export default function AdminAuthGate({ onSuccess, onBackToHome }) {
                     setPassword(e.target.value);
                     if (error) setError('');
                   }}
-                  placeholder="Masukkan password admin..."
-                  className={`block w-full pl-9 pr-10 py-2.5 text-sm bg-white border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none transition-colors ${
+                  placeholder="Masukkan kata sandi..."
+                  className={`block w-full pl-10 pr-10 py-2.5 text-sm bg-white border rounded-lg text-[#1F1A1B] placeholder-[#B5AEAB] focus:outline-none transition-all ${
                     error
-                      ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-1 focus:ring-rose-500'
-                      : 'border-slate-300 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A]'
+                      ? 'border-rose-400 bg-rose-50/20 focus:border-rose-600 focus:ring-1 focus:ring-rose-600'
+                      : 'border-[#DED6CA] focus:border-[#58121A] focus:ring-1 focus:ring-[#58121A]'
                   }`}
                   autoFocus
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#8A827E] hover:text-[#1F1A1B] transition-colors cursor-pointer"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -87,7 +89,7 @@ export default function AdminAuthGate({ onSuccess, onBackToHome }) {
               </div>
 
               {error && (
-                <p className="mt-2 text-xs font-medium text-rose-600 flex items-center gap-1.5">
+                <p className="mt-2 text-xs font-medium text-rose-700 flex items-center gap-1.5">
                   <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                   <span>{error}</span>
                 </p>
@@ -97,25 +99,25 @@ export default function AdminAuthGate({ onSuccess, onBackToHome }) {
             <button
               type="submit"
               disabled={isVerifying}
-              className="w-full py-2.5 px-4 rounded-lg bg-[#1E3A8A] hover:bg-[#162D6B] text-white font-medium text-sm transition-all shadow-sm active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3 px-4 rounded-lg bg-[#58121A] hover:bg-[#420D13] text-[#FAF8F5] font-medium text-sm transition-all shadow-warm active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
             >
-              <ShieldCheck className="w-4 h-4" />
-              <span>{isVerifying ? 'Memverifikasi...' : 'Buka Dashboard Rekap'}</span>
+              <ShieldCheck className="w-4 h-4 text-[#C4A36B]" />
+              <span>{isVerifying ? 'Memverifikasi...' : 'Masuk ke Dashboard'}</span>
             </button>
           </form>
 
           {/* Footer Back Link */}
-          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <div className="mt-6 pt-4 border-t border-[#EAE3D7] flex items-center justify-between text-xs text-[#8A827E]">
             <button
               type="button"
               onClick={onBackToHome}
-              className="inline-flex items-center gap-1 hover:text-[#FF4081] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 hover:text-[#58121A] transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Halaman Utama Partner</span>
             </button>
 
-            <span className="text-[10px] text-slate-400 font-mono">v1.0-secure</span>
+            <span className="text-[10px] text-[#8A827E] font-serif italic">IKNOWYOU by misshiday</span>
           </div>
         </div>
       </div>
