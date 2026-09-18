@@ -188,15 +188,18 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
                 className="w-full h-full object-cover block pointer-events-none"
               />
 
-              {/* Dynamic Family Name Overlay di Panel Merah Marun Kiri */}
-              <div className="absolute left-[13.7%] top-[52.8%] -translate-x-1/2 -translate-y-1/2 w-[24%] text-center pointer-events-none flex flex-col items-center justify-center">
-                <span className="font-black italic uppercase tracking-wide text-[#D4AF37] text-[10px] sm:text-[13px] md:text-[16px] lg:text-[18px] leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] break-words">
+              {/* Dynamic Family Name Overlay di Panel Merah Marun Kiri - 1:1 Persis Desain Asli */}
+              <div
+                style={{ fontFamily: "'CertificateNameFont', 'Arial Narrow', sans-serif" }}
+                className="absolute left-[13.7%] top-[52.8%] -translate-x-1/2 -translate-y-1/2 w-[24%] text-center pointer-events-none flex flex-col items-center justify-center select-none"
+              >
+                <span className="font-bold italic uppercase tracking-wider text-[#C4A36B] text-[11px] sm:text-[14px] md:text-[17px] lg:text-[19px] leading-[1.05] break-words">
                   {(() => {
                     const raw = nama_keluarga || 'Keluarga Partner';
                     return raw.toUpperCase().replace(/^KELUARGA\s+/i, '').replace(/\s+FAMILY$/i, '').trim() || 'KELUARGA';
                   })()}
                 </span>
-                <span className="font-black italic uppercase tracking-widest text-[#D4AF37] text-[10px] sm:text-[13px] md:text-[16px] lg:text-[18px] leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] mt-0.5">
+                <span className="font-bold italic uppercase tracking-wider text-[#C4A36B] text-[11px] sm:text-[14px] md:text-[17px] lg:text-[19px] leading-[1.05] mt-1">
                   FAMILY
                 </span>
               </div>

@@ -2,10 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const templatePath = path.join(__dirname, '../assets/certificate_template.png');
+const fontPath = path.join(__dirname, '../assets/ArialNarrowBoldItalic.ttf');
 
 /**
  * Format nama keluarga ke format resmi piagam (contoh: "BOY HAMZAH FAMILY")
@@ -38,6 +40,7 @@ function formatFamilyName(rawName) {
  */
 export async function generateCertificatePdf({ nama_keluarga, nama_kepala_keluarga }) {
   const pdfDoc = await PDFDocument.create();
+  pdfDoc.registerFontkit(fontkit);
   
   // Format sertifikat lanskap: A4 (842 x 595 pt)
   const page = pdfDoc.addPage([842, 595]);
@@ -55,48 +58,54 @@ export async function generateCertificatePdf({ nama_keluarga, nama_kepala_keluar
     });
   }
 
-  // 2. Embed Font Resmi (Helvetica-BoldOblique untuk efek miring tebal khas piagam)
-  const fontBoldOblique = await pdfDoc.embedFont(StandardFonts.HelveticaBoldOblique);
+  // 2. Embed Font Asli (Arial Narrow Bold Italic identik 100% dengan desain asli)
+  let fontCustom;
+  if (fs.existsSync(fontPath)) {
+    const fontBytes = fs.readFileSync(fontPath);
+    fontCustom = await pdfDoc.embedFont(fontBytes);
+  } else {
+    fontCustom = await pdfDoc.embedFont(StandardFonts.HelveticaBoldOblique);
+  }
 
-  // 3. Render Nama Keluarga di panel marun kiri persis di posisi template asli
-  // Warna Emas Piagam (#D4AF37)
-  const goldColor = rgb(212 / 255, 175 / 255, 55 / 255);
+  // 3. Warna Emas Asli Hasil Sampling Pixel (#C4A36B / RGB 196, 163, 108)
+  const exactColor = rgb(196 / 255, 163 / 255, 108 / 255);
 
   const rawName = nama_keluarga || nama_kepala_keluarga || 'Keluarga Partner';
   const { line1, line2 } = formatFamilyName(rawName);
 
   // Titik tengah horizontal panel marun kiri (lebar panel ~230 pt)
   const panelCenterX = 115;
-  let fontSize = 21;
+  let fontSize = 23;
 
-  // Cek lebar baris 1 agar tidak meluber dari panel marun (maks 185 pt)
-  const line1Width = fontBoldOblique.widthOfTextAtSize(line1, fontSize);
+  // Cek lebar baris 1 agar pas di dalam panel marun
+  const line1Width = fontCustom.widthOfTextAtSize(line1, fontSize);
   if (line1Width > 185) {
     fontSize = Math.max(12, Math.floor(fontSize * (185 / line1Width)));
   }
 
-  const measuredLine1Width = fontBoldOblique.widthOfTextAtSize(line1, fontSize);
-  const measuredLine2Width = fontBoldOblique.widthOfTextAtSize(line2, fontSize);
+  const measuredLine1Width = fontCustom.widthOfTextAtSize(line1, fontSize);
+  const measuredLine2Width = fontCustom.widthOfTextAtSize(line2, fontSize);
 
   // Cetak Baris 1 (Nama Inti)
   page.drawText(line1, {
     x: panelCenterX - (measuredLine1Width / 2),
-    y: 280,
+    y: 282,
     size: fontSize,
-    font: fontBoldOblique,
-    color: goldColor,
+    font: fontCustom,
+    color: exactColor,
   });
 
   // Cetak Baris 2 ("FAMILY")
   page.drawText(line2, {
     x: panelCenterX - (measuredLine2Width / 2),
-    y: 280 - (fontSize * 1.35),
+    y: 282 - (fontSize * 1.25),
     size: fontSize,
-    font: fontBoldOblique,
-    color: goldColor,
+    font: fontCustom,
+    color: exactColor,
   });
 
   const pdfBytes = await pdfDoc.save();
   return pdfBytes;
 }
+
 
