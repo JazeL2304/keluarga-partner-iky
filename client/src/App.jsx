@@ -7,7 +7,8 @@ import StepOneDataKeluarga from './components/StepOneDataKeluarga';
 import StepTwoProfilAnak from './components/StepTwoProfilAnak';
 import StepThreeKonfirmasi from './components/StepThreeKonfirmasi';
 import SuccessState from './components/SuccessState';
-import { AlertCircle } from 'lucide-react';
+import AdminRekapView from './components/AdminRekapView';
+import { AlertCircle, FileText, LayoutDashboard, Sparkles } from 'lucide-react';
 
 const INITIAL_FORM_DATA = {
   pribadi_instansi: 'Pribadi',
@@ -27,7 +28,20 @@ const INITIAL_FORM_DATA = {
 };
 
 // Komponen Pembungkus Form Portal dengan Animasi Pop-Up Sekali di Awal
-function PortalContainer({ step, setStep, formData, updateFormData, onNext, onPrev, onReset, onSubmit, isSubmitting, submitError, resultData }) {
+function PortalContainer({
+  step,
+  setStep,
+  formData,
+  updateFormData,
+  onNext,
+  onPrev,
+  onReset,
+  onSubmit,
+  isSubmitting,
+  submitError,
+  resultData,
+  onViewRekap,
+}) {
   const mainCardRef = useRef(null);
 
   // Animasi pop-up berjalan TEPAT saat komponen portal pertama kali muncul (Mount)
@@ -52,7 +66,7 @@ function PortalContainer({ step, setStep, formData, updateFormData, onNext, onPr
   }, []); // Hanya 1x saat portal muncul
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-3 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
+    <div className="flex-1 flex items-center justify-center p-3 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
       <main
         ref={mainCardRef}
         className="w-full max-w-5xl bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-[640px] lg:min-h-[680px]"
@@ -104,6 +118,7 @@ function PortalContainer({ step, setStep, formData, updateFormData, onNext, onPr
             <SuccessState
               resultData={resultData}
               onReset={onReset}
+              onViewRekap={onViewRekap}
             />
           )}
         </section>
@@ -114,6 +129,7 @@ function PortalContainer({ step, setStep, formData, updateFormData, onNext, onPr
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('FORM'); // 'FORM' | 'ADMIN'
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -197,21 +213,76 @@ export default function App() {
     return <LoadingScreen onFinish={() => setIsLoading(false)} />;
   }
 
-  // 2. Fase Kedua: Begitu loading kelar, langsung pop-up portalnya, seterusnya stabil
+  // 2. Fase Kedua: Begitu loading kelar, tampilkan portal / admin view dengan top navigation
   return (
-    <PortalContainer
-      step={step}
-      setStep={setStep}
-      formData={formData}
-      updateFormData={updateFormData}
-      onNext={handleNext}
-      onPrev={handlePrev}
-      onReset={handleReset}
-      onSubmit={handleSubmit}
-      isSubmitting={isSubmitting}
-      submitError={submitError}
-      resultData={resultData}
-    />
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
+      {/* Universal Top App Header */}
+      <header className="w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 px-4 py-2.5 sm:px-8 flex items-center justify-between shadow-2xs">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#1E3A8A] to-[#FF4081] flex items-center justify-center text-white font-bold text-xs shadow-xs tracking-wider">
+            IKY
+          </div>
+          <div>
+            <span className="font-bold text-sm tracking-tight text-slate-900 block leading-tight">
+              Keluarga Partner <span className="text-[#FF4081]">I Know You</span>
+            </span>
+            <span className="text-[10px] text-slate-400 hidden sm:block leading-none">
+              Sistem Otomatisasi Sertifikasi &amp; Pemetaan Genetika STIFIn
+            </span>
+          </div>
+        </div>
+
+        {/* Navigation Tabs Toggle */}
+        <nav className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/80">
+          <button
+            type="button"
+            onClick={() => setActiveTab('FORM')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeTab === 'FORM'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5 text-[#FF4081]" />
+            <span>Formulir</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('ADMIN')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeTab === 'ADMIN'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <LayoutDashboard className="w-3.5 h-3.5 text-[#1E3A8A]" />
+            <span>Rekap Data</span>
+          </button>
+        </nav>
+      </header>
+
+      {/* Main Tab Content */}
+      <div className="flex-1 flex flex-col">
+        {activeTab === 'FORM' ? (
+          <PortalContainer
+            step={step}
+            setStep={setStep}
+            formData={formData}
+            updateFormData={updateFormData}
+            onNext={handleNext}
+            onPrev={handlePrev}
+            onReset={handleReset}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            submitError={submitError}
+            resultData={resultData}
+            onViewRekap={() => setActiveTab('ADMIN')}
+          />
+        ) : (
+          <AdminRekapView onBackToForm={() => setActiveTab('FORM')} />
+        )}
+      </div>
+    </div>
   );
 }
-

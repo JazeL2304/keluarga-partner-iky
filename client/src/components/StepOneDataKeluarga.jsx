@@ -1,5 +1,5 @@
-import React from 'react';
-import { User, Building2, UserCircle2, ChevronDown, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Building2, UserCircle2, ChevronDown, ArrowRight, AlertCircle } from 'lucide-react';
 import { STIFIN_OPTIONS, GOLONGAN_DARAH_OPTIONS } from '../constants/stifin';
 
 export default function StepOneDataKeluarga({ formData, updateFormData, onNext }) {
@@ -15,18 +15,26 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
     golongan_darah_ibu,
   } = formData;
 
+  const [errors, setErrors] = useState({});
   const isInstansi = pribadi_instansi === 'Instansi';
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const newErrors = {};
+
     if (!nama_keluarga || !nama_keluarga.trim()) {
-      alert('Silakan isi Nama Keluarga (untuk dicetak pada sertifikat)');
-      return;
+      newErrors.nama_keluarga = 'Nama Keluarga wajib diisi (untuk dicetak pada piagam sertifikat)';
     }
     if (isInstansi && (!nama_instansi_custom || !nama_instansi_custom.trim())) {
-      alert('Silakan masukkan nama instansi');
+      newErrors.nama_instansi_custom = 'Nama Instansi / Lembaga wajib diisi jika memilih kategori Instansi';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+
+    setErrors({});
     onNext();
   };
 
@@ -56,7 +64,12 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
             <div className="grid grid-cols-2 gap-3 max-w-md">
               <button
                 type="button"
-                onClick={() => updateFormData({ pribadi_instansi: 'Pribadi', nama_instansi_custom: '' })}
+                onClick={() => {
+                  updateFormData({ pribadi_instansi: 'Pribadi', nama_instansi_custom: '' });
+                  if (errors.nama_instansi_custom) {
+                    setErrors((prev) => ({ ...prev, nama_instansi_custom: null }));
+                  }
+                }}
                 className={`py-2.5 px-4 rounded-lg border text-sm font-medium flex items-center justify-center gap-2 transition-all ${
                   !isInstansi
                     ? 'border-[#FF4081] bg-pink-50/60 text-slate-900 font-semibold shadow-sm'
@@ -90,12 +103,26 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
                 <input
                   id="instansi-name"
                   type="text"
-                  required={isInstansi}
                   value={nama_instansi_custom || ''}
-                  onChange={(e) => updateFormData({ nama_instansi_custom: e.target.value })}
+                  onChange={(e) => {
+                    updateFormData({ nama_instansi_custom: e.target.value });
+                    if (errors.nama_instansi_custom) {
+                      setErrors((prev) => ({ ...prev, nama_instansi_custom: null }));
+                    }
+                  }}
                   placeholder="Contoh: Yayasan Mutiara Bangsa / PT Sinergi Edukasi"
-                  className="block w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081] transition-colors"
+                  className={`block w-full px-3.5 py-2.5 text-sm bg-white border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none transition-colors ${
+                    errors.nama_instansi_custom
+                      ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-1 focus:ring-rose-500'
+                      : 'border-slate-300 focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081]'
+                  }`}
                 />
+                {errors.nama_instansi_custom && (
+                  <p className="mt-1.5 text-xs font-medium text-rose-600 flex items-center gap-1.5">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{errors.nama_instansi_custom}</span>
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -108,15 +135,30 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
             <input
               id="family-name"
               type="text"
-              required
               value={nama_keluarga}
-              onChange={(e) => updateFormData({ nama_keluarga: e.target.value })}
+              onChange={(e) => {
+                updateFormData({ nama_keluarga: e.target.value });
+                if (errors.nama_keluarga) {
+                  setErrors((prev) => ({ ...prev, nama_keluarga: null }));
+                }
+              }}
               placeholder="Contoh: Keluarga Hendra Pratama"
-              className="block w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081] transition-colors"
+              className={`block w-full px-3.5 py-2.5 text-sm bg-white border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none transition-colors ${
+                errors.nama_keluarga
+                  ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-1 focus:ring-rose-500'
+                  : 'border-slate-300 focus:border-[#FF4081] focus:ring-1 focus:ring-[#FF4081]'
+              }`}
             />
-            <span className="block text-[11px] text-slate-400 mt-1">
-              Nama keluarga ini yang akan dicetak pada piagam sertifikat kemitraan resmi.
-            </span>
+            {errors.nama_keluarga ? (
+              <p className="mt-1.5 text-xs font-medium text-rose-600 flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>{errors.nama_keluarga}</span>
+              </p>
+            ) : (
+              <span className="block text-[11px] text-slate-400 mt-1">
+                Nama keluarga ini yang akan dicetak pada piagam sertifikat kemitraan resmi.
+              </span>
+            )}
           </div>
 
           {/* Section 3: Profil Genetika Ayah */}
