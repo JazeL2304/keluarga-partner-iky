@@ -10,10 +10,10 @@ export default function SuccessState({ resultData, onReset }) {
   useEffect(() => {
     try {
       confetti({
-        particleCount: 50,
-        spread: 55,
+        particleCount: 60,
+        spread: 60,
         origin: { y: 0.6 },
-        colors: ['#58121A', '#C4A36B', '#DED6CA'],
+        colors: ['#1E3A8A', '#FF4081', '#10B981'],
       });
     } catch (e) {
       console.log('Confetti skipped');
@@ -30,7 +30,7 @@ export default function SuccessState({ resultData, onReset }) {
       margin: 1,
       width: 200,
       color: {
-        dark: '#1F1A1B',
+        dark: '#0F172A',
         light: '#FFFFFF'
       }
     })
@@ -56,121 +56,128 @@ export default function SuccessState({ resultData, onReset }) {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center p-6 sm:p-10 max-w-lg mx-auto">
-      {/* Authentic Medal Seal Icon */}
-      <div className="w-16 h-16 rounded-full bg-[#58121A] border-2 border-[#C4A36B] text-[#C4A36B] flex items-center justify-center mb-5 shadow-warm">
-        <Award className="w-8 h-8 stroke-[1.75]" />
+      {/* Icon Award */}
+      <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-5 shadow-xs">
+        <Award className="w-8 h-8 stroke-[2]" />
       </div>
 
-      <span className="text-xs font-serif italic text-[#C4A36B] tracking-wider mb-1">
-        Well Identified Family
+      <span className="text-xs font-semibold uppercase tracking-wider text-[#FF4081] mb-1">
+        Penerbitan Berhasil
       </span>
 
-      <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#1F1A1B] tracking-tight mb-2">
+      <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-2">
         Piagam Apresiasi Diterbitkan
       </h1>
 
-      <p className="text-xs sm:text-sm text-[#8A827E] max-w-md leading-relaxed mb-6">
-        Data kemitraan untuk <strong className="font-semibold text-[#1F1A1B]">{headName}</strong> telah tercatat resmi dan piagam sertifikat telah terbit.
+      <p className="text-xs sm:text-sm text-slate-500 mb-6 leading-relaxed max-w-sm">
+        Data kemitraan untuk <strong className="font-semibold text-slate-900">{headName}</strong> telah berhasil disimpan ke basis data resmi STIFIn I Know You.
       </p>
 
-      {/* Certificate Number Card with Prestige Detailing */}
-      <div className="w-full bg-[#FAF8F5] border border-[#EAE3D7] rounded-xl p-5 mb-5 text-left shadow-warm-sm">
-        <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#EAE3D7]">
-          <span className="text-xs font-serif font-semibold text-[#58121A]">
-            Nomor Registrasi Kemitraan
-          </span>
-          <span className="text-[10px] font-medium text-[#C4A36B] bg-white px-2.5 py-0.5 rounded-full border border-[#C4A36B]/30">
-            Resmi Terdaftar
+      {/* Meta Certificate Card */}
+      <div className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 mb-6 text-left shadow-xs">
+        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200/80">
+          <span className="text-xs text-slate-500 font-medium">Nomor Registrasi:</span>
+          <span className="font-mono text-xs font-bold text-[#1E3A8A] bg-blue-50 px-2 py-0.5 rounded border border-blue-200/60">
+            {certificateNumber}
           </span>
         </div>
 
-        <div className="py-2 text-center">
-          <div className="text-3xl font-mono font-bold text-[#58121A] tracking-wider">
-            {certificateNumber}
+        {/* Dynamic Smartphone QR Scan Box */}
+        <div className="flex items-center gap-4 bg-white p-3 rounded-lg border border-slate-200">
+          <div className="p-1 bg-white rounded border border-slate-200 shrink-0">
+            {qrCodeUrl ? (
+              <img
+                src={qrCodeUrl}
+                alt="QR Verifikasi Sertifikat"
+                className="w-16 h-16 sm:w-20 sm:h-20 block"
+              />
+            ) : (
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
+                QR
+              </div>
+            )}
           </div>
-          <div className="text-[11px] text-[#8A827E] font-serif italic mt-1">
-            Tercatat dalam basis data resmi I Know You
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 mb-0.5">
+              <Smartphone className="w-3.5 h-3.5 text-[#1E3A8A]" />
+              <span>Verifikasi Berkas Digital</span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-snug">
+              Pindai dengan kamera smartphone untuk memverifikasi keaslian dan validitas piagam.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Smartphone Scan QR Card */}
-      {qrCodeUrl && (
-        <div className="w-full bg-white border border-[#EAE3D7] rounded-xl p-4 mb-5 flex items-center gap-4 text-left shadow-warm-sm">
-          <div className="p-1.5 bg-[#FAF8F5] rounded-lg border border-[#DED6CA] shrink-0">
-            <img src={qrCodeUrl} alt="QR Code Piagam" className="w-20 h-20 block" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5 text-xs font-serif font-bold text-[#58121A]">
-              <Smartphone className="w-3.5 h-3.5 text-[#C4A36B]" />
-              <span>Buka Langsung di Ponsel</span>
-            </div>
-            <p className="text-xs text-[#8A827E] mt-1 leading-relaxed">
-              Arahkan kamera smartphone Anda ke QR code ini untuk menyimpan dokumen piagam langsung di HP Anda.
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Action Buttons */}
-      <div className="w-full space-y-3 mb-5">
-        {/* Primary Download Button */}
-        {downloadUrl && (
+      <div className="w-full space-y-2.5">
+        {downloadUrl ? (
           <a
             href={downloadUrl}
             target="_blank"
             rel="noopener noreferrer"
-            download
-            className="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#58121A] hover:bg-[#420D13] text-[#FAF8F5] font-medium text-sm transition-all gap-2 shadow-warm active:scale-[0.99] cursor-pointer"
+            className="w-full py-3 px-5 rounded-lg bg-[#1E3A8A] hover:bg-[#162D6B] text-white font-semibold text-sm transition-all shadow-xs active:scale-[0.99] flex items-center justify-center gap-2"
           >
-            <Download className="w-4 h-4 text-[#C4A36B]" />
+            <Download className="w-4 h-4" />
             <span>Unduh Berkas Piagam (PDF)</span>
           </a>
+        ) : (
+          <button
+            disabled
+            className="w-full py-3 px-5 rounded-lg bg-slate-200 text-slate-400 font-medium text-sm flex items-center justify-center gap-2 cursor-not-allowed"
+          >
+            <Download className="w-4 h-4" />
+            <span>Tautan Berkas Sedang Disiapkan...</span>
+          </button>
         )}
 
-        {/* Secondary Actions */}
-        {downloadUrl && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={handleCopyLink}
-              className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-[#DED6CA] bg-white hover:bg-[#FAF8F5] text-[#1F1A1B] text-xs font-medium transition-all gap-1.5 cursor-pointer active:scale-[0.99]"
-            >
-              {copied ? (
-                <>
-                  <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="text-emerald-700 font-semibold">Link Tersalin!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5 text-[#8A827E]" />
-                  <span>Salin Tautan Piagam</span>
-                </>
-              )}
-            </button>
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          {downloadUrl && (
             <a
               href={waShareUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-[#DED6CA] bg-white hover:bg-[#FAF8F5] text-[#1F1A1B] text-xs font-medium transition-all gap-1.5 cursor-pointer active:scale-[0.99]"
+              className="w-full py-2.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs transition-all shadow-xs flex items-center justify-center gap-2"
             >
-              <Share2 className="w-3.5 h-3.5 text-[#C4A36B]" />
-              <span>Bagikan ke WhatsApp</span>
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Kirim ke WhatsApp</span>
             </a>
-          </div>
-        )}
-      </div>
+          )}
 
-      {/* Reset Action */}
-      <button
-        type="button"
-        onClick={onReset}
-        className="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-[#8A827E] hover:text-[#58121A] transition-colors gap-1.5 cursor-pointer"
-      >
-        <RotateCcw className="w-3.5 h-3.5" />
-        <span>Daftarkan keluarga lainnya</span>
-      </button>
+          {downloadUrl && (
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className={`w-full py-2.5 px-4 rounded-lg border text-xs font-medium transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                copied
+                  ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
+                  : 'border-slate-300 bg-white hover:bg-slate-50 text-slate-700'
+              }`}
+            >
+              {copied ? (
+                <>
+                  <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Tautan Disalin!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Salin Tautan Piagam</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={onReset}
+          className="w-full py-2 px-4 text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors flex items-center justify-center gap-1.5 pt-2 cursor-pointer"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Daftarkan Keluarga Lain</span>
+        </button>
+      </div>
     </div>
   );
 }

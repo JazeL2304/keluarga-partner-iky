@@ -64,23 +64,23 @@ function PortalContainer({
   }, []);
 
   return (
-    <div className="flex-1 flex items-center justify-center p-3 sm:p-6 md:p-8 font-sans antialiased overflow-x-hidden">
+    <div className="flex-1 flex flex-col items-center justify-start pt-4 pb-12 sm:pt-6 sm:pb-16 px-3 sm:px-6 md:px-8 font-sans antialiased">
       <main
         ref={mainCardRef}
-        className="w-full max-w-5xl bg-white rounded-2xl border border-[#EAE3D7] shadow-warm-lg overflow-hidden flex flex-col lg:flex-row min-h-[640px] lg:min-h-[680px]"
+        className="w-full max-w-5xl bg-white rounded-2xl border border-slate-200/90 shadow-portal overflow-hidden flex flex-col lg:flex-row"
       >
-        {/* Sidebar Stepper - Bespoke Deep Maroon Panel */}
+        {/* Sidebar Stepper - Brand Navy Panel */}
         <SidebarRail
           currentStep={step}
           setStep={(s) => setStep(s)}
           isSubmitted={step === 4}
         />
 
-        {/* Right Form Canvas - Warm Ivory Paper */}
-        <section className="flex-1 bg-white p-6 sm:p-9 lg:p-11 flex flex-col justify-between overflow-y-auto">
+        {/* Right Form Canvas */}
+        <section className="flex-1 bg-white p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
           {submitError && (
             <div className="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2.5">
-              <AlertCircle className="w-4 h-4 text-red-700 shrink-0" />
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
               <span>{submitError}</span>
             </div>
           )}
@@ -230,7 +230,7 @@ export default function App() {
   // RUTE INTERNAL ADMIN (/admin)
   if (currentPath === '/admin') {
     return (
-      <div className="min-h-screen bg-[#FAF8F5] text-[#1F1A1B] flex flex-col font-sans antialiased">
+      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
         {!isAdminAuthed ? (
           <AdminAuthGate
             onSuccess={() => setIsAdminAuthed(true)}
@@ -251,26 +251,31 @@ export default function App() {
 
   // RUTE PUBLIK UTAMA (/) - MURNI UNTUK USER PARTNER
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#1F1A1B] flex flex-col font-sans antialiased">
-      {/* Editorial Top Navigation Header */}
-      <header className="w-full bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#EAE3D7] sticky top-0 z-40 px-5 py-3 sm:px-8 flex items-center justify-between">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
+      {/* Universal Top App Header untuk Mitra Partner */}
+      <header className="w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 px-4 py-3 sm:px-8 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-[#58121A] border border-[#C4A36B]/40 flex items-center justify-center text-[#C4A36B] font-serif font-bold text-sm tracking-wider shadow-warm-sm">
-            IKY
+          <div className="w-9 h-9 rounded-xl bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider shadow-sm relative">
+            <span>IKY</span>
+            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#FF4081] ring-2 ring-white" />
           </div>
           <div>
-            <span className="font-serif font-bold text-base tracking-tight text-[#1F1A1B] block leading-tight">
-              I Know You <span className="font-sans font-normal text-xs text-[#8A827E]">· Portal Kemitraan</span>
-            </span>
-            <span className="text-[11px] text-[#C4A36B] font-serif italic block leading-none mt-0.5">
-              Well Identified Family by misshiday
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-sm sm:text-base tracking-tight text-slate-900 leading-tight">
+                Keluarga Partner <span className="text-[#FF4081]">I Know You</span>
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-500 hidden sm:block leading-none mt-0.5">
+              Sistem Pendataan &amp; Otomatisasi Piagam Kemitraan STIFIn
             </span>
           </div>
         </div>
 
+        {/* Badge Status Resmi Mitra */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-serif italic text-[#8A827E] hidden sm:inline">
-            Formulir Resmi Kemitraan STIFIn
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Portal Resmi Mitra</span>
           </span>
         </div>
       </header>

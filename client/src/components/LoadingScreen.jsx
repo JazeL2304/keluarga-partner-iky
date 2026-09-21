@@ -28,39 +28,43 @@ export default function LoadingScreen({ onFinish }) {
   }, [onFinish]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#FAF8F5] text-[#1F1A1B]">
-      <div className="flex flex-col items-center w-full max-w-sm px-6">
-        {/* Dignified Monogram Badge */}
-        <div className="w-16 h-16 rounded-full bg-[#58121A] text-[#FAF8F5] flex items-center justify-center shadow-warm mb-6 border border-[#C4A36B]/40">
-          <span className="font-serif text-2xl font-bold tracking-widest text-[#FAF8F5]">
-            IKY
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F8FAFC]">
+      <div className="flex flex-col items-center w-full max-w-xs px-6">
+        {/* Minimalist Brand Mark & Geometric Spinner */}
+        <div className="relative flex items-center justify-center mb-7">
+          <div
+            className="w-14 h-14 rounded-full border-2 border-slate-200 border-t-[#FF4081] border-r-[#1E3A8A] animate-spin"
+            style={{ animationDuration: '0.8s' }}
+          />
+          <span className="absolute font-mono font-bold text-xs tracking-wider text-[#1E3A8A]">
+            IKY<span className="text-[#FF4081]">.</span>
           </span>
         </div>
 
         {/* Brand Hierarchy */}
-        <div className="text-center mb-8">
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#1F1A1B] tracking-tight">
+        <div className="text-center mb-6">
+          <h1 className="text-base font-bold text-slate-900 tracking-tight">
             I Know You
           </h1>
-          <p className="text-xs uppercase tracking-widest text-[#C4A36B] font-semibold mt-1">
-            by misshiday · STIFIn
-          </p>
-          <p className="text-xs text-[#8A827E] mt-2 font-serif italic">
-            Well Identified Family
+          <p className="text-xs font-medium text-slate-500 mt-0.5">
+            Portal Kemitraan Keluarga
           </p>
         </div>
 
-        {/* Quiet Hairline Progress Bar */}
-        <div className="w-48 bg-[#EAE3D7] h-[2px] rounded-full overflow-hidden mb-3">
+        {/* Minimal Hairline Progress */}
+        <div className="w-full bg-slate-200/70 h-[2px] rounded-full overflow-hidden mb-3">
           <div
-            className="h-full bg-[#58121A] transition-all duration-75 ease-out"
+            className="h-full bg-gradient-to-r from-[#1E3A8A] to-[#FF4081] transition-all duration-75 ease-out"
             style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>
 
-        {/* Progress Counter */}
-        <div className="text-[11px] font-serif tracking-widest text-[#8A827E]">
-          {Math.round(progress)}%
+        {/* Tabular Progress Counter */}
+        <div className="flex items-center justify-between w-full text-[11px] text-slate-400 font-medium">
+          <span>Memuat sistem</span>
+          <span className="font-mono tabular-nums text-slate-700">
+            {Math.round(progress)}%
+          </span>
         </div>
       </div>
     </div>
