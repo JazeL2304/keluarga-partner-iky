@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { Users, ChevronDown, ArrowLeft, ArrowRight, Baby } from 'lucide-react';
+import { Users, ArrowLeft, ArrowRight, Baby } from 'lucide-react';
 import { STIFIN_OPTIONS, GOLONGAN_DARAH_OPTIONS } from '../constants/stifin';
+import CustomSelect from './CustomSelect';
 
 export default function StepTwoProfilAnak({ formData, updateFormData, onNext, onPrev }) {
   const initialJumlahAnak = Math.max(0, formData.jumlah_anak || 0);
@@ -22,6 +23,7 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
   });
 
   const currentJumlahAnak = watch('jumlah_anak');
+  const watchedAnak = watch('anak') || [];
 
   useEffect(() => {
     const targetCount = Math.max(0, parseInt(currentJumlahAnak, 10) || 0);
@@ -144,40 +146,36 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
                       <label className="block text-xs font-medium text-slate-600 mb-1">
                         Hasil STIFIn
                       </label>
-                      <div className="relative">
-                        <select
-                          {...register(`anak.${index}.stifin`)}
-                          className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2 pl-3 pr-8 text-xs sm:text-sm text-slate-900 font-medium focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-all"
-                        >
-                          <option value="">Pilih Hasil STIFIn</option>
-                          {STIFIN_OPTIONS.map((opt) => (
-                            <option key={opt} value={opt}>{opt}</option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </div>
-                      </div>
+                      <CustomSelect
+                        id={`child-stifin-${index}`}
+                        value={watchedAnak[index]?.stifin || ''}
+                        onChange={(val) =>
+                          setValue(`anak.${index}.stifin`, val, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          })
+                        }
+                        options={STIFIN_OPTIONS}
+                        placeholder="Pilih STIFIn"
+                      />
                     </div>
 
                     <div>
                       <label className="block text-xs font-medium text-slate-600 mb-1">
                         Gol. Darah
                       </label>
-                      <div className="relative">
-                        <select
-                          {...register(`anak.${index}.golongan_darah`)}
-                          className="block w-full appearance-none bg-white border border-slate-300 rounded-lg py-2 pl-3 pr-8 text-xs sm:text-sm text-slate-900 font-medium focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-all"
-                        >
-                          <option value="">Pilih Gol. Darah</option>
-                          {GOLONGAN_DARAH_OPTIONS.map((bg) => (
-                            <option key={bg} value={bg}>{bg}</option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </div>
-                      </div>
+                      <CustomSelect
+                        id={`child-blood-${index}`}
+                        value={watchedAnak[index]?.golongan_darah || ''}
+                        onChange={(val) =>
+                          setValue(`anak.${index}.golongan_darah`, val, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          })
+                        }
+                        options={GOLONGAN_DARAH_OPTIONS}
+                        placeholder="Pilih"
+                      />
                     </div>
                   </div>
                 </div>
