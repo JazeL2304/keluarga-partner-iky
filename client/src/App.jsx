@@ -253,11 +253,10 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
       {/* Universal Top App Header untuk Mitra Partner */}
-      <header className="w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 px-4 py-3 sm:px-8 flex items-center justify-between shadow-xs">
+      <header className="w-full bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-3 sm:px-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider shadow-sm relative">
-            <span>IKY</span>
-            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#FF4081] ring-2 ring-white" />
+          <div className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider shadow-xs">
+            IKY
           </div>
           <div>
             <div className="flex items-center gap-1.5">
@@ -271,12 +270,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Badge Status Resmi Mitra */}
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Portal Resmi Mitra</span>
-          </span>
+        <div className="text-xs text-slate-400 hidden sm:block font-medium">
+          Formulir Kemitraan Resmi
         </div>
       </header>
 

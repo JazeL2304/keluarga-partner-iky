@@ -40,9 +40,9 @@ export default function AdminAuthGate({ onSuccess, onBackToHome }) {
           <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mx-auto mb-3 shadow-xs">
             <Lock className="w-5 h-5 text-white" />
           </div>
-          <span className="inline-block text-[10px] font-bold tracking-widest uppercase bg-white/20 text-white px-2.5 py-0.5 rounded-full mb-1">
-            Internal Staff Only
-          </span>
+          <p className="text-xs text-blue-200 font-medium mb-1">
+            Portal Khusus Internal
+          </p>
           <h1 className="text-xl font-bold tracking-tight">Supervisi &amp; Rekap Mitra</h1>
           <p className="text-xs text-white/80 mt-1">
             Sistem Otomasi Sertifikasi STIFIn I Know You

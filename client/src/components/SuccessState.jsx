@@ -77,7 +77,7 @@ export default function SuccessState({ resultData, onReset }) {
       <div className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 mb-6 text-left shadow-xs">
         <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200/80">
           <span className="text-xs text-slate-500 font-medium">Nomor Registrasi:</span>
-          <span className="font-mono text-xs font-bold text-[#1E3A8A] bg-blue-50 px-2 py-0.5 rounded border border-blue-200/60">
+          <span className="font-mono text-xs font-bold text-slate-800">
             {certificateNumber}
           </span>
         </div>

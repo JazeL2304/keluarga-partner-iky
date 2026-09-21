@@ -25,9 +25,8 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
       <div>
         {/* Brand identity */}
         <div className="flex items-center space-x-3 mb-6 sm:mb-8">
-          <div className="w-9 h-9 rounded-xl bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider relative shadow-sm">
-            <span>IKY</span>
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#FF4081]" />
+          <div className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider shadow-xs">
+            IKY
           </div>
           <div>
             <div className="font-bold text-sm tracking-tight text-slate-900 leading-none">

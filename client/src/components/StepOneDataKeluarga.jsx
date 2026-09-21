@@ -166,14 +166,9 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 pt-1">
             {/* Profil Ayah */}
             <div className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200">
-              <div className="flex items-center justify-between pb-3 mb-3.5 border-b border-slate-200/80">
-                <span className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <UserCircle2 className="w-4 h-4 text-[#1E3A8A]" />
-                  <span>Profil Ayah</span>
-                </span>
-                <span className="text-[10px] uppercase tracking-wider text-[#1E3A8A] font-semibold bg-blue-50 px-2 py-0.5 rounded border border-blue-200/60">
-                  Kepala Keluarga
-                </span>
+              <div className="flex items-center gap-2 pb-3 mb-3.5 border-b border-slate-200/80">
+                <UserCircle2 className="w-4 h-4 text-[#1E3A8A]" />
+                <span className="text-sm font-bold text-slate-900">Profil Ayah</span>
               </div>
 
               <div className="space-y-3.5">
@@ -241,14 +236,9 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
 
             {/* Profil Ibu */}
             <div className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200">
-              <div className="flex items-center justify-between pb-3 mb-3.5 border-b border-slate-200/80">
-                <span className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <UserCircle2 className="w-4 h-4 text-[#FF4081]" />
-                  <span>Profil Ibu</span>
-                </span>
-                <span className="text-[10px] uppercase tracking-wider text-[#FF4081] font-semibold bg-pink-50 px-2 py-0.5 rounded border border-pink-200/60">
-                  Ibu Keluarga
-                </span>
+              <div className="flex items-center gap-2 pb-3 mb-3.5 border-b border-slate-200/80">
+                <UserCircle2 className="w-4 h-4 text-[#FF4081]" />
+                <span className="text-sm font-bold text-slate-900">Profil Ibu</span>
               </div>
 
               <div className="space-y-3.5">

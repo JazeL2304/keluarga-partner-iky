@@ -127,11 +127,9 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#FF4081] bg-pink-50 px-2 py-0.5 rounded-full border border-pink-100">
-                <ShieldCheck className="w-3 h-3" />
-                <span>Supervisi & Rekapitulasi</span>
-              </span>
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1E3A8A] mb-1">
+              <ShieldCheck className="w-4 h-4 text-[#FF4081]" />
+              <span>Supervisi &amp; Rekapitulasi</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-1">
               Data Mitra Keluarga & Piagam
@@ -357,26 +355,18 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
                           <div className="font-semibold text-slate-900 text-sm">
                             {row.nama_keluarga}
                           </div>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span
-                              className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
-                                isInstansi
-                                  ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                  : 'bg-pink-50 text-[#FF4081] border-pink-200'
-                              }`}
-                            >
-                              {isInstansi ? (
-                                <>
-                                  <Building2 className="w-2.5 h-2.5" />
-                                  <span>{row.pribadi_instansi}</span>
-                                </>
-                              ) : (
-                                <>
-                                  <User className="w-2.5 h-2.5" />
-                                  <span>Pribadi</span>
-                                </>
-                              )}
-                            </span>
+                          <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
+                            {isInstansi ? (
+                              <>
+                                <Building2 className="w-3 h-3 text-slate-400" />
+                                <span>{row.pribadi_instansi}</span>
+                              </>
+                            ) : (
+                              <>
+                                <User className="w-3 h-3 text-slate-400" />
+                                <span>Pribadi</span>
+                              </>
+                            )}
                           </div>
                         </td>
 
