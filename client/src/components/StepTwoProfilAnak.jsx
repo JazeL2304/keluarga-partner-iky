@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { Users, ArrowLeft, ArrowRight, Baby } from 'lucide-react';
+import { Users, ArrowLeft, ArrowRight, Baby, Trash2 } from 'lucide-react';
+import gsap from 'gsap';
 import { STIFIN_OPTIONS, GOLONGAN_DARAH_OPTIONS } from '../constants/stifin';
 import CustomSelect from './CustomSelect';
 
@@ -25,6 +26,13 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
   const currentJumlahAnak = watch('jumlah_anak');
   const watchedAnak = watch('anak') || [];
 
+  const cardRefs = useRef({});
+  const counterNumRef = useRef(null);
+  const isAnimatingRef = useRef(false);
+  const knownIdsRef = useRef(new Set(fields.map((f) => f.id)));
+  const isInitialMount = useRef(true);
+
+  // Sync field count when currentJumlahAnak changes
   useEffect(() => {
     const targetCount = Math.max(0, parseInt(currentJumlahAnak, 10) || 0);
     const currentCount = fields.length;
@@ -40,9 +48,146 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
     }
   }, [currentJumlahAnak, fields.length, append, remove]);
 
+  // Entrance animations for cards (stagger on mount, pop on add)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      const elements = fields.map((f) => cardRefs.current[f.id]).filter(Boolean);
+      if (elements.length > 0) {
+        gsap.fromTo(
+          elements,
+          { opacity: 0, y: 16, scale: 0.98 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.35,
+            stagger: 0.08,
+            ease: 'power2.out',
+            clearProps: 'transform',
+          }
+        );
+      }
+      return;
+    }
+
+    // Detect newly added card
+    fields.forEach((field) => {
+      if (!knownIdsRef.current.has(field.id)) {
+        knownIdsRef.current.add(field.id);
+        const el = cardRefs.current[field.id];
+        if (el) {
+          gsap.fromTo(
+            el,
+            { opacity: 0, y: 26, scale: 0.95 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.38,
+              ease: 'back.out(1.3)',
+              clearProps: 'transform',
+              onComplete: () => {
+                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                isAnimatingRef.current = false;
+              },
+            }
+          );
+        }
+      }
+    });
+
+    // Clean up removed IDs
+    const currentIdSet = new Set(fields.map((f) => f.id));
+    knownIdsRef.current.forEach((id) => {
+      if (!currentIdSet.has(id)) {
+        knownIdsRef.current.delete(id);
+      }
+    });
+  }, [fields]);
+
   const handleCounterChange = (delta) => {
-    const nextVal = Math.max(0, (parseInt(currentJumlahAnak, 10) || 0) + delta);
-    setValue('jumlah_anak', nextVal);
+    if (isAnimatingRef.current) return;
+    const currentVal = parseInt(currentJumlahAnak, 10) || 0;
+
+    if (delta > 0) {
+      // Adding child
+      isAnimatingRef.current = true;
+      if (counterNumRef.current) {
+        gsap.fromTo(
+          counterNumRef.current,
+          { scale: 1.45, color: '#FF4081', y: -2 },
+          { scale: 1, color: '#1E3A8A', y: 0, duration: 0.3, ease: 'back.out(2)' }
+        );
+      }
+      setValue('jumlah_anak', currentVal + 1);
+      setTimeout(() => {
+        isAnimatingRef.current = false;
+      }, 400);
+    } else if (delta < 0 && currentVal > 0) {
+      // Subtracting child
+      isAnimatingRef.current = true;
+      if (counterNumRef.current) {
+        gsap.fromTo(
+          counterNumRef.current,
+          { scale: 0.75, color: '#e11d48', y: 2 },
+          { scale: 1, color: '#1E3A8A', y: 0, duration: 0.25, ease: 'power2.out' }
+        );
+      }
+
+      const lastField = fields[fields.length - 1];
+      const lastCardEl = lastField ? cardRefs.current[lastField.id] : null;
+
+      if (lastCardEl) {
+        gsap.to(lastCardEl, {
+          opacity: 0,
+          y: -16,
+          scale: 0.94,
+          duration: 0.22,
+          ease: 'power2.in',
+          onComplete: () => {
+            setValue('jumlah_anak', currentVal - 1);
+            isAnimatingRef.current = false;
+          },
+        });
+      } else {
+        setValue('jumlah_anak', currentVal - 1);
+        isAnimatingRef.current = false;
+      }
+    }
+  };
+
+  const handleRemoveChild = (index, fieldId) => {
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    const cardEl = cardRefs.current[fieldId];
+
+    if (counterNumRef.current) {
+      gsap.fromTo(
+        counterNumRef.current,
+        { scale: 0.75, color: '#e11d48', y: 2 },
+        { scale: 1, color: '#1E3A8A', y: 0, duration: 0.25, ease: 'power2.out' }
+      );
+    }
+
+    if (cardEl) {
+      gsap.to(cardEl, {
+        opacity: 0,
+        x: -24,
+        scale: 0.94,
+        duration: 0.22,
+        ease: 'power2.in',
+        onComplete: () => {
+          remove(index);
+          setValue('jumlah_anak', Math.max(0, (parseInt(currentJumlahAnak, 10) || 0) - 1));
+          isAnimatingRef.current = false;
+        },
+      });
+    } else {
+      remove(index);
+      setValue('jumlah_anak', Math.max(0, (parseInt(currentJumlahAnak, 10) || 0) - 1));
+      isAnimatingRef.current = false;
+    }
   };
 
   const onFormSubmit = (data) => {
@@ -79,20 +224,23 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
               <div className="flex items-center border border-slate-300 rounded-lg bg-white overflow-hidden h-[42px] w-44 shadow-xs">
                 <button
                   type="button"
+                  disabled={currentJumlahAnak <= 0}
                   onClick={() => handleCounterChange(-1)}
-                  className="w-12 h-full bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-semibold text-lg transition-colors border-r border-slate-300 flex items-center justify-center select-none cursor-pointer"
+                  className="w-12 h-full bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-semibold text-lg transition-all active:scale-90 border-r border-slate-300 flex items-center justify-center select-none cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
                   aria-label="Kurangi jumlah anak"
                 >
                   −
                 </button>
-                <div className="flex-1 flex items-center justify-center gap-1.5 text-sm font-bold text-[#1E3A8A]">
-                  <Users className="w-3.5 h-3.5 text-slate-400" />
-                  <span className="text-base">{currentJumlahAnak || 0}</span>
+                <div className="flex-1 flex items-center justify-center gap-1.5 text-sm font-bold text-[#1E3A8A] select-none">
+                  <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span ref={counterNumRef} className="text-base inline-block font-extrabold">
+                    {currentJumlahAnak || 0}
+                  </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleCounterChange(1)}
-                  className="w-12 h-full bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-semibold text-lg transition-colors border-l border-slate-300 flex items-center justify-center select-none cursor-pointer"
+                  className="w-12 h-full bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-semibold text-lg transition-all active:scale-90 border-l border-slate-300 flex items-center justify-center select-none cursor-pointer"
                   aria-label="Tambah jumlah anak"
                 >
                   +
@@ -108,7 +256,7 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
           </div>
 
           {/* Dynamic Fieldset Anak */}
-          {fields.length > 0 && (
+          {fields.length > 0 ? (
             <div className="space-y-4 pt-1">
               <div className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
                 <Baby className="w-4 h-4 text-[#1E3A8A]" />
@@ -118,7 +266,11 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200 space-y-3.5 transition-all"
+                  ref={(el) => {
+                    if (el) cardRefs.current[field.id] = el;
+                    else delete cardRefs.current[field.id];
+                  }}
+                  className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200 space-y-3.5 transition-all shadow-2xs hover:shadow-xs"
                 >
                   <div className="flex items-center justify-between pb-2 border-b border-slate-200/80">
                     <span className="text-sm font-bold text-slate-900 flex items-center gap-2">
@@ -127,6 +279,16 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
                       </span>
                       <span>Anak ke-{index + 1}</span>
                     </span>
+
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveChild(index, field.id)}
+                      className="text-xs text-slate-400 hover:text-rose-600 hover:bg-rose-50 px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 select-none"
+                      title={`Hapus Formulir Anak ke-${index + 1}`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span className="font-medium text-[11px]">Hapus</span>
+                    </button>
                   </div>
 
                   <div>
@@ -180,6 +342,14 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
                   </div>
                 </div>
               ))}
+            </div>
+          ) : (
+            <div className="py-8 px-4 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 my-2">
+              <Baby className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-sm font-medium text-slate-700">Belum ada anak dalam daftar</p>
+              <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                Gunakan tombol <span className="font-bold text-[#1E3A8A] px-1.5 py-0.5 rounded bg-white border border-slate-200">+</span> di atas untuk menambahkan formulir data anak.
+              </p>
             </div>
           )}
 
