@@ -64,10 +64,10 @@ function PortalContainer({
   }, []);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-start pt-4 pb-12 sm:pt-6 sm:pb-16 px-3 sm:px-6 md:px-8 font-sans antialiased">
+    <div className="flex-1 flex flex-col items-center justify-start pt-4 pb-36 sm:pt-6 sm:pb-48 px-3 sm:px-6 md:px-8 font-sans antialiased">
       <main
         ref={mainCardRef}
-        className="w-full max-w-5xl bg-white rounded-2xl border border-slate-200/90 shadow-portal overflow-hidden flex flex-col lg:flex-row"
+        className="w-full max-w-5xl bg-white rounded-2xl border border-slate-200/90 shadow-portal overflow-visible flex flex-col lg:flex-row relative"
       >
         {/* Sidebar Stepper - Brand Navy Panel */}
         <SidebarRail
@@ -77,7 +77,7 @@ function PortalContainer({
         />
 
         {/* Right Form Canvas */}
-        <section className="flex-1 bg-white p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
+        <section className="flex-1 bg-white p-6 sm:p-8 lg:p-10 flex flex-col justify-between rounded-b-2xl lg:rounded-bl-none lg:rounded-r-2xl">
           {submitError && (
             <div className="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />

@@ -174,7 +174,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
           </div>
 
           {/* Profil Orang Tua - Grid 2 Kolom Rapi */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 pt-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 pt-1 mb-6">
             {/* Profil Ayah */}
             <div className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200">
               <div className="flex items-center gap-2 pb-3 mb-3.5 border-b border-slate-200/80">

@@ -21,7 +21,7 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
   ];
 
   return (
-    <aside className="w-full lg:w-[300px] xl:w-[320px] bg-[#FAFBFD] border-b lg:border-b-0 lg:border-r border-slate-200/80 p-6 sm:p-8 flex flex-col justify-between shrink-0">
+    <aside className="w-full lg:w-[300px] xl:w-[320px] bg-[#FAFBFD] border-b lg:border-b-0 lg:border-r border-slate-200/80 p-6 sm:p-8 flex flex-col justify-between shrink-0 rounded-t-2xl lg:rounded-tr-none lg:rounded-l-2xl">
       <div>
         {/* Brand identity */}
         <div className="flex items-center space-x-3 mb-6 sm:mb-8">

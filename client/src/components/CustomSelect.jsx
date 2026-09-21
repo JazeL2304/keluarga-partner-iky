@@ -37,10 +37,22 @@ export default function CustomSelect({
     }
   }, [isOpen]);
 
+  // Scroll into view if near bottom edge of viewport when opened downward
+  useEffect(() => {
+    if (isOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      if (spaceBelow < 320) {
+        containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [isOpen]);
+
   const selectedLabel = options.find((opt) => opt === value) || value;
+  const hasLongOptions = options.some((opt) => String(opt).length > 6);
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative ${isOpen ? 'z-50' : 'z-10'} ${className}`}>
       {/* Trigger Box */}
       <button
         id={id}
@@ -68,7 +80,9 @@ export default function CustomSelect({
       {isOpen && (
         <div
           role="listbox"
-          className={`absolute left-0 top-full mt-1.5 z-50 bg-white border border-slate-200 rounded-xl shadow-xl py-1 max-h-60 overflow-y-auto w-full min-w-[220px] animate-in fade-in-50 duration-150 ${dropdownClassName}`}
+          className={`absolute left-0 top-full mt-1.5 z-50 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 max-h-[min(360px,60vh)] overflow-y-auto ${
+            hasLongOptions ? 'w-full min-w-[220px]' : 'w-full'
+          } animate-in fade-in-50 duration-150 ${dropdownClassName}`}
         >
           {options.map((opt) => {
             const isSelected = opt === value;
