@@ -39,7 +39,7 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
 
     if (targetCount > currentCount) {
       for (let i = currentCount; i < targetCount; i++) {
-        append({ nama: '', stifin: '', golongan_darah: '' });
+        append({ nama: '', stifin: '', golongan_darah: '' }, { shouldFocus: false });
       }
     } else if (targetCount < currentCount) {
       for (let i = currentCount - 1; i >= targetCount; i--) {
@@ -88,7 +88,6 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
               ease: 'back.out(1.3)',
               clearProps: 'transform',
               onComplete: () => {
-                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 isAnimatingRef.current = false;
               },
             }
