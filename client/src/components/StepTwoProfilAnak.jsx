@@ -141,7 +141,7 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-[1fr_90px] gap-2.5 sm:gap-3">
                     <div>
                       <label className="block text-xs font-medium text-slate-600 mb-1">
                         Hasil STIFIn

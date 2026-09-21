@@ -197,7 +197,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-[1fr_90px] gap-2.5 sm:gap-3">
                   <div>
                     <label htmlFor="father-stifin" className="block text-xs font-medium text-slate-600 mb-1">
                       Hasil STIFIn
@@ -249,7 +249,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-[1fr_90px] gap-2.5 sm:gap-3">
                   <div>
                     <label htmlFor="mother-stifin" className="block text-xs font-medium text-slate-600 mb-1">
                       Hasil STIFIn

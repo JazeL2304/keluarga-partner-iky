@@ -64,11 +64,11 @@ export default function CustomSelect({
         />
       </button>
 
-      {/* Dropdown Menu - ALWAYS OPENS DOWNWARD */}
+      {/* Dropdown Menu - ALWAYS OPENS DOWNWARD & AUTO-SIZES TO FIT TEXT */}
       {isOpen && (
         <div
           role="listbox"
-          className={`absolute left-0 right-0 top-full mt-1.5 z-50 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden py-1 max-h-60 overflow-y-auto animate-in fade-in-50 duration-150 ${dropdownClassName}`}
+          className={`absolute left-0 top-full mt-1.5 z-50 bg-white border border-slate-200 rounded-xl shadow-xl py-1 max-h-60 overflow-y-auto w-full min-w-[220px] animate-in fade-in-50 duration-150 ${dropdownClassName}`}
         >
           {options.map((opt) => {
             const isSelected = opt === value;
@@ -82,14 +82,14 @@ export default function CustomSelect({
                   onChange(opt);
                   setIsOpen(false);
                 }}
-                className={`w-full px-3 py-2 text-left text-xs sm:text-sm flex items-center justify-between transition-colors cursor-pointer ${
+                className={`w-full px-3.5 py-2 text-left text-xs sm:text-sm flex items-center justify-between gap-3 transition-colors cursor-pointer ${
                   isSelected
                     ? 'bg-blue-50 text-[#1E3A8A] font-semibold'
                     : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
-                <span className="truncate">{opt}</span>
-                {isSelected && <Check className="w-3.5 h-3.5 text-[#1E3A8A] shrink-0 ml-2" />}
+                <span className="whitespace-nowrap font-medium">{opt}</span>
+                {isSelected && <Check className="w-3.5 h-3.5 text-[#1E3A8A] shrink-0" />}
               </button>
             );
           })}
