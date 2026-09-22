@@ -264,14 +264,14 @@ export default function App() {
                 Keluarga Partner <span className="text-[#FF4081]">I Know You</span>
               </span>
             </div>
-            <span className="text-[11px] text-slate-500 hidden sm:block leading-none mt-0.5">
-              Sistem Pendataan &amp; Otomatisasi Piagam Kemitraan STIFIn
+            <span className="text-[11px] text-slate-500 block leading-none mt-0.5">
+              Portal Kemitraan STIFIn
             </span>
           </div>
         </div>
 
-        <div className="text-xs text-slate-400 hidden sm:block font-medium">
-          Formulir Kemitraan Resmi
+        <div className="text-xs text-slate-500 hidden sm:block font-medium">
+          Formulir Resmi
         </div>
       </header>
 

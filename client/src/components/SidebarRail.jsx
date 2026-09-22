@@ -44,7 +44,7 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
             Pendaftaran Partner
           </h2>
           <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-            Formulir resmi pendataan keluarga dan penerbitan piagam kemitraan STIFIn.
+            Pendataan keluarga &amp; penerbitan piagam kemitraan STIFIn.
           </p>
         </div>
 
