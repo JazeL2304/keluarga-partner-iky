@@ -50,7 +50,7 @@ export default function SuccessState({ resultData, onReset }) {
   };
 
   const waMessage = encodeURIComponent(
-    `Alhamdulillah, Piagam Apresiasi resmi Keluarga Partner I Know You untuk ${headName} telah terbit.\n\nUnduh berkas piagam di sini:\n${downloadUrl || ''}`
+    `Alhamdulillah, Piagam Apresiasi resmi Well Identified Family I Know You untuk ${headName} telah terbit.\n\nUnduh berkas piagam di sini:\n${downloadUrl || ''}`
   );
   const waShareUrl = `https://wa.me/?text=${waMessage}`;
 
@@ -62,7 +62,7 @@ export default function SuccessState({ resultData, onReset }) {
       </div>
 
       <span className="text-xs font-semibold uppercase tracking-wider text-[#FF4081] mb-1">
-        Penerbitan Berhasil
+        Well Identified Family
       </span>
 
       <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-2">
@@ -70,7 +70,7 @@ export default function SuccessState({ resultData, onReset }) {
       </h1>
 
       <p className="text-xs sm:text-sm text-slate-500 mb-6 leading-relaxed max-w-sm">
-        Data kemitraan untuk <strong className="font-semibold text-slate-900">{headName}</strong> telah berhasil disimpan ke basis data resmi STIFIn I Know You.
+        Data kemitraan Well Identified Family untuk <strong className="font-semibold text-slate-900">{headName}</strong> telah berhasil disimpan ke basis data resmi STIFIn I Know You.
       </p>
 
       {/* Meta Certificate Card */}

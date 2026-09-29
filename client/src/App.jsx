@@ -26,6 +26,7 @@ const INITIAL_FORM_DATA = {
     { nama: 'Ahmad Dani Pratama', stifin: 'Sensing Extrovert', golongan_darah: 'O' },
     { nama: 'Aisyah Putri Pratama', stifin: 'Intuiting Introvert', golongan_darah: 'A' },
   ],
+  kesan_pesan: '',
 };
 
 function PortalContainer({
@@ -183,6 +184,7 @@ export default function App() {
         nama_ibu: formData.nama_ibu,
         stifin_ibu: formData.stifin_ibu,
         golongan_darah_ibu: formData.golongan_darah_ibu,
+        kesan_pesan: formData.kesan_pesan ? formData.kesan_pesan.trim() : null,
         jumlah_anak: Number(formData.jumlah_anak || 0),
         anak: Array.isArray(formData.anak) ? formData.anak : [],
       };
@@ -217,6 +219,7 @@ export default function App() {
       golongan_darah_ibu: '',
       jumlah_anak: 0,
       anak: [],
+      kesan_pesan: '',
     });
     setResultData(null);
     setSubmitError(null);
@@ -254,18 +257,30 @@ export default function App() {
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
       {/* Universal Top App Header untuk Mitra Partner */}
       <header className="w-full bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-3 sm:px-8 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider shadow-xs">
-            IKY
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-sm sm:text-base tracking-tight text-slate-900 leading-tight">
-                Keluarga Partner <span className="text-[#FF4081]">I Know You</span>
+        <div className="flex items-center gap-3.5">
+          {/* Logo IKY biasa dengan tulisan iknowyou */}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1E3A8A] to-[#0F172A] flex items-center justify-center text-white font-extrabold text-xs tracking-wider shadow-xs ring-1 ring-black/5 shrink-0">
+              IKY
+            </div>
+            <div className="flex items-baseline">
+              <span className="font-extrabold text-base sm:text-lg tracking-tight text-[#1E3A8A] select-none">
+                iknow<span className="text-[#FF4081]">you</span>
               </span>
             </div>
-            <span className="text-[11px] text-slate-500 block leading-none mt-0.5">
-              Portal Kemitraan STIFIn
+          </div>
+
+          <div className="h-5 w-[1px] bg-slate-200 hidden sm:block" />
+
+          {/* Well Identified Family "Nama Keluarga Partner IKY" */}
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-xs sm:text-sm tracking-tight text-slate-800 leading-tight">
+                Well Identified Family
+              </span>
+            </div>
+            <span className="text-[10px] sm:text-[11px] text-slate-500 block leading-none mt-0.5">
+              Keluarga Partner IKY
             </span>
           </div>
         </div>

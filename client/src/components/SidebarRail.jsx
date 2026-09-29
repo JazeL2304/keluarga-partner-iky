@@ -25,26 +25,28 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
       <div>
         {/* Brand identity */}
         <div className="flex items-center space-x-3 mb-6 sm:mb-8">
-          <div className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center text-white font-bold text-xs tracking-wider shadow-xs">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#1E3A8A] to-[#0F172A] flex items-center justify-center text-white font-extrabold text-xs tracking-wider shadow-xs ring-1 ring-black/5 shrink-0">
             IKY
           </div>
           <div>
-            <div className="font-bold text-sm tracking-tight text-slate-900 leading-none">
-              I Know You
+            <div className="flex items-baseline">
+              <span className="font-extrabold text-base tracking-tight text-[#1E3A8A] select-none">
+                iknow<span className="text-[#FF4081]">you</span>
+              </span>
             </div>
-            <div className="text-[11px] font-medium text-slate-500 mt-1">
-              Portal Keluarga Partner
+            <div className="text-[11px] font-medium text-slate-500">
+              Well Identified Family
             </div>
           </div>
         </div>
 
         {/* Section Heading */}
         <div className="mb-6 sm:mb-8">
-          <h2 className="text-base sm:text-lg font-semibold text-slate-900 tracking-tight">
-            Pendaftaran Partner
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Well Identified Family
           </h2>
           <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-            Pendataan keluarga &amp; penerbitan piagam kemitraan STIFIn.
+            Pendataan profil keluarga partner IKY &amp; penerbitan piagam STIFIn.
           </p>
         </div>
 

@@ -14,11 +14,15 @@ CREATE TABLE IF NOT EXISTS public.keluarga (
   nama_ibu TEXT,
   stifin_ibu TEXT,
   golongan_darah_ibu TEXT,
+  kesan_pesan TEXT,
   jumlah_anak INTEGER DEFAULT 0,
   tanggal_submit TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   nomor_sertifikat TEXT,
   url_sertifikat TEXT
 );
+
+-- Migrasi jika tabel keluarga sudah ada sebelumnya:
+ALTER TABLE public.keluarga ADD COLUMN IF NOT EXISTS kesan_pesan TEXT;
 
 -- 2. Buat Tabel anak (Relasi 1-to-Many ke tabel keluarga)
 CREATE TABLE IF NOT EXISTS public.anak (

@@ -15,6 +15,7 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
     golongan_darah_ibu,
     jumlah_anak,
     anak,
+    kesan_pesan,
   } = formData;
 
   const [qrDataUrl, setQrDataUrl] = useState('');
@@ -46,10 +47,10 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
             Tahap 3 dari 3
           </span>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Konfirmasi Kemitraan &amp; Pratinjau Piagam
+            Konfirmasi Well Identified Family &amp; Pratinjau Piagam
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
-            Periksa kembali profil genetika keluarga Anda sebelum piagam resmi diterbitkan dan dicatat ke database.
+            Periksa kembali profil genetika keluarga partner IKY sebelum piagam resmi diterbitkan dan dicatat ke database.
           </p>
         </header>
 
@@ -89,7 +90,7 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
             </div>
 
             <div>
-              <span className="text-slate-500 block mb-0.5">Nama Dicetak pada Piagam</span>
+              <span className="text-slate-500 block mb-0.5">Nama Keluarga Partner IKY</span>
               <span className="font-bold text-slate-900 text-sm block truncate">
                 {nama_keluarga || '—'}
               </span>
@@ -177,6 +178,18 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
               </div>
             )}
           </div>
+
+          {/* Kesan & Pesan Kemitraan (Feedback) */}
+          {kesan_pesan && (
+            <div className="pt-2 border-t border-slate-200/80">
+              <span className="text-xs font-bold text-slate-800 block mb-1">
+                Kesan &amp; Pesan Kemitraan:
+              </span>
+              <p className="p-3 bg-white rounded-lg border border-slate-200 text-slate-700 italic text-xs leading-relaxed">
+                &ldquo;{kesan_pesan}&rdquo;
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Part 2: Authentic Certificate Document Preview 1:1 */}

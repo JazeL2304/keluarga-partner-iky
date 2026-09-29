@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   ShieldCheck,
   LogOut,
+  MessageSquareQuote,
 } from 'lucide-react';
 
 export default function AdminRekapView({ onBackToForm, onLogout }) {
@@ -483,6 +484,18 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
                                       </div>
                                     </div>
                                   ))}
+                                </div>
+                              )}
+
+                              {row.kesan_pesan && (
+                                <div className="mt-3 pt-2.5 border-t border-slate-200">
+                                  <div className="text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1 flex items-center gap-1.5">
+                                    <MessageSquareQuote className="w-3.5 h-3.5 text-[#1E3A8A]" />
+                                    <span>Kesan &amp; Pesan Kemitraan:</span>
+                                  </div>
+                                  <p className="p-2.5 bg-white rounded-lg border border-slate-200 text-slate-700 italic text-xs leading-relaxed">
+                                    &ldquo;{row.kesan_pesan}&rdquo;
+                                  </p>
                                 </div>
                               )}
                             </div>

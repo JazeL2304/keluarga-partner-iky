@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Building2, ArrowRight, AlertCircle, UserCircle2 } from 'lucide-react';
+import { User, Building2, ArrowRight, AlertCircle, UserCircle2, MessageSquareQuote } from 'lucide-react';
 import { STIFIN_OPTIONS, GOLONGAN_DARAH_OPTIONS } from '../constants/stifin';
 import CustomSelect from './CustomSelect';
 
@@ -14,6 +14,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
     nama_ibu,
     stifin_ibu,
     golongan_darah_ibu,
+    kesan_pesan,
   } = formData;
 
   const [errors, setErrors] = useState({});
@@ -48,10 +49,10 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
             Tahap 1 dari 3
           </span>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Profil Kemitraan &amp; Orang Tua
+            Well Identified Family
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
-            Lengkapi data jalur kemitraan keluarga dan profil tes genetik STIFIn untuk penerbitan piagam resmi.
+            Formulir kemitraan keluarga partner IKY &amp; profil genetika STIFIn orang tua.
           </p>
         </header>
 
@@ -139,10 +140,10 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
             </div>
           </div>
 
-          {/* Section 2: Nama Keluarga (Dicetak di Piagam) */}
+          {/* Section 2: Nama Keluarga Partner IKY (Dicetak di Piagam) */}
           <div>
             <label htmlFor="family-name" className="block text-xs font-semibold text-slate-900 tracking-wide mb-1.5">
-              Nama Keluarga yang Dicetak pada Piagam <span className="text-rose-500">*</span>
+              Nama Keluarga Partner IKY <span className="text-rose-500">*</span>
             </label>
             <input
               id="family-name"
@@ -168,7 +169,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
               </p>
             ) : (
               <span className="block text-[11px] text-slate-500 mt-1">
-                Nama ini yang akan dicetak di panel utama piagam resmi dengan akhiran <strong className="font-semibold text-slate-700">FAMILY</strong>.
+                Nama ini yang akan dicetak di piagam resmi Well Identified Family dengan akhiran <strong className="font-semibold text-slate-700">FAMILY</strong>.
               </span>
             )}
           </div>
@@ -277,6 +278,38 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Section 4: Feedback / Kesan & Pesan Kemitraan (Di Bawah Profil Genetika Orang Tua) */}
+          <div className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200">
+            <div className="flex items-center gap-2 pb-3 mb-3.5 border-b border-slate-200/80">
+              <MessageSquareQuote className="w-4 h-4 text-[#1E3A8A]" />
+              <div>
+                <span className="text-sm font-bold text-slate-900 block leading-tight">
+                  Kesan &amp; Pesan Kemitraan (Feedback)
+                </span>
+                <span className="text-[11px] text-slate-500">
+                  Kuesioner kemitraan keluarga partner IKY
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="kesan-pesan" className="block text-xs font-medium text-slate-600 mb-1.5">
+                Kesan &amp; Pesan untuk I Know You
+              </label>
+              <textarea
+                id="kesan-pesan"
+                rows={3}
+                value={kesan_pesan || ''}
+                onChange={(e) => updateFormData({ kesan_pesan: e.target.value })}
+                placeholder="Bagikan kesan, pesan, atau pengalaman Anda setelah mengenali fitrah genetik STIFIn keluarga..."
+                className="block w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-all resize-y"
+              />
+              <span className="block text-[11px] text-slate-400 mt-1">
+                Masukan Anda sangat berharga bagi peningkatan layanan edukasi &amp; tes STIFIn I Know You.
+              </span>
             </div>
           </div>
 

@@ -109,6 +109,7 @@ router.post('/', async (req, res) => {
       nama_ibu,
       stifin_ibu,
       golongan_darah_ibu,
+      kesan_pesan,
       jumlah_anak,
       anak
     } = req.body;
@@ -152,19 +153,37 @@ router.post('/', async (req, res) => {
       nama_ibu: nama_ibu ? String(nama_ibu).trim() : null,
       stifin_ibu: stifin_ibu ? String(stifin_ibu).trim() : null,
       golongan_darah_ibu: golongan_darah_ibu ? String(golongan_darah_ibu).trim() : null,
+      kesan_pesan: kesan_pesan ? String(kesan_pesan).trim() : null,
       jumlah_anak: parsedJumlahAnak,
       nomor_sertifikat,
       url_sertifikat: null
     };
 
-    const { data: insertedKeluarga, error: keluargaError } = await supabase
+    let insertedKeluarga;
+    const { data: insertedData, error: keluargaError } = await supabase
       .from('keluarga')
       .insert([keluargaPayload])
       .select()
       .single();
 
     if (keluargaError) {
-      throw keluargaError;
+      // Fallback jika kolom kesan_pesan belum ditambahkan di Supabase
+      if (keluargaError.code === '42703' || keluargaError.message?.includes('kesan_pesan')) {
+        console.warn('Kolom kesan_pesan belum ada di database Supabase, menyimpan tanpa kolom kesan_pesan...');
+        const { kesan_pesan: _omit, ...safePayload } = keluargaPayload;
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('keluarga')
+          .insert([safePayload])
+          .select()
+          .single();
+
+        if (fallbackError) throw fallbackError;
+        insertedKeluarga = fallbackData;
+      } else {
+        throw keluargaError;
+      }
+    } else {
+      insertedKeluarga = insertedData;
     }
 
     // 5. Step 2 & 3: Ambil ID keluarga baru dan insert data anak jika ada
