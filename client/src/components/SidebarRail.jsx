@@ -24,18 +24,20 @@ export default function SidebarRail({ currentStep, setStep, isSubmitted }) {
     <aside className="w-full lg:w-[300px] xl:w-[320px] bg-[#FAFBFD] border-b lg:border-b-0 lg:border-r border-slate-200/80 p-6 sm:p-8 flex flex-col justify-between shrink-0 rounded-t-2xl lg:rounded-tr-none lg:rounded-l-2xl">
       <div>
         {/* Brand identity */}
-        <div className="flex items-center space-x-3 mb-6 sm:mb-8">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#1E3A8A] to-[#0F172A] flex items-center justify-center text-white font-extrabold text-xs tracking-wider shadow-xs ring-1 ring-black/5 shrink-0">
-            IKY
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center mb-3">
+            <img
+              src="/logo-iknowyou.png"
+              alt="IKNOWYOU by Miss Hiday"
+              className="h-9 sm:h-10 w-auto object-contain select-none"
+            />
           </div>
           <div>
-            <div className="flex items-baseline">
-              <span className="font-extrabold text-base tracking-tight text-[#1E3A8A] select-none">
-                iknow<span className="text-[#FF4081]">you</span>
-              </span>
-            </div>
-            <div className="text-[11px] font-medium text-slate-500">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-[#FF4081] mb-0.5">
               Well Identified Family
+            </div>
+            <div className="text-xs text-slate-500 font-medium">
+              Portal Kemitraan Resmi
             </div>
           </div>
         </div>

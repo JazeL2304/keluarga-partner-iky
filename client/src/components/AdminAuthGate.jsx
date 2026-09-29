@@ -37,10 +37,12 @@ export default function AdminAuthGate({ onSuccess, onBackToHome }) {
       <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden">
         {/* Header Bersih & Ringkas */}
         <div className="pt-8 pb-3 px-6 sm:px-8 text-center">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 text-[#1E3A8A] border border-blue-100/80 flex items-center justify-center mx-auto mb-3.5 shadow-2xs">
-            <Lock className="w-5 h-5" />
-          </div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Portal Admin</h1>
+          <img
+            src="/logo-iknowyou.png"
+            alt="IKNOWYOU by Miss Hiday"
+            className="h-10 mx-auto mb-4 object-contain select-none"
+          />
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Portal Supervisi Admin</h1>
           <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
             Masukkan kata sandi untuk mengakses rekap data mitra.
           </p>
