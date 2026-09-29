@@ -30,18 +30,29 @@ export default function LoadingScreen({ onFinish }) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F8FAFC]">
       <div className="flex flex-col items-center w-full max-w-sm px-6">
-        {/* Official Brand Logo with Subtle Floating Entrance */}
-        <div className="relative mb-5 flex flex-col items-center select-none">
+        {/* Minimalist Geometric Spinner (Animasi Putar-putar) */}
+        <div className="relative flex items-center justify-center mb-5">
+          <div
+            className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-[#FF4081] border-r-[#1E3A8A] animate-spin"
+            style={{ animationDuration: '0.8s' }}
+          />
+          <span className="absolute font-mono font-bold text-xs tracking-wider text-[#1E3A8A] select-none">
+            IKY<span className="text-[#FF4081]">.</span>
+          </span>
+        </div>
+
+        {/* Official Brand Logo */}
+        <div className="relative mb-3 flex flex-col items-center select-none">
           <img
             src="/logo-iknowyou.png"
             alt="IKNOWYOU by Miss Hiday"
-            className="h-14 sm:h-16 w-auto object-contain drop-shadow-2xs transition-transform duration-700 ease-out hover:scale-105"
+            className="h-10 sm:h-11 w-auto object-contain drop-shadow-2xs"
           />
         </div>
 
         {/* Brand Hierarchy & Well Identified Family */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-50 border border-pink-100 text-[#FF4081] text-[11px] font-bold tracking-wide mb-1 shadow-2xs">
+        <div className="text-center mb-5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-pink-50 border border-pink-100 text-[#FF4081] text-[11px] font-bold tracking-wide mb-1 shadow-2xs">
             Well Identified Family
           </div>
           <p className="text-xs font-medium text-slate-500">
