@@ -30,24 +30,25 @@ export default function LoadingScreen({ onFinish }) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F8FAFC]">
       <div className="flex flex-col items-center w-full max-w-sm px-6">
-        {/* Minimalist Geometric Spinner (Animasi Putar-putar) */}
-        <div className="relative flex items-center justify-center mb-5">
-          <div
-            className="w-12 h-12 rounded-full border-2 border-slate-200 border-t-[#FF4081] border-r-[#1E3A8A] animate-spin"
-            style={{ animationDuration: '0.8s' }}
-          />
-          <span className="absolute font-mono font-bold text-xs tracking-wider text-[#1E3A8A] select-none">
-            IKY<span className="text-[#FF4081]">.</span>
-          </span>
-        </div>
+        {/* Lingkaran Loading Effect di Sekitar Logo IKNOWYOU */}
+        <div className="relative flex items-center justify-center mb-6 select-none">
+          {/* Background Ring Track */}
+          <div className="w-36 h-36 sm:w-40 sm:h-40 rounded-full border-2 border-slate-200/60" />
 
-        {/* Official Brand Logo */}
-        <div className="relative mb-3 flex flex-col items-center select-none">
-          <img
-            src="/logo-iknowyou.png"
-            alt="IKNOWYOU by Miss Hiday"
-            className="h-10 sm:h-11 w-auto object-contain drop-shadow-2xs"
+          {/* Spinning Loading Ring */}
+          <div
+            className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#FF4081] border-r-[#1E3A8A] animate-spin"
+            style={{ animationDuration: '0.9s' }}
           />
+
+          {/* White Card containing the Official Logo in the center of the ring */}
+          <div className="absolute inset-2 sm:inset-2.5 rounded-full bg-white shadow-md border border-slate-100 flex items-center justify-center p-3.5">
+            <img
+              src="/logo-iknowyou.png"
+              alt="IKNOWYOU by Miss Hiday"
+              className="w-24 sm:w-28 h-auto object-contain drop-shadow-2xs"
+            />
+          </div>
         </div>
 
         {/* Brand Hierarchy & Well Identified Family */}
