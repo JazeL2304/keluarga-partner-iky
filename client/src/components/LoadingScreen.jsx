@@ -41,12 +41,12 @@ export default function LoadingScreen({ onFinish }) {
             style={{ animationDuration: '0.9s' }}
           />
 
-          {/* White Card containing the Official Logo in the center of the ring */}
-          <div className="absolute inset-2 sm:inset-2.5 rounded-full bg-white shadow-md border border-slate-100 flex items-center justify-center p-3.5">
+          {/* Logo IKNOWYOU Transparan Murni Tanpa Background Card */}
+          <div className="absolute inset-0 flex items-center justify-center p-4">
             <img
               src="/logo-iknowyou.png"
               alt="IKNOWYOU by Miss Hiday"
-              className="w-24 sm:w-28 h-auto object-contain drop-shadow-2xs"
+              className="w-24 sm:w-28 h-auto object-contain select-none"
             />
           </div>
         </div>
