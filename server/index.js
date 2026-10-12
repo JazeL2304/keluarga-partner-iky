@@ -40,12 +40,13 @@ app.get(['/', '/api'], (req, res) => {
   res.send('API Backend Sistem Pendataan Keluarga Partner I Know You berjalan dengan baik.');
 });
 
-// Start Server (hanya saat dijalankan mandiri di lingkungan non-serverless)
-if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+// Start Server
+if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`🚀 Server Express berjalan pada port ${PORT} (http://localhost:${PORT})`);
   });
 }
+
 
 
 export default app;
