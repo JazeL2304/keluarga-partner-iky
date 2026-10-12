@@ -4,9 +4,11 @@
       "root": "client"
     },
     "server": {
-      "root": "server"
+      "root": "server",
+      "entrypoint": "index.js"
     }
   },
+
   "rewrites": [
     {
       "source": "/api/(.*)",
