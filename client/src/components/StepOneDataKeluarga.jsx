@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Building2, ArrowRight, AlertCircle, UserCircle2, MessageSquareQuote } from 'lucide-react';
+import { User, Building2, ArrowRight, AlertCircle, UserCircle2, MessageSquareQuote, Phone, Mail } from 'lucide-react';
 import { STIFIN_OPTIONS, GOLONGAN_DARAH_OPTIONS } from '../constants/stifin';
 import CustomSelect from './CustomSelect';
 
@@ -8,6 +8,8 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
     pribadi_instansi,
     nama_instansi_custom,
     nama_keluarga,
+    no_wa,
+    email,
     nama_ayah,
     stifin_ayah,
     golongan_darah_ayah,
@@ -16,6 +18,7 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
     golongan_darah_ibu,
     kesan_pesan,
   } = formData;
+
 
   const [errors, setErrors] = useState({});
   const isInstansi = pribadi_instansi === 'Instansi';
@@ -30,15 +33,29 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
     if (isInstansi && (!nama_instansi_custom || !nama_instansi_custom.trim())) {
       newErrors.nama_instansi_custom = 'Nama Instansi / Lembaga wajib diisi untuk pendaftaran instansi';
     }
+    if (!no_wa || !no_wa.trim()) {
+      newErrors.no_wa = 'Nomor WhatsApp responden wajib diisi untuk koordinasi & konfirmasi';
+    } else if (!/^[0-9+\s\-()]{8,20}$/.test(no_wa.trim())) {
+      newErrors.no_wa = 'Format nomor WhatsApp tidak valid (contoh: 081234567890)';
+    }
+    if (email && email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      newErrors.email = 'Format email tidak valid (contoh: keluarga@gmail.com)';
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      } catch {
+        window.scrollTo(0, 0);
+      }
       return;
     }
 
     setErrors({});
     onNext();
   };
+
 
   return (
     <div className="flex-1 flex flex-col justify-between">
@@ -172,6 +189,101 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
                 Nama ini yang akan dicetak di piagam resmi Well Identified Family dengan akhiran <strong className="font-semibold text-slate-700">FAMILY</strong>.
               </span>
             )}
+          </div>
+
+          {/* Section: Kontak Responden (WhatsApp & Email) */}
+          <div className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200">
+            <div className="flex items-center gap-2 pb-3 mb-3.5 border-b border-slate-200/80">
+              <Phone className="w-4 h-4 text-[#1E3A8A]" />
+              <div>
+                <span className="text-sm font-bold text-slate-900 block leading-tight">
+                  Kontak Responden / Penanggung Jawab
+                </span>
+                <span className="text-[11px] text-slate-500">
+                  Informasi untuk koordinasi kemitraan dan pengiriman informasi berkas
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* WhatsApp */}
+              <div>
+                <label htmlFor="resp-wa" className="block text-xs font-semibold text-slate-800 mb-1.5 flex items-center justify-between">
+                  <span>No. WhatsApp (Aktif) <span className="text-rose-500">*</span></span>
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Phone className="w-4 h-4" />
+                  </div>
+                  <input
+                    id="resp-wa"
+                    type="tel"
+                    value={no_wa || ''}
+                    onChange={(e) => {
+                      updateFormData({ no_wa: e.target.value });
+                      if (errors.no_wa) {
+                        setErrors((prev) => ({ ...prev, no_wa: null }));
+                      }
+                    }}
+                    placeholder="Contoh: 081234567890"
+                    className={`block w-full pl-9 pr-3.5 py-2.5 text-sm bg-white border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none transition-all ${
+                      errors.no_wa
+                        ? 'border-rose-400 bg-rose-50/20 focus:border-rose-600 focus:ring-1 focus:ring-rose-600'
+                        : 'border-slate-300 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A]'
+                    }`}
+                  />
+                </div>
+                {errors.no_wa ? (
+                  <p className="mt-1.5 text-xs font-medium text-rose-600 flex items-center gap-1.5">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{errors.no_wa}</span>
+                  </p>
+                ) : (
+                  <span className="block text-[11px] text-slate-500 mt-1">
+                    Nomor aktif yang terhubung dengan WhatsApp untuk koordinasi panitia.
+                  </span>
+                )}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label htmlFor="resp-email" className="block text-xs font-semibold text-slate-800 mb-1.5">
+                  Email Responden
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <input
+                    id="resp-email"
+                    type="email"
+                    value={email || ''}
+                    onChange={(e) => {
+                      updateFormData({ email: e.target.value });
+                      if (errors.email) {
+                        setErrors((prev) => ({ ...prev, email: null }));
+                      }
+                    }}
+                    placeholder="Contoh: keluarga@gmail.com"
+                    className={`block w-full pl-9 pr-3.5 py-2.5 text-sm bg-white border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none transition-all ${
+                      errors.email
+                        ? 'border-rose-400 bg-rose-50/20 focus:border-rose-600 focus:ring-1 focus:ring-rose-600'
+                        : 'border-slate-300 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A]'
+                    }`}
+                  />
+                </div>
+                {errors.email ? (
+                  <p className="mt-1.5 text-xs font-medium text-rose-600 flex items-center gap-1.5">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{errors.email}</span>
+                  </p>
+                ) : (
+                  <span className="block text-[11px] text-slate-500 mt-1">
+                    Opsional: Untuk pengiriman arsip dan pemberitahuan agenda IKY.
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Profil Orang Tua - Grid 2 Kolom Rapi */}

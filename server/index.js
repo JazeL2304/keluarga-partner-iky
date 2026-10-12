@@ -23,9 +23,10 @@ app.use(express.json());
 
 // Routes
 app.use('/api/keluarga', keluargaRouter);
+app.use('/keluarga', keluargaRouter);
 
 // Health Check Endpoint
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     status: 'ok',
     service: 'keluarga-partner-iky-backend',
@@ -35,15 +36,16 @@ app.get('/api/health', (req, res) => {
 });
 
 // Root fallback
-app.get('/', (req, res) => {
+app.get(['/', '/api'], (req, res) => {
   res.send('API Backend Sistem Pendataan Keluarga Partner I Know You berjalan dengan baik.');
 });
 
-// Start Server
-if (process.env.NODE_ENV !== 'test') {
+// Start Server (hanya saat dijalankan mandiri di lingkungan non-serverless)
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`🚀 Server Express berjalan pada port ${PORT} (http://localhost:${PORT})`);
   });
 }
+
 
 export default app;

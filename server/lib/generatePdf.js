@@ -7,8 +7,25 @@ import QRCode from 'qrcode';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const templatePath = path.join(__dirname, '../assets/certificate_template.png');
-const fontPath = path.join(__dirname, '../assets/ArialNarrowBoldItalic.ttf');
+
+function getAssetPath(filename) {
+  const candidates = [
+    path.join(__dirname, '../assets', filename),
+    path.join(process.cwd(), 'server', 'assets', filename),
+    path.join(process.cwd(), 'assets', filename),
+    path.join(process.cwd(), filename),
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return candidates[0];
+}
+
+const templatePath = getAssetPath('certificate_template.png');
+const fontPath = getAssetPath('ArialNarrowBoldItalic.ttf');
+
 
 /**
  * Format nama keluarga ke format resmi piagam (contoh: "BOY HAMZAH FAMILY")

@@ -14,20 +14,21 @@ import { AlertCircle } from 'lucide-react';
 const INITIAL_FORM_DATA = {
   pribadi_instansi: 'Pribadi',
   nama_instansi_custom: '',
-  nama_keluarga: 'Keluarga Hendra Pratama',
-  nama_ayah: 'Hendra Pratama',
-  stifin_ayah: 'Thinking Introvert',
-  golongan_darah_ayah: 'O',
-  nama_ibu: 'Siti Nurhaliza',
-  stifin_ibu: 'Feeling Extrovert',
-  golongan_darah_ibu: 'A',
-  jumlah_anak: 2,
-  anak: [
-    { nama: 'Ahmad Dani Pratama', stifin: 'Sensing Extrovert', golongan_darah: 'O' },
-    { nama: 'Aisyah Putri Pratama', stifin: 'Intuiting Introvert', golongan_darah: 'A' },
-  ],
+  nama_keluarga: '',
+  no_wa: '',
+  email: '',
+  nama_ayah: '',
+  stifin_ayah: '',
+  golongan_darah_ayah: '',
+  nama_ibu: '',
+  stifin_ibu: '',
+  golongan_darah_ibu: '',
+  jumlah_anak: 0,
+  anak: [],
   kesan_pesan: '',
 };
+
+
 
 function PortalContainer({
   step,
@@ -147,6 +148,19 @@ export default function App() {
     return () => window.removeEventListener('popstate', handleLocationChange);
   }, []);
 
+  const scrollToTop = () => {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    } catch {
+      window.scrollTo(0, 0);
+    }
+  };
+
+  useEffect(() => {
+    scrollToTop();
+  }, [step]);
+
   const navigateTo = (path) => {
     window.history.pushState({}, '', path);
     setCurrentPath(path);
@@ -159,11 +173,13 @@ export default function App() {
   const handleNext = () => {
     setSubmitError(null);
     setStep((prev) => Math.min(prev + 1, 3));
+    scrollToTop();
   };
 
   const handlePrev = () => {
     setSubmitError(null);
     setStep((prev) => Math.max(prev - 1, 1));
+    scrollToTop();
   };
 
   const handleSubmit = async () => {
@@ -178,6 +194,8 @@ export default function App() {
       const payload = {
         nama_keluarga: formData.nama_keluarga,
         pribadi_instansi: instansiLabel,
+        no_wa: formData.no_wa ? formData.no_wa.trim() : null,
+        email: formData.email ? formData.email.trim() : null,
         nama_ayah: formData.nama_ayah,
         stifin_ayah: formData.stifin_ayah,
         golongan_darah_ayah: formData.golongan_darah_ayah,
@@ -194,6 +212,7 @@ export default function App() {
       if (res.data && res.data.success) {
         setResultData(res.data.data);
         setStep(4);
+        scrollToTop();
       } else {
         throw new Error(res.data?.message || 'Terjadi kesalahan saat memproses data.');
       }
@@ -201,16 +220,20 @@ export default function App() {
       console.error('Submission error:', err);
       const msg = err.response?.data?.message || err.message || 'Gagal menghubungi server.';
       setSubmitError(msg);
+      scrollToTop();
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   const handleReset = () => {
     setFormData({
       pribadi_instansi: 'Pribadi',
       nama_instansi_custom: '',
       nama_keluarga: '',
+      no_wa: '',
+      email: '',
       nama_ayah: '',
       stifin_ayah: '',
       golongan_darah_ayah: '',

@@ -103,6 +103,8 @@ router.post('/', async (req, res) => {
     const {
       nama_keluarga,
       pribadi_instansi,
+      no_wa,
+      email,
       nama_ayah,
       stifin_ayah,
       golongan_darah_ayah,
@@ -147,6 +149,8 @@ router.post('/', async (req, res) => {
     const keluargaPayload = {
       nama_keluarga: nama_keluarga.trim(),
       pribadi_instansi: pribadi_instansi ? String(pribadi_instansi).trim() : null,
+      no_wa: no_wa ? String(no_wa).trim() : null,
+      email: email ? String(email).trim() : null,
       nama_ayah: nama_ayah ? String(nama_ayah).trim() : null,
       stifin_ayah: stifin_ayah ? String(stifin_ayah).trim() : null,
       golongan_darah_ayah: golongan_darah_ayah ? String(golongan_darah_ayah).trim() : null,
@@ -160,31 +164,40 @@ router.post('/', async (req, res) => {
     };
 
     let insertedKeluarga;
-    const { data: insertedData, error: keluargaError } = await supabase
-      .from('keluarga')
-      .insert([keluargaPayload])
-      .select()
-      .single();
+    let currentPayload = { ...keluargaPayload };
+    let lastError = null;
 
-    if (keluargaError) {
-      // Fallback jika kolom kesan_pesan belum ditambahkan di Supabase
-      if (keluargaError.code === '42703' || keluargaError.message?.includes('kesan_pesan')) {
-        console.warn('Kolom kesan_pesan belum ada di database Supabase, menyimpan tanpa kolom kesan_pesan...');
-        const { kesan_pesan: _omit, ...safePayload } = keluargaPayload;
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('keluarga')
-          .insert([safePayload])
-          .select()
-          .single();
+    // Coba insert dengan payload lengkap, dan otomatis strip kolom jika belum dimigrasi di Supabase
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const { data: insertedData, error: err } = await supabase
+        .from('keluarga')
+        .insert([currentPayload])
+        .select()
+        .single();
 
-        if (fallbackError) throw fallbackError;
-        insertedKeluarga = fallbackData;
-      } else {
-        throw keluargaError;
+      if (!err) {
+        insertedKeluarga = insertedData;
+        lastError = null;
+        break;
       }
-    } else {
-      insertedKeluarga = insertedData;
+
+      lastError = err;
+      // Deteksi jika error karena kolom tidak ditemukan di schema cache (PostgREST code PGRST204 / 42703)
+      const missingColMatch = err.message?.match(/Could not find the '(\w+)' column/);
+      if (missingColMatch && missingColMatch[1] && currentPayload[missingColMatch[1]] !== undefined) {
+        const col = missingColMatch[1];
+        console.warn(`[Supabase Schema Fallback] Kolom '${col}' belum ada di database, menyimpan tanpa kolom '${col}'...`);
+        delete currentPayload[col];
+      } else {
+        break;
+      }
     }
+
+    if (lastError || !insertedKeluarga) {
+      throw lastError || new Error('Gagal menyimpan data keluarga ke database Supabase');
+    }
+
+
 
     // 5. Step 2 & 3: Ambil ID keluarga baru dan insert data anak jika ada
     let insertedAnak = [];

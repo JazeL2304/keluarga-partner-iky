@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 import {
   Users,
   Building2,
@@ -19,6 +20,9 @@ import {
   ShieldCheck,
   LogOut,
   MessageSquareQuote,
+  FileSpreadsheet,
+  Phone,
+  Mail,
 } from 'lucide-react';
 
 export default function AdminRekapView({ onBackToForm, onLogout }) {
@@ -28,6 +32,7 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL'); // 'ALL' | 'Pribadi' | 'Instansi'
   const [expandedRowId, setExpandedRowId] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -50,6 +55,170 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // ─── EXPORT EXCEL ────────────────────────────────────────────────────────────
+  const exportToExcel = () => {
+    if (data.length === 0) return;
+    setIsExporting(true);
+
+    try {
+      const wb = XLSX.utils.book_new();
+
+      // ── Sheet 1: Data Keluarga (Orang Tua) ──────────────────────────────────
+      const keluargaHeaders = [
+        'No. Sertifikat',
+        'Nama Keluarga',
+        'Kategori',
+        'No. WhatsApp',
+        'Email',
+        'Nama Ayah',
+        'STIFIn Ayah',
+        'Gol. Darah Ayah',
+        'Nama Ibu',
+        'STIFIn Ibu',
+        'Gol. Darah Ibu',
+        'Jumlah Anak',
+        'Kesan & Pesan',
+        'Tanggal Submit',
+        'URL Sertifikat',
+      ];
+
+      const keluargaRows = data.map((k) => ({
+        'No. Sertifikat': k.nomor_sertifikat || '-',
+        'Nama Keluarga': k.nama_keluarga || '-',
+        'Kategori': k.pribadi_instansi || 'Pribadi',
+        'No. WhatsApp': k.no_wa || '-',
+        'Email': k.email || '-',
+        'Nama Ayah': k.nama_ayah || '-',
+        'STIFIn Ayah': k.stifin_ayah || '-',
+        'Gol. Darah Ayah': k.golongan_darah_ayah || '-',
+        'Nama Ibu': k.nama_ibu || '-',
+        'STIFIn Ibu': k.stifin_ibu || '-',
+        'Gol. Darah Ibu': k.golongan_darah_ibu || '-',
+        'Jumlah Anak': Array.isArray(k.anak) ? k.anak.length : (k.jumlah_anak || 0),
+        'Kesan & Pesan': k.kesan_pesan || '-',
+        'Tanggal Submit': k.tanggal_submit
+          ? new Date(k.tanggal_submit).toLocaleString('id-ID')
+          : '-',
+        'URL Sertifikat': k.url_sertifikat || '-',
+      }));
+
+      const wsKeluarga = XLSX.utils.json_to_sheet(keluargaRows, { header: keluargaHeaders });
+
+      // Set column widths for Sheet 1
+      wsKeluarga['!cols'] = [
+        { wch: 14 }, // No. Sertifikat
+        { wch: 28 }, // Nama Keluarga
+        { wch: 20 }, // Kategori
+        { wch: 18 }, // No. WhatsApp
+        { wch: 25 }, // Email
+        { wch: 22 }, // Nama Ayah
+        { wch: 22 }, // STIFIn Ayah
+        { wch: 15 }, // Gol. Darah Ayah
+        { wch: 22 }, // Nama Ibu
+        { wch: 22 }, // STIFIn Ibu
+        { wch: 15 }, // Gol. Darah Ibu
+        { wch: 12 }, // Jumlah Anak
+        { wch: 40 }, // Kesan & Pesan
+        { wch: 22 }, // Tanggal Submit
+        { wch: 50 }, // URL Sertifikat
+      ];
+
+      XLSX.utils.book_append_sheet(wb, wsKeluarga, 'Data Keluarga');
+
+      // ── Sheet 2: Data Anak (flat list) ──────────────────────────────────────
+      const anakHeaders = [
+        'No. Sertifikat Keluarga',
+        'Nama Keluarga',
+        'No. Urut Anak',
+        'Nama Anak',
+        'STIFIn Anak',
+        'Gol. Darah Anak',
+      ];
+
+      const anakRows = [];
+      data.forEach((k) => {
+        const anakList = Array.isArray(k.anak) ? k.anak : [];
+        if (anakList.length === 0) {
+          anakRows.push({
+            'No. Sertifikat Keluarga': k.nomor_sertifikat || '-',
+            'Nama Keluarga': k.nama_keluarga || '-',
+            'No. Urut Anak': '-',
+            'Nama Anak': '(Belum ada data anak)',
+            'STIFIn Anak': '-',
+            'Gol. Darah Anak': '-',
+          });
+        } else {
+          anakList.forEach((a, idx) => {
+            anakRows.push({
+              'No. Sertifikat Keluarga': k.nomor_sertifikat || '-',
+              'Nama Keluarga': k.nama_keluarga || '-',
+              'No. Urut Anak': idx + 1,
+              'Nama Anak': a.nama || '-',
+              'STIFIn Anak': a.stifin || '-',
+              'Gol. Darah Anak': a.golongan_darah || '-',
+            });
+          });
+        }
+      });
+
+      const wsAnak = XLSX.utils.json_to_sheet(anakRows, { header: anakHeaders });
+
+      // Set column widths for Sheet 2
+      wsAnak['!cols'] = [
+        { wch: 22 }, // No. Sertifikat Keluarga
+        { wch: 28 }, // Nama Keluarga
+        { wch: 14 }, // No. Urut Anak
+        { wch: 28 }, // Nama Anak
+        { wch: 22 }, // STIFIn Anak
+        { wch: 16 }, // Gol. Darah Anak
+      ];
+
+      XLSX.utils.book_append_sheet(wb, wsAnak, 'Data Anak');
+
+      // ── Sheet 3: Rekap Kesan & Pesan ─────────────────────────────────────────
+      const kesanRows = data
+        .filter((k) => k.kesan_pesan && k.kesan_pesan.trim())
+        .map((k) => ({
+          'No. Sertifikat': k.nomor_sertifikat || '-',
+          'Nama Keluarga': k.nama_keluarga || '-',
+          'Kesan & Pesan': k.kesan_pesan,
+          'Tanggal Submit': k.tanggal_submit
+            ? new Date(k.tanggal_submit).toLocaleString('id-ID')
+            : '-',
+        }));
+
+      if (kesanRows.length > 0) {
+        const wsKesan = XLSX.utils.json_to_sheet(kesanRows, {
+          header: ['No. Sertifikat', 'Nama Keluarga', 'Kesan & Pesan', 'Tanggal Submit'],
+        });
+        wsKesan['!cols'] = [
+          { wch: 14 },
+          { wch: 28 },
+          { wch: 60 },
+          { wch: 22 },
+        ];
+        XLSX.utils.book_append_sheet(wb, wsKesan, 'Kesan & Pesan');
+      }
+
+      // ── Download file ────────────────────────────────────────────────────────
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('id-ID', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).replace(/\//g, '-');
+      const fileName = `Rekap-WIF-IKY_${dateStr}.xlsx`;
+
+      XLSX.writeFile(wb, fileName);
+    } catch (err) {
+      console.error('Gagal export Excel:', err);
+      alert('Gagal membuat file Excel. Silakan coba lagi.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+  // ─────────────────────────────────────────────────────────────────────────────
 
   // Stats calculation
   const stats = useMemo(() => {
@@ -89,8 +258,10 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
       const matchAyah = (item.nama_ayah || '').toLowerCase().includes(q);
       const matchIbu = (item.nama_ibu || '').toLowerCase().includes(q);
       const matchInstansi = (item.pribadi_instansi || '').toLowerCase().includes(q);
+      const matchWa = (item.no_wa || '').toLowerCase().includes(q);
+      const matchEmail = (item.email || '').toLowerCase().includes(q);
 
-      return matchKeluarga || matchNo || matchAyah || matchIbu || matchInstansi;
+      return matchKeluarga || matchNo || matchAyah || matchIbu || matchInstansi || matchWa || matchEmail;
     });
   }, [data, searchQuery, categoryFilter]);
 
@@ -141,38 +312,70 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={fetchData}
-            disabled={isLoading}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all shadow-sm active:scale-95 disabled:opacity-50 cursor-pointer"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-[#FF4081]' : 'text-slate-500'}`} />
-            <span>{isLoading ? 'Memuat...' : 'Perbarui'}</span>
-          </button>
+        {/* Right: 2-row action layout — primary CTA + secondary nav */}
+        <div className="flex flex-col items-stretch sm:items-end gap-2 shrink-0">
 
-          <button
-            type="button"
-            onClick={onBackToForm}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all shadow-sm active:scale-95 cursor-pointer"
-            title="Buka Halaman Formulir Pendaftaran Mitra"
-          >
-            <User className="w-3.5 h-3.5 text-[#FF4081]" />
-            <span>Portal Partner</span>
-          </button>
-
-          {onLogout && (
+          {/* Baris 1 — Primary CTAs */}
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={onLogout}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 border border-slate-200 hover:border-rose-200 transition-all shadow-sm active:scale-95 cursor-pointer"
-              title="Kunci sesi admin dan keluar"
+              onClick={fetchData}
+              disabled={isLoading}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-all shadow-sm active:scale-95 disabled:opacity-50 cursor-pointer"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Keluar</span>
+              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-[#FF4081]' : 'text-slate-500'}`} />
+              <span>{isLoading ? 'Memuat...' : 'Perbarui'}</span>
             </button>
-          )}
+
+            <button
+              type="button"
+              onClick={exportToExcel}
+              disabled={isLoading || isExporting || data.length === 0}
+              title={data.length === 0 ? 'Belum ada data untuk diexport' : `Export ${data.length} data ke Excel`}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-emerald-300 bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-sm active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {isExporting ? (
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+              )}
+              <span>{isExporting ? 'Mengekspor...' : 'Export Excel'}</span>
+              {!isExporting && data.length > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full bg-white/25 text-white text-[10px] font-bold leading-none">
+                  {data.length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Baris 2 — Secondary Nav (muted text links) */}
+          <div className="flex items-center justify-end gap-3 text-[11px] text-slate-400 font-medium">
+            <button
+              type="button"
+              onClick={onBackToForm}
+              className="inline-flex items-center gap-1 hover:text-[#FF4081] transition-colors"
+              title="Buka Halaman Formulir Pendaftaran Mitra"
+            >
+              <User className="w-3 h-3" />
+              <span>Portal Partner</span>
+            </button>
+
+            {onLogout && (
+              <>
+                <span className="text-slate-200">|</span>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  className="inline-flex items-center gap-1 hover:text-rose-500 transition-colors"
+                  title="Kunci sesi admin dan keluar"
+                >
+                  <LogOut className="w-3 h-3" />
+                  <span>Keluar</span>
+                </button>
+              </>
+            )}
+          </div>
+
         </div>
       </div>
 
@@ -351,7 +554,7 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
                           </span>
                         </td>
 
-                        {/* Nama Keluarga & Kategori */}
+                        {/* Nama Keluarga, Kategori, & Kontak Responden */}
                         <td className="py-3.5 px-4">
                           <div className="font-semibold text-slate-900 text-sm">
                             {row.nama_keluarga}
@@ -369,6 +572,33 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
                               </>
                             )}
                           </div>
+                          {/* Kontak WA & Email */}
+                          {(row.no_wa || row.email) && (
+                            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] mt-1.5 pt-1 border-t border-slate-100">
+                              {row.no_wa && (
+                                <a
+                                  href={`https://wa.me/${row.no_wa.replace(/\D/g, '').replace(/^0/, '62')}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-medium hover:underline"
+                                  title="Chat WhatsApp Responden"
+                                >
+                                  <Phone className="w-3 h-3 text-emerald-600" />
+                                  <span>{row.no_wa}</span>
+                                </a>
+                              )}
+                              {row.email && (
+                                <a
+                                  href={`mailto:${row.email}`}
+                                  className="inline-flex items-center gap-1 text-slate-600 hover:text-[#1E3A8A] hover:underline"
+                                  title="Kirim Email ke Responden"
+                                >
+                                  <Mail className="w-3 h-3 text-slate-400" />
+                                  <span className="truncate max-w-[150px]">{row.email}</span>
+                                </a>
+                              )}
+                            </div>
+                          )}
                         </td>
 
                         {/* Profil Ortu */}
@@ -498,10 +728,39 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
                                   </p>
                                 </div>
                               )}
+
+                              {(row.no_wa || row.email) && (
+                                <div className="mt-3 pt-2.5 border-t border-slate-200 flex flex-wrap items-center gap-4 text-xs">
+                                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                                    Kontak Responden:
+                                  </span>
+                                  {row.no_wa && (
+                                    <a
+                                      href={`https://wa.me/${row.no_wa.replace(/\D/g, '').replace(/^0/, '62')}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="inline-flex items-center gap-1.5 text-emerald-700 font-semibold hover:underline"
+                                    >
+                                      <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                                      <span>WA: {row.no_wa}</span>
+                                    </a>
+                                  )}
+                                  {row.email && (
+                                    <a
+                                      href={`mailto:${row.email}`}
+                                      className="inline-flex items-center gap-1.5 text-[#1E3A8A] font-semibold hover:underline"
+                                    >
+                                      <Mail className="w-3.5 h-3.5 text-[#1E3A8A]" />
+                                      <span>Email: {row.email}</span>
+                                    </a>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </td>
                         </tr>
                       )}
+
                     </React.Fragment>
                   );
                 })}

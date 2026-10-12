@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
-import { Edit3, ArrowLeft, Send, Loader2, Baby, User, Building2, UserCircle2 } from 'lucide-react';
+import { Edit3, ArrowLeft, Send, Loader2, Baby, User, Building2, UserCircle2, Phone, Mail } from 'lucide-react';
 
 export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit, isSubmitting }) {
   const {
     pribadi_instansi,
     nama_instansi_custom,
     nama_keluarga,
+    no_wa,
+    email,
     nama_ayah,
     stifin_ayah,
     golongan_darah_ayah,
@@ -94,6 +96,25 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
               <span className="font-bold text-slate-900 text-sm block truncate">
                 {nama_keluarga || '—'}
               </span>
+            </div>
+          </div>
+
+          {/* Kontak Responden */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-slate-200/80 text-xs">
+            <div>
+              <span className="text-slate-500 block mb-0.5">No. WhatsApp Responden</span>
+              <div className="font-semibold text-slate-900 text-sm flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                <span>{no_wa || '—'}</span>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-slate-500 block mb-0.5">Email Responden</span>
+              <div className="font-semibold text-slate-900 text-sm flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-[#1E3A8A]" />
+                <span className="truncate">{email || '—'}</span>
+              </div>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { Users, ArrowLeft, ArrowRight, Baby, Trash2 } from 'lucide-react';
+import { Users, ArrowLeft, ArrowRight, Baby, Trash2, AlertCircle } from 'lucide-react';
 import gsap from 'gsap';
 import { STIFIN_OPTIONS, GOLONGAN_DARAH_OPTIONS } from '../constants/stifin';
 import CustomSelect from './CustomSelect';
@@ -25,6 +25,7 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
 
   const currentJumlahAnak = watch('jumlah_anak');
   const watchedAnak = watch('anak') || [];
+  const [errors, setErrors] = useState({});
 
   const cardRefs = useRef({});
   const counterNumRef = useRef(null);
@@ -46,7 +47,19 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
         remove(i);
       }
     }
+
+    setErrors((prev) => {
+      const next = {};
+      for (const [k, v] of Object.entries(prev)) {
+        const m = k.match(/^anak_(\d+)_/);
+        if (m && parseInt(m[1], 10) < targetCount) {
+          next[k] = v;
+        }
+      }
+      return next;
+    });
   }, [currentJumlahAnak, fields.length, append, remove]);
+
 
   // Entrance animations for cards (stagger on mount, pop on add)
   useEffect(() => {
@@ -190,9 +203,36 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
   };
 
   const onFormSubmit = (data) => {
+    const targetCount = Math.max(0, parseInt(data.jumlah_anak, 10) || 0);
+    const anakList = Array.isArray(data.anak) ? data.anak : [];
+    const newErrors = {};
+
+    if (targetCount > 0) {
+      for (let i = 0; i < targetCount; i++) {
+        const item = anakList[i] || {};
+        if (!item.nama || !item.nama.trim()) {
+          newErrors[`anak_${i}_nama`] = `Nama lengkap anak ke-${i + 1} wajib diisi`;
+        }
+        if (!item.stifin || !item.stifin.trim()) {
+          newErrors[`anak_${i}_stifin`] = `Hasil tes STIFIn anak ke-${i + 1} wajib dipilih`;
+        }
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      } catch {
+        window.scrollTo(0, 0);
+      }
+      return;
+    }
+
+    setErrors({});
     updateFormData({
-      jumlah_anak: parseInt(data.jumlah_anak, 10) || 0,
-      anak: data.anak || [],
+      jumlah_anak: targetCount,
+      anak: anakList.slice(0, targetCount),
     });
     onNext();
   };
@@ -254,6 +294,17 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
             </div>
           </div>
 
+          {/* Validation Banner if children incomplete */}
+          {Object.keys(errors).length > 0 && (
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2.5 shadow-xs">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span className="font-semibold">
+                Mohon lengkapi nama dan hasil STIFIn untuk semua anak.
+              </span>
+            </div>
+          )}
+
+
           {/* Dynamic Fieldset Anak */}
           {fields.length > 0 ? (
             <div className="space-y-4 pt-1">
@@ -291,34 +342,75 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
-                      Nama Lengkap Anak ke-{index + 1}
+                    <label className="block text-xs font-medium text-slate-600 mb-1 flex items-center justify-between">
+                      <span>
+                        Nama Lengkap Anak ke-{index + 1} <span className="text-rose-500">*</span>
+                      </span>
                     </label>
                     <input
                       type="text"
-                      {...register(`anak.${index}.nama`)}
+                      {...register(`anak.${index}.nama`, {
+                        onChange: () => {
+                          if (errors[`anak_${index}_nama`]) {
+                            setErrors((prev) => {
+                              const next = { ...prev };
+                              delete next[`anak_${index}_nama`];
+                              return next;
+                            });
+                          }
+                        },
+                      })}
                       placeholder={`Nama lengkap anak ke-${index + 1}`}
-                      className="block w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-all"
+                      className={`block w-full px-3 py-2 text-sm bg-white border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none transition-all ${
+                        errors[`anak_${index}_nama`]
+                          ? 'border-rose-400 bg-rose-50/20 focus:border-rose-600 focus:ring-1 focus:ring-rose-600'
+                          : 'border-slate-300 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A]'
+                      }`}
                     />
+                    {errors[`anak_${index}_nama`] && (
+                      <p className="mt-1 text-xs font-medium text-rose-600 flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{errors[`anak_${index}_nama`]}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-[1fr_90px] gap-2.5 sm:gap-3">
                     <div>
                       <label className="block text-xs font-medium text-slate-600 mb-1">
-                        Hasil STIFIn
+                        Hasil STIFIn <span className="text-rose-500">*</span>
                       </label>
-                      <CustomSelect
-                        id={`child-stifin-${index}`}
-                        value={watchedAnak[index]?.stifin || ''}
-                        onChange={(val) =>
-                          setValue(`anak.${index}.stifin`, val, {
-                            shouldValidate: true,
-                            shouldDirty: true,
-                          })
-                        }
-                        options={STIFIN_OPTIONS}
-                        placeholder="Pilih STIFIn"
-                      />
+                      <div
+                        className={`rounded-lg transition-all ${
+                          errors[`anak_${index}_stifin`] ? 'ring-1 ring-rose-400 rounded-lg' : ''
+                        }`}
+                      >
+                        <CustomSelect
+                          id={`child-stifin-${index}`}
+                          value={watchedAnak[index]?.stifin || ''}
+                          onChange={(val) => {
+                            setValue(`anak.${index}.stifin`, val, {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            });
+                            if (errors[`anak_${index}_stifin`]) {
+                              setErrors((prev) => {
+                                const next = { ...prev };
+                                delete next[`anak_${index}_stifin`];
+                                return next;
+                              });
+                            }
+                          }}
+                          options={STIFIN_OPTIONS}
+                          placeholder="Pilih STIFIn"
+                        />
+                      </div>
+                      {errors[`anak_${index}_stifin`] && (
+                        <p className="mt-1 text-xs font-medium text-rose-600 flex items-center gap-1.5">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{errors[`anak_${index}_stifin`]}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
