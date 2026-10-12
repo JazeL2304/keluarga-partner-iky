@@ -135,6 +135,7 @@ export default function App() {
     );
   };
 
+  const [isLoading, setIsLoading] = useState(!getIsAdmin());
   const [isAdminRoute, setIsAdminRoute] = useState(getIsAdmin);
   const [isAdminAuthed, setIsAdminAuthed] = useState(() => {
     return sessionStorage.getItem('iky_admin_auth') === 'true';
