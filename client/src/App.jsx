@@ -9,7 +9,7 @@ import StepThreeKonfirmasi from './components/StepThreeKonfirmasi';
 import SuccessState from './components/SuccessState';
 import AdminRekapView from './components/AdminRekapView';
 import AdminAuthGate from './components/AdminAuthGate';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ShieldCheck } from 'lucide-react';
 
 const INITIAL_FORM_DATA = {
   pribadi_instansi: 'Pribadi',
@@ -127,8 +127,15 @@ function PortalContainer({
 }
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const getIsAdmin = () => {
+    return (
+      window.location.pathname === '/admin' ||
+      window.location.hash.toLowerCase().includes('admin') ||
+      window.location.search.toLowerCase().includes('admin')
+    );
+  };
+
+  const [isAdminRoute, setIsAdminRoute] = useState(getIsAdmin);
   const [isAdminAuthed, setIsAdminAuthed] = useState(() => {
     return sessionStorage.getItem('iky_admin_auth') === 'true';
   });
@@ -141,11 +148,15 @@ export default function App() {
 
   useEffect(() => {
     const handleLocationChange = () => {
-      setCurrentPath(window.location.pathname);
+      setIsAdminRoute(getIsAdmin());
       setIsAdminAuthed(sessionStorage.getItem('iky_admin_auth') === 'true');
     };
     window.addEventListener('popstate', handleLocationChange);
-    return () => window.removeEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+    };
   }, []);
 
   const scrollToTop = () => {
@@ -163,7 +174,7 @@ export default function App() {
 
   const navigateTo = (path) => {
     window.history.pushState({}, '', path);
-    setCurrentPath(path);
+    setIsAdminRoute(path === '/admin');
   };
 
   const updateFormData = (fields) => {
@@ -253,8 +264,8 @@ export default function App() {
     return <LoadingScreen onFinish={() => setIsLoading(false)} />;
   }
 
-  // RUTE INTERNAL ADMIN (/admin)
-  if (currentPath === '/admin') {
+  // RUTE INTERNAL ADMIN (/admin atau #admin)
+  if (isAdminRoute) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased selection:bg-[#FF4081]/20">
         {!isAdminAuthed ? (
@@ -305,8 +316,19 @@ export default function App() {
           </div>
         </div>
 
-        <div className="text-xs text-slate-500 hidden sm:block font-medium">
-          Formulir Resmi
+        <div className="flex items-center gap-3">
+          <div className="text-xs text-slate-500 hidden sm:block font-medium">
+            Formulir Resmi
+          </div>
+          <button
+            type="button"
+            onClick={() => navigateTo('/admin')}
+            className="text-[11px] sm:text-xs text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1.5 rounded-lg border border-slate-200/80 transition-all flex items-center gap-1.5 cursor-pointer font-medium shadow-2xs"
+            title="Akses Portal Rekap Admin"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-slate-500" />
+            <span>Admin</span>
+          </button>
         </div>
       </header>
 
