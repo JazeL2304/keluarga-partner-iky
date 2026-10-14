@@ -68,6 +68,9 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
       const keluargaHeaders = [
         'No. Sertifikat',
         'Nama Keluarga',
+        'Status Pernikahan',
+        'Total Anggota',
+        'Status Kualifikasi',
         'Kategori',
         'No. WhatsApp',
         'Email',
@@ -83,25 +86,33 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
         'URL Sertifikat',
       ];
 
-      const keluargaRows = data.map((k) => ({
-        'No. Sertifikat': k.nomor_sertifikat || '-',
-        'Nama Keluarga': k.nama_keluarga || '-',
-        'Kategori': k.pribadi_instansi || 'Pribadi',
-        'No. WhatsApp': k.no_wa || '-',
-        'Email': k.email || '-',
-        'Nama Ayah': k.nama_ayah || '-',
-        'STIFIn Ayah': k.stifin_ayah || '-',
-        'Gol. Darah Ayah': k.golongan_darah_ayah || '-',
-        'Nama Ibu': k.nama_ibu || '-',
-        'STIFIn Ibu': k.stifin_ibu || '-',
-        'Gol. Darah Ibu': k.golongan_darah_ibu || '-',
-        'Jumlah Anak': Array.isArray(k.anak) ? k.anak.length : (k.jumlah_anak || 0),
-        'Kesan & Pesan': k.kesan_pesan || '-',
-        'Tanggal Submit': k.tanggal_submit
-          ? new Date(k.tanggal_submit).toLocaleString('id-ID')
-          : '-',
-        'URL Sertifikat': k.url_sertifikat || '-',
-      }));
+      const keluargaRows = data.map((k) => {
+        const isBelum = k.status_pernikahan === 'Belum Menikah';
+        const totAnggota = k.jumlah_anggota_keluarga || (2 + (Array.isArray(k.anak) ? k.anak.length : (k.jumlah_anak || 0)));
+
+        return {
+          'No. Sertifikat': k.nomor_sertifikat || '-',
+          'Nama Keluarga': k.nama_keluarga || '-',
+          'Status Pernikahan': k.status_pernikahan || 'Menikah',
+          'Total Anggota': totAnggota,
+          'Status Kualifikasi': isBelum ? 'Not Qualified' : 'Qualified',
+          'Kategori': k.pribadi_instansi || 'Pribadi',
+          'No. WhatsApp': k.no_wa || '-',
+          'Email': k.email || '-',
+          'Nama Ayah': k.nama_ayah || '-',
+          'STIFIn Ayah': k.stifin_ayah || '-',
+          'Gol. Darah Ayah': k.golongan_darah_ayah || '-',
+          'Nama Ibu': k.nama_ibu || '-',
+          'STIFIn Ibu': k.stifin_ibu || '-',
+          'Gol. Darah Ibu': k.golongan_darah_ibu || '-',
+          'Jumlah Anak': Array.isArray(k.anak) ? k.anak.length : (k.jumlah_anak || 0),
+          'Kesan & Pesan': k.kesan_pesan || '-',
+          'Tanggal Submit': k.tanggal_submit
+            ? new Date(k.tanggal_submit).toLocaleString('id-ID')
+            : '-',
+          'URL Sertifikat': k.url_sertifikat || '-',
+        };
+      });
 
       const wsKeluarga = XLSX.utils.json_to_sheet(keluargaRows, { header: keluargaHeaders });
 
@@ -109,6 +120,9 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
       wsKeluarga['!cols'] = [
         { wch: 14 }, // No. Sertifikat
         { wch: 28 }, // Nama Keluarga
+        { wch: 18 }, // Status Pernikahan
+        { wch: 14 }, // Total Anggota
+        { wch: 18 }, // Status Kualifikasi
         { wch: 20 }, // Kategori
         { wch: 18 }, // No. WhatsApp
         { wch: 25 }, // Email
@@ -559,18 +573,37 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
                           <div className="font-semibold text-slate-900 text-sm">
                             {row.nama_keluarga}
                           </div>
-                          <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
+                          <div className="flex items-center gap-1.5 flex-wrap text-[11px] text-slate-500 mt-1">
                             {isInstansi ? (
-                              <>
+                              <span className="inline-flex items-center gap-1">
                                 <Building2 className="w-3 h-3 text-slate-400" />
                                 <span>{row.pribadi_instansi}</span>
-                              </>
+                              </span>
                             ) : (
-                              <>
+                              <span className="inline-flex items-center gap-1">
                                 <User className="w-3 h-3 text-slate-400" />
                                 <span>Pribadi</span>
-                              </>
+                              </span>
                             )}
+
+                            <span className="text-slate-300">•</span>
+
+                            {/* Status Kualifikasi Keluarga */}
+                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold border ${
+                              row.status_pernikahan === 'Belum Menikah'
+                                ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            }`}>
+                              {row.status_pernikahan === 'Belum Menikah' ? 'Belum Menikah' : '💍 Menikah (Qualified)'}
+                            </span>
+
+                            <span className="text-slate-300">•</span>
+
+                            {/* Total Anggota */}
+                            <span className="inline-flex items-center gap-1 text-[10px] text-slate-600 font-medium">
+                              <Users className="w-3 h-3 text-[#1E3A8A]" />
+                              <span>{row.jumlah_anggota_keluarga || (2 + (anakList.length || row.jumlah_anak || 0))} Jiwa</span>
+                            </span>
                           </div>
                           {/* Kontak WA & Email */}
                           {(row.no_wa || row.email) && (

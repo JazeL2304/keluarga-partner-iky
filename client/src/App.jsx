@@ -14,6 +14,8 @@ import { AlertCircle, ShieldCheck } from 'lucide-react';
 const INITIAL_FORM_DATA = {
   pribadi_instansi: 'Pribadi',
   nama_instansi_custom: '',
+  status_pernikahan: 'Menikah',
+  jumlah_anggota_keluarga: 2,
   nama_keluarga: '',
   no_wa: '',
   email: '',
@@ -42,6 +44,7 @@ function PortalContainer({
   isSubmitting,
   submitError,
   resultData,
+  isAdminAuthed,
 }) {
   const mainCardRef = useRef(null);
 
@@ -92,6 +95,7 @@ function PortalContainer({
               formData={formData}
               updateFormData={updateFormData}
               onNext={onNext}
+              isAdminAuthed={isAdminAuthed}
             />
           )}
 
@@ -206,6 +210,8 @@ export default function App() {
       const payload = {
         nama_keluarga: formData.nama_keluarga,
         pribadi_instansi: instansiLabel,
+        status_pernikahan: formData.status_pernikahan || 'Menikah',
+        jumlah_anggota_keluarga: Number(formData.jumlah_anggota_keluarga || 2),
         no_wa: formData.no_wa ? formData.no_wa.trim() : null,
         email: formData.email ? formData.email.trim() : null,
         nama_ayah: formData.nama_ayah,
@@ -243,6 +249,8 @@ export default function App() {
     setFormData({
       pribadi_instansi: 'Pribadi',
       nama_instansi_custom: '',
+      status_pernikahan: 'Menikah',
+      jumlah_anggota_keluarga: 2,
       nama_keluarga: '',
       no_wa: '',
       email: '',
@@ -347,6 +355,7 @@ export default function App() {
           isSubmitting={isSubmitting}
           submitError={submitError}
           resultData={resultData}
+          isAdminAuthed={isAdminAuthed}
         />
       </div>
     </div>

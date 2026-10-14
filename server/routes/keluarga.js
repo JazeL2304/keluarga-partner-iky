@@ -103,6 +103,8 @@ router.post('/', async (req, res) => {
     const {
       nama_keluarga,
       pribadi_instansi,
+      status_pernikahan,
+      jumlah_anggota_keluarga,
       no_wa,
       email,
       nama_ayah,
@@ -149,6 +151,8 @@ router.post('/', async (req, res) => {
     const keluargaPayload = {
       nama_keluarga: nama_keluarga.trim(),
       pribadi_instansi: pribadi_instansi ? String(pribadi_instansi).trim() : null,
+      status_pernikahan: status_pernikahan ? String(status_pernikahan).trim() : 'Menikah',
+      jumlah_anggota_keluarga: parseInt(jumlah_anggota_keluarga, 10) || (2 + parsedJumlahAnak),
       no_wa: no_wa ? String(no_wa).trim() : null,
       email: email ? String(email).trim() : null,
       nama_ayah: nama_ayah ? String(nama_ayah).trim() : null,

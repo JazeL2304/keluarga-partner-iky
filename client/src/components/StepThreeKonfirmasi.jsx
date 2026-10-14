@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
-import { Edit3, ArrowLeft, Send, Loader2, Baby, User, Building2, UserCircle2, Phone, Mail } from 'lucide-react';
+import { Edit3, ArrowLeft, Send, Loader2, Baby, User, Building2, UserCircle2, Phone, Mail, Users } from 'lucide-react';
 
 export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit, isSubmitting }) {
   const {
     pribadi_instansi,
     nama_instansi_custom,
+    status_pernikahan,
+    jumlah_anggota_keluarga,
     nama_keluarga,
     no_wa,
     email,
@@ -96,6 +98,26 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
               <span className="font-bold text-slate-900 text-sm block truncate">
                 {nama_keluarga || '—'}
               </span>
+            </div>
+          </div>
+
+          {/* Status Berkeluarga & Total Anggota */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-slate-200/80 text-xs">
+            <div>
+              <span className="text-slate-500 block mb-0.5">Status Berkeluarga</span>
+              <div className="font-semibold text-slate-900 text-sm flex items-center gap-1.5 mt-0.5">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
+                  💍 {status_pernikahan || 'Menikah'} (Memenuhi Syarat)
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-slate-500 block mb-0.5">Total Anggota Keluarga</span>
+              <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5 mt-0.5">
+                <Users className="w-4 h-4 text-[#1E3A8A]" />
+                <span>{jumlah_anggota_keluarga || 2} Jiwa</span>
+              </div>
             </div>
           </div>
 

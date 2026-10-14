@@ -1,12 +1,28 @@
 import React, { useState } from 'react';
-import { User, Building2, ArrowRight, AlertCircle, UserCircle2, MessageSquareQuote, Phone, Mail } from 'lucide-react';
+import {
+  User,
+  Building2,
+  ArrowRight,
+  AlertCircle,
+  UserCircle2,
+  MessageSquareQuote,
+  Phone,
+  Mail,
+  HeartHandshake,
+  Sparkles,
+  CheckCircle2,
+  RotateCcw,
+  Users,
+} from 'lucide-react';
 import { STIFIN_OPTIONS, GOLONGAN_DARAH_OPTIONS } from '../constants/stifin';
 import CustomSelect from './CustomSelect';
 
-export default function StepOneDataKeluarga({ formData, updateFormData, onNext }) {
+export default function StepOneDataKeluarga({ formData, updateFormData, onNext, isAdminAuthed }) {
   const {
     pribadi_instansi,
     nama_instansi_custom,
+    status_pernikahan,
+    jumlah_anggota_keluarga,
     nama_keluarga,
     no_wa,
     email,
@@ -19,9 +35,15 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
     kesan_pesan,
   } = formData;
 
-
   const [errors, setErrors] = useState({});
   const isInstansi = pribadi_instansi === 'Instansi';
+
+  // Kunci browser publik jika memilih Belum Menikah (Admin kebal / bisa reset)
+  const isLockedOut = !isAdminAuthed && (
+    sessionStorage.getItem('wif_marriage_locked') === 'true' ||
+    status_pernikahan === 'Belum Menikah'
+  );
+  const isBelumMenikah = status_pernikahan === 'Belum Menikah' || isLockedOut;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -29,6 +51,9 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
 
     if (!nama_keluarga || !nama_keluarga.trim()) {
       newErrors.nama_keluarga = 'Nama Keluarga wajib diisi untuk dicetak pada piagam penghargaan';
+    }
+    if (!jumlah_anggota_keluarga || Number(jumlah_anggota_keluarga) < 2) {
+      newErrors.jumlah_anggota_keluarga = 'Total anggota keluarga minimal 2 orang (Ayah & Ibu)';
     }
     if (isInstansi && (!nama_instansi_custom || !nama_instansi_custom.trim())) {
       newErrors.nama_instansi_custom = 'Nama Instansi / Lembaga wajib diisi untuk pendaftaran instansi';
@@ -56,6 +81,74 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
     onNext();
   };
 
+  // LAYAR KHUSUS JIKA BELUM MENIKAH / BELUM BERKELUARGA
+  if (isBelumMenikah) {
+    return (
+      <div className="flex-1 flex flex-col justify-between py-2">
+        <div className="space-y-6">
+          {/* Header Apresiasi */}
+          <div className="text-center max-w-lg mx-auto pt-4">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-pink-50 border border-pink-100 flex items-center justify-center text-[#FF4081] shadow-sm">
+              <HeartHandshake className="w-8 h-8" />
+            </div>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#FF4081] block mb-1">
+              Program Well Identified Family
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Terima Kasih Atas Partisipasi Anda
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+              Program <strong>Well Identified Family</strong> saat ini dirancang khusus sebagai apresiasi dan pendataan bagi mitra <strong>IKNOWYOU</strong> yang telah berkeluarga.
+            </p>
+          </div>
+
+          {/* Kartu Informasi & Apresiasi Dedikasi */}
+          <div className="max-w-lg mx-auto bg-slate-50/80 border border-slate-200/90 rounded-2xl p-5 sm:p-6 text-xs text-slate-600 space-y-3.5 shadow-2xs">
+            <div className="flex items-start gap-3">
+              <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-slate-800 font-semibold block text-sm">Dedikasi Rekan Mitra Sangat Berharga</strong>
+                <p className="mt-1 leading-relaxed text-slate-500">
+                  Bagi rekan mitra yang belum berkeluarga, kami sangat menghargai kontribusi dan sinergi Anda. Nantikan program pendataan potensi personal, workshop, dan rekognisi individual STIFIn berikutnya.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Status: Khusus Mitra Berkeluarga</span>
+              <span className="font-semibold text-slate-600">I Know You by Miss Hiday</span>
+            </div>
+          </div>
+
+          {/* Akses Khusus Tim Internal / Admin Tester */}
+          {isAdminAuthed && (
+            <div className="max-w-lg mx-auto p-4 rounded-xl bg-blue-50/90 border border-blue-200 text-blue-900 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+                <span>Mode Internal: Anda dapat beralih kembali untuk menguji skenario berkeluarga.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  sessionStorage.removeItem('wif_marriage_locked');
+                  updateFormData({ status_pernikahan: 'Menikah' });
+                }}
+                className="px-3.5 py-1.5 rounded-lg bg-[#1E3A8A] hover:bg-blue-900 text-white font-semibold text-xs transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset ke Menikah</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Footer Meta */}
+        <div className="pt-6 border-t border-slate-200 text-center text-xs text-slate-400">
+          Butuh koordinasi kemitraan? Hubungi manajemen IKNOWYOU melalui narahubung resmi.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col justify-between">
@@ -75,6 +168,50 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Section 0: Status Pernikahan / Berkeluarga (Screening) */}
+          <div className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-slate-900 tracking-wide">
+                Status Pernikahan / Berkeluarga <span className="text-rose-500">*</span>
+              </label>
+              <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-semibold">
+                Kualifikasi Kemitraan
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 mb-3">
+              Program apresiasi ini khusus diperuntukkan bagi rekan mitra yang telah membangun unit keluarga.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3 max-w-md">
+              <button
+                type="button"
+                onClick={() => {
+                  updateFormData({ status_pernikahan: 'Menikah' });
+                }}
+                className={`py-2.5 px-3.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 border transition-all cursor-pointer ${
+                  status_pernikahan === 'Menikah'
+                    ? 'bg-[#1E3A8A] text-white border-[#1E3A8A] shadow-xs'
+                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                <span>💍 Sudah Menikah</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isAdminAuthed) {
+                    sessionStorage.setItem('wif_marriage_locked', 'true');
+                  }
+                  updateFormData({ status_pernikahan: 'Belum Menikah' });
+                }}
+                className="py-2.5 px-3.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all cursor-pointer"
+              >
+                <span>👤 Belum Menikah</span>
+              </button>
+            </div>
+          </div>
+
           {/* Section 1: Kategori Pendaftaran dengan Animasi Slider */}
           <div>
             <label className="block text-xs font-semibold text-slate-900 tracking-wide mb-2">
@@ -157,38 +294,80 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext }
             </div>
           </div>
 
-          {/* Section 2: Nama Keluarga Partner IKY (Dicetak di Piagam) */}
-          <div>
-            <label htmlFor="family-name" className="block text-xs font-semibold text-slate-900 tracking-wide mb-1.5">
-              Nama Keluarga Partner IKY <span className="text-rose-500">*</span>
-            </label>
-            <input
-              id="family-name"
-              type="text"
-              value={nama_keluarga}
-              onChange={(e) => {
-                updateFormData({ nama_keluarga: e.target.value });
-                if (errors.nama_keluarga) {
-                  setErrors((prev) => ({ ...prev, nama_keluarga: null }));
-                }
-              }}
-              placeholder="Contoh: Keluarga Hendra Pratama"
-              className={`block w-full max-w-xl px-3.5 py-2.5 text-sm bg-white border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none transition-all ${
-                errors.nama_keluarga
-                  ? 'border-rose-400 bg-rose-50/20 focus:border-rose-600 focus:ring-1 focus:ring-rose-600'
-                  : 'border-slate-300 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A]'
-              }`}
-            />
-            {errors.nama_keluarga ? (
-              <p className="mt-1.5 text-xs font-medium text-rose-600 flex items-center gap-1.5">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                <span>{errors.nama_keluarga}</span>
-              </p>
-            ) : (
-              <span className="block text-[11px] text-slate-500 mt-1">
-                Nama ini yang akan dicetak di piagam resmi Well Identified Family dengan akhiran <strong className="font-semibold text-slate-700">FAMILY</strong>.
-              </span>
-            )}
+          {/* Section 2: Nama Keluarga & Total Jumlah Anggota Keluarga */}
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_180px] gap-4">
+            <div>
+              <label htmlFor="family-name" className="block text-xs font-semibold text-slate-900 tracking-wide mb-1.5">
+                Nama Keluarga Partner IKY <span className="text-rose-500">*</span>
+              </label>
+              <input
+                id="family-name"
+                type="text"
+                value={nama_keluarga}
+                onChange={(e) => {
+                  updateFormData({ nama_keluarga: e.target.value });
+                  if (errors.nama_keluarga) {
+                    setErrors((prev) => ({ ...prev, nama_keluarga: null }));
+                  }
+                }}
+                placeholder="Contoh: Keluarga Hendra Pratama"
+                className={`block w-full px-3.5 py-2.5 text-sm bg-white border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none transition-all ${
+                  errors.nama_keluarga
+                    ? 'border-rose-400 bg-rose-50/20 focus:border-rose-600 focus:ring-1 focus:ring-rose-600'
+                    : 'border-slate-300 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A]'
+                }`}
+              />
+              {errors.nama_keluarga ? (
+                <p className="mt-1.5 text-xs font-medium text-rose-600 flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  <span>{errors.nama_keluarga}</span>
+                </p>
+              ) : (
+                <span className="block text-[11px] text-slate-500 mt-1">
+                  Nama ini dicetak di piagam resmi dengan akhiran <strong className="font-semibold text-slate-700">FAMILY</strong>.
+                </span>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="family-members-count" className="block text-xs font-semibold text-slate-900 tracking-wide mb-1.5">
+                Total Anggota (Jiwa) <span className="text-rose-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <Users className="w-4 h-4" />
+                </div>
+                <input
+                  id="family-members-count"
+                  type="number"
+                  min="2"
+                  max="20"
+                  value={jumlah_anggota_keluarga || 2}
+                  onChange={(e) => {
+                    const val = Math.max(1, parseInt(e.target.value, 10) || 0);
+                    updateFormData({ jumlah_anggota_keluarga: val });
+                    if (errors.jumlah_anggota_keluarga) {
+                      setErrors((prev) => ({ ...prev, jumlah_anggota_keluarga: null }));
+                    }
+                  }}
+                  className={`block w-full pl-9 pr-3.5 py-2.5 text-sm bg-white border rounded-lg text-slate-900 focus:outline-none transition-all ${
+                    errors.jumlah_anggota_keluarga
+                      ? 'border-rose-400 bg-rose-50/20 focus:border-rose-600 focus:ring-1 focus:ring-rose-600'
+                      : 'border-slate-300 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A]'
+                  }`}
+                />
+              </div>
+              {errors.jumlah_anggota_keluarga ? (
+                <p className="mt-1.5 text-xs font-medium text-rose-600 flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  <span>{errors.jumlah_anggota_keluarga}</span>
+                </p>
+              ) : (
+                <span className="block text-[11px] text-slate-500 mt-1">
+                  Ayah + Ibu + Anak.
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Section: Kontak Responden (WhatsApp & Email) */}
