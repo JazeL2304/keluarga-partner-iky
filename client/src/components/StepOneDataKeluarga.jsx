@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import gsap from 'gsap';
 import {
   User,
   Building2,
@@ -41,6 +42,39 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext, 
   const [errors, setErrors] = useState({});
   const isInstansi = pribadi_instansi === 'Instansi';
 
+  const counterNumRef = useRef(null);
+
+  const handleStepperChange = (delta) => {
+    const current = Math.max(2, parseInt(jumlah_anggota_keluarga, 10) || 2);
+    const nextVal = current + delta;
+    if (nextVal < 2 || nextVal > 20) return;
+
+    if (counterNumRef.current) {
+      if (delta > 0) {
+        gsap.fromTo(
+          counterNumRef.current,
+          { scale: 1.45, color: '#FF4081', y: -2 },
+          { scale: 1, color: '#0f172a', y: 0, duration: 0.3, ease: 'back.out(2)' }
+        );
+      } else {
+        gsap.fromTo(
+          counterNumRef.current,
+          { scale: 0.75, color: '#e11d48', y: 2 },
+          { scale: 1, color: '#0f172a', y: 0, duration: 0.25, ease: 'power2.out' }
+        );
+      }
+    }
+
+    const calculatedAnakCount = Math.max(0, nextVal - 2);
+    updateFormData({
+      jumlah_anggota_keluarga: nextVal,
+      jumlah_anak: calculatedAnakCount,
+    });
+    if (errors.jumlah_anggota_keluarga) {
+      setErrors((prev) => ({ ...prev, jumlah_anggota_keluarga: null }));
+    }
+  };
+
   // Kunci browser publik jika memilih Belum Menikah (Admin kebal / bisa reset)
   const isLockedOut = !isAdminAuthed && (
     sessionStorage.getItem('wif_marriage_locked') === 'true' ||
@@ -79,6 +113,13 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext, 
       }
       return;
     }
+
+    const finalTotal = Math.max(2, Number(jumlah_anggota_keluarga) || 2);
+    const calculatedAnak = Math.max(0, finalTotal - 2);
+    updateFormData({
+      jumlah_anggota_keluarga: finalTotal,
+      jumlah_anak: calculatedAnak,
+    });
 
     setErrors({});
     onNext();
@@ -352,28 +393,26 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext, 
                 Total Anggota (Jiwa) <span className="text-rose-500">*</span>
               </label>
 
-              {/* Stepper Klik +/- (Tanpa Ketik Manual) */}
+              {/* Stepper Klik +/- (Dengan Animasi Pop GSAP seperti di Page Anak) */}
               <div className="flex items-center h-[42px] bg-white border border-slate-300 rounded-lg overflow-hidden shadow-2xs">
                 {/* Tombol Minus */}
                 <button
                   type="button"
                   disabled={(jumlah_anggota_keluarga || 2) <= 2}
-                  onClick={() => {
-                    const current = Math.max(2, parseInt(jumlah_anggota_keluarga, 10) || 2);
-                    if (current > 2) {
-                      updateFormData({ jumlah_anggota_keluarga: current - 1 });
-                    }
-                  }}
-                  className="w-10 h-full flex items-center justify-center bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border-r border-slate-200 transition-colors cursor-pointer select-none"
+                  onClick={() => handleStepperChange(-1)}
+                  className="w-10 h-full flex items-center justify-center bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border-r border-slate-200 transition-all active:scale-90 cursor-pointer select-none"
                   title="Kurangi 1 Anggota"
                 >
                   <Minus className="w-3.5 h-3.5" />
                 </button>
 
-                {/* Display Nilai */}
+                {/* Display Nilai dengan Animasi Pop */}
                 <div className="flex-1 flex items-center justify-center gap-1.5 px-2 select-none">
                   <Users className="w-3.5 h-3.5 text-[#1E3A8A]" />
-                  <span className="font-bold text-slate-900 text-sm">
+                  <span
+                    ref={counterNumRef}
+                    className="font-bold text-slate-900 text-sm inline-block"
+                  >
                     {jumlah_anggota_keluarga || 2}
                   </span>
                   <span className="text-[11px] text-slate-500 font-medium">Jiwa</span>
@@ -383,13 +422,8 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext, 
                 <button
                   type="button"
                   disabled={(jumlah_anggota_keluarga || 2) >= 20}
-                  onClick={() => {
-                    const current = Math.max(2, parseInt(jumlah_anggota_keluarga, 10) || 2);
-                    if (current < 20) {
-                      updateFormData({ jumlah_anggota_keluarga: current + 1 });
-                    }
-                  }}
-                  className="w-10 h-full flex items-center justify-center bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border-l border-slate-200 transition-colors cursor-pointer select-none"
+                  onClick={() => handleStepperChange(1)}
+                  className="w-10 h-full flex items-center justify-center bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed border-l border-slate-200 transition-all active:scale-90 cursor-pointer select-none"
                   title="Tambah 1 Anggota"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -397,7 +431,11 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext, 
               </div>
 
               <span className="block text-[11px] text-slate-500 mt-1">
-                Klik + atau - (Ayah, Ibu, &amp; Anak).
+                {(() => {
+                  const total = jumlah_anggota_keluarga || 2;
+                  const anak = Math.max(0, total - 2);
+                  return `Ayah + Ibu${anak > 0 ? ` + ${anak} Anak` : ''} (${total} Jiwa)`;
+                })()}
               </span>
             </div>
           </div>

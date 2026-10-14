@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { Users, ArrowLeft, ArrowRight, Baby, Trash2, AlertCircle } from 'lucide-react';
+import { Users, ArrowLeft, ArrowRight, Baby, AlertCircle, ShieldCheck } from 'lucide-react';
 import gsap from 'gsap';
 import { STIFIN_OPTIONS, GOLONGAN_DARAH_OPTIONS } from '../constants/stifin';
 import CustomSelect from './CustomSelect';
 
 export default function StepTwoProfilAnak({ formData, updateFormData, onNext, onPrev }) {
-  const initialJumlahAnak = Math.max(0, formData.jumlah_anak || 0);
-  const initialAnakList = Array.isArray(formData.anak) && formData.anak.length > 0
-    ? formData.anak
-    : Array.from({ length: initialJumlahAnak }, () => ({ nama: '', stifin: '', golongan_darah: '' }));
+  // Jumlah anak dikunci otomatis sesuai Total Anggota Keluarga di Tahap 1:
+  // Total Jiwa = Ayah (1) + Ibu (1) + Anak (N) -> N = Math.max(0, totalJiwa - 2)
+  const totalJiwa = Math.max(2, parseInt(formData.jumlah_anggota_keluarga, 10) || 2);
+  const fixedJumlahAnak = Math.max(0, totalJiwa - 2);
 
-  const { register, control, watch, setValue, handleSubmit } = useForm({
+  const initialAnakList = Array.isArray(formData.anak) && formData.anak.length > 0
+    ? formData.anak.slice(0, fixedJumlahAnak)
+    : [];
+
+  while (initialAnakList.length < fixedJumlahAnak) {
+    initialAnakList.push({ nama: '', stifin: '', golongan_darah: '' });
+  }
+
+  const { register, control, setValue, handleSubmit } = useForm({
     defaultValues: {
-      jumlah_anak: initialJumlahAnak,
+      jumlah_anak: fixedJumlahAnak,
       anak: initialAnakList,
     },
   });
@@ -23,27 +31,23 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
     name: 'anak',
   });
 
-  const currentJumlahAnak = watch('jumlah_anak');
-  const watchedAnak = watch('anak') || [];
   const [errors, setErrors] = useState({});
-
   const cardRefs = useRef({});
-  const counterNumRef = useRef(null);
-  const isAnimatingRef = useRef(false);
   const knownIdsRef = useRef(new Set(fields.map((f) => f.id)));
   const isInitialMount = useRef(true);
 
-  // Sync field count when currentJumlahAnak changes
+  // Sinkronisasi otomatis agar jumlah kartu anak selalu sama persis dengan fixedJumlahAnak
   useEffect(() => {
-    const targetCount = Math.max(0, parseInt(currentJumlahAnak, 10) || 0);
+    setValue('jumlah_anak', fixedJumlahAnak);
     const currentCount = fields.length;
 
-    if (targetCount > currentCount) {
-      for (let i = currentCount; i < targetCount; i++) {
-        append({ nama: '', stifin: '', golongan_darah: '' }, { shouldFocus: false });
+    if (fixedJumlahAnak > currentCount) {
+      for (let i = currentCount; i < fixedJumlahAnak; i++) {
+        const existing = (formData.anak && formData.anak[i]) || { nama: '', stifin: '', golongan_darah: '' };
+        append(existing, { shouldFocus: false });
       }
-    } else if (targetCount < currentCount) {
-      for (let i = currentCount - 1; i >= targetCount; i--) {
+    } else if (fixedJumlahAnak < currentCount) {
+      for (let i = currentCount - 1; i >= fixedJumlahAnak; i--) {
         remove(i);
       }
     }
@@ -52,13 +56,13 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
       const next = {};
       for (const [k, v] of Object.entries(prev)) {
         const m = k.match(/^anak_(\d+)_/);
-        if (m && parseInt(m[1], 10) < targetCount) {
+        if (m && parseInt(m[1], 10) < fixedJumlahAnak) {
           next[k] = v;
         }
       }
       return next;
     });
-  }, [currentJumlahAnak, fields.length, append, remove]);
+  }, [fixedJumlahAnak, fields.length, append, remove, setValue]);
 
 
   // Entrance animations for cards (stagger on mount, pop on add)
@@ -118,92 +122,8 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
     });
   }, [fields]);
 
-  const handleCounterChange = (delta) => {
-    if (isAnimatingRef.current) return;
-    const currentVal = parseInt(currentJumlahAnak, 10) || 0;
-
-    if (delta > 0) {
-      // Adding child
-      isAnimatingRef.current = true;
-      if (counterNumRef.current) {
-        gsap.fromTo(
-          counterNumRef.current,
-          { scale: 1.45, color: '#FF4081', y: -2 },
-          { scale: 1, color: '#1E3A8A', y: 0, duration: 0.3, ease: 'back.out(2)' }
-        );
-      }
-      setValue('jumlah_anak', currentVal + 1);
-      setTimeout(() => {
-        isAnimatingRef.current = false;
-      }, 400);
-    } else if (delta < 0 && currentVal > 0) {
-      // Subtracting child
-      isAnimatingRef.current = true;
-      if (counterNumRef.current) {
-        gsap.fromTo(
-          counterNumRef.current,
-          { scale: 0.75, color: '#e11d48', y: 2 },
-          { scale: 1, color: '#1E3A8A', y: 0, duration: 0.25, ease: 'power2.out' }
-        );
-      }
-
-      const lastField = fields[fields.length - 1];
-      const lastCardEl = lastField ? cardRefs.current[lastField.id] : null;
-
-      if (lastCardEl) {
-        gsap.to(lastCardEl, {
-          opacity: 0,
-          y: -16,
-          scale: 0.94,
-          duration: 0.22,
-          ease: 'power2.in',
-          onComplete: () => {
-            setValue('jumlah_anak', currentVal - 1);
-            isAnimatingRef.current = false;
-          },
-        });
-      } else {
-        setValue('jumlah_anak', currentVal - 1);
-        isAnimatingRef.current = false;
-      }
-    }
-  };
-
-  const handleRemoveChild = (index, fieldId) => {
-    if (isAnimatingRef.current) return;
-    isAnimatingRef.current = true;
-    const cardEl = cardRefs.current[fieldId];
-
-    if (counterNumRef.current) {
-      gsap.fromTo(
-        counterNumRef.current,
-        { scale: 0.75, color: '#e11d48', y: 2 },
-        { scale: 1, color: '#1E3A8A', y: 0, duration: 0.25, ease: 'power2.out' }
-      );
-    }
-
-    if (cardEl) {
-      gsap.to(cardEl, {
-        opacity: 0,
-        x: -24,
-        scale: 0.94,
-        duration: 0.22,
-        ease: 'power2.in',
-        onComplete: () => {
-          remove(index);
-          setValue('jumlah_anak', Math.max(0, (parseInt(currentJumlahAnak, 10) || 0) - 1));
-          isAnimatingRef.current = false;
-        },
-      });
-    } else {
-      remove(index);
-      setValue('jumlah_anak', Math.max(0, (parseInt(currentJumlahAnak, 10) || 0) - 1));
-      isAnimatingRef.current = false;
-    }
-  };
-
   const onFormSubmit = (data) => {
-    const targetCount = Math.max(0, parseInt(data.jumlah_anak, 10) || 0);
+    const targetCount = fixedJumlahAnak;
     const anakList = Array.isArray(data.anak) ? data.anak : [];
     const newErrors = {};
 
@@ -254,44 +174,33 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
         </header>
 
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
-          {/* Counter Jumlah Anak */}
+          {/* Counter Jumlah Anak (Dikunci otomatis sesuai Total Anggota Tahap 1) */}
           <div className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200">
             <label className="block text-xs font-semibold text-slate-900 tracking-wide mb-2.5">
               Jumlah Anak dalam Keluarga
             </label>
-            <div className="flex flex-wrap items-center gap-3.5">
-              <div className="flex items-center border border-slate-300 rounded-lg bg-white overflow-hidden h-[42px] w-44 shadow-xs">
-                <button
-                  type="button"
-                  disabled={currentJumlahAnak <= 0}
-                  onClick={() => handleCounterChange(-1)}
-                  className="w-12 h-full bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-semibold text-lg transition-all active:scale-90 border-r border-slate-300 flex items-center justify-center select-none cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-                  aria-label="Kurangi jumlah anak"
-                >
-                  −
-                </button>
-                <div className="flex-1 flex items-center justify-center gap-1.5 text-sm font-bold text-[#1E3A8A] select-none">
-                  <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                  <span ref={counterNumRef} className="text-base inline-block font-extrabold">
-                    {currentJumlahAnak || 0}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleCounterChange(1)}
-                  className="w-12 h-full bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-semibold text-lg transition-all active:scale-90 border-l border-slate-300 flex items-center justify-center select-none cursor-pointer"
-                  aria-label="Tambah jumlah anak"
-                >
-                  +
-                </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center border border-slate-300 rounded-lg bg-white overflow-hidden h-[42px] px-3.5 gap-2 select-none shadow-2xs">
+                <Users className="w-4 h-4 text-[#1E3A8A] shrink-0" />
+                <span className="text-base font-extrabold text-[#1E3A8A]">
+                  {fixedJumlahAnak}
+                </span>
+                <span className="text-xs font-semibold text-slate-700">Anak</span>
               </div>
 
-              <span className="text-xs text-slate-500">
-                {currentJumlahAnak > 0
-                  ? `${currentJumlahAnak} formulir anak ditampilkan di bawah`
-                  : 'Pilih 0 jika belum memiliki anak'}
-              </span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 text-xs font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span>
+                  Terkunci otomatis dari Total Anggota ({totalJiwa} Jiwa = Ayah, Ibu{fixedJumlahAnak > 0 ? ` + ${fixedJumlahAnak} Anak` : ''})
+                </span>
+              </div>
             </div>
+
+            <p className="text-xs text-slate-500 mt-2">
+              {fixedJumlahAnak > 0
+                ? `Jumlah formulir (${fixedJumlahAnak} anak) disesuaikan otomatis dari Total Anggota (${totalJiwa} Jiwa). Untuk mengubah jumlah anak, silakan klik tombol "Kembali" ke Tahap 1.`
+                : `Total anggota keluarga terdata 2 Jiwa (Ayah & Ibu, tanpa anak). Anda dapat langsung melanjutkan ke tahap pratinjau piagam.`}
+            </p>
           </div>
 
           {/* Validation Banner if children incomplete */}
@@ -330,15 +239,9 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
                       <span>Anak ke-{index + 1}</span>
                     </span>
 
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveChild(index, field.id)}
-                      className="text-xs text-slate-400 hover:text-rose-600 hover:bg-rose-50 px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 select-none"
-                      title={`Hapus Formulir Anak ke-${index + 1}`}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span className="font-medium text-[11px]">Hapus</span>
-                    </button>
+                    <span className="text-[11px] text-slate-400 font-medium">
+                      Profil {index + 1} dari {fixedJumlahAnak}
+                    </span>
                   </div>
 
                   <div>
@@ -435,11 +338,11 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
               ))}
             </div>
           ) : (
-            <div className="py-8 px-4 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 my-2">
-              <Baby className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-sm font-medium text-slate-700">Belum ada anak dalam daftar</p>
-              <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-                Gunakan tombol <span className="font-bold text-[#1E3A8A] px-1.5 py-0.5 rounded bg-white border border-slate-200">+</span> di atas untuk menambahkan formulir data anak.
+            <div className="py-8 px-4 text-center border border-slate-200 rounded-xl bg-slate-50/70 my-2">
+              <Baby className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+              <p className="text-sm font-bold text-slate-800">Keluarga Tanpa Anak (2 Jiwa: Ayah &amp; Ibu)</p>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                Sesuai pilihan Total Anggota 2 Jiwa di Tahap 1, formulir profil anak tidak diperlukan. Anda dapat langsung melanjutkan ke tahap pratinjau piagam.
               </p>
             </div>
           )}
