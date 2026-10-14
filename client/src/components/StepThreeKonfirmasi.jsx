@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
-import { Edit3, ArrowLeft, Send, Loader2, Baby, User, Building2, UserCircle2, Phone, Mail, Users } from 'lucide-react';
+import { Edit3, ArrowLeft, Send, Loader2, Baby, User, Building2, UserCircle2, Phone, Mail, Users, HeartHandshake } from 'lucide-react';
 
 export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit, isSubmitting }) {
   const {
@@ -106,8 +106,9 @@ export default function StepThreeKonfirmasi({ formData, onPrev, onEdit, onSubmit
             <div>
               <span className="text-slate-500 block mb-0.5">Status Berkeluarga</span>
               <div className="font-semibold text-slate-900 text-sm flex items-center gap-1.5 mt-0.5">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
-                  💍 {status_pernikahan || 'Menikah'} (Memenuhi Syarat)
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
+                  <HeartHandshake className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{status_pernikahan || 'Menikah'} (Memenuhi Syarat)</span>
                 </span>
               </div>
             </div>

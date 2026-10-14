@@ -25,6 +25,7 @@ import {
   Mail,
   Trash2,
   AlertTriangle,
+  HeartHandshake,
 } from 'lucide-react';
 
 export default function AdminRekapView({ onBackToForm, onLogout }) {
@@ -637,7 +638,14 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
                                 ? 'bg-amber-50 text-amber-800 border-amber-200'
                                 : 'bg-emerald-50 text-emerald-800 border-emerald-200'
                             }`}>
-                              {row.status_pernikahan === 'Belum Menikah' ? 'Belum Menikah' : '💍 Menikah (Qualified)'}
+                              {row.status_pernikahan === 'Belum Menikah' ? (
+                                'Belum Menikah'
+                              ) : (
+                                <>
+                                  <HeartHandshake className="w-3 h-3 text-emerald-600 inline" />
+                                  <span>Menikah (Qualified)</span>
+                                </>
+                              )}
                             </span>
 
                             <span className="text-slate-300">•</span>
