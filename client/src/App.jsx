@@ -157,7 +157,6 @@ export default function App() {
     if (next >= 3) {
       sessionStorage.removeItem('wif_marriage_locked');
       setFormData((prev) => ({ ...prev, status_pernikahan: 'Menikah' }));
-      alert('Mode Uji Coba: Kuncian status formulir berhasil direset!');
       setLogoClicks(0);
       window.location.reload();
     } else {
