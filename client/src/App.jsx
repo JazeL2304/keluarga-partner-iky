@@ -150,6 +150,21 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [resultData, setResultData] = useState(null);
+  const [logoClicks, setLogoClicks] = useState(0);
+
+  const handleLogoClick = () => {
+    const next = logoClicks + 1;
+    if (next >= 3) {
+      sessionStorage.removeItem('wif_marriage_locked');
+      setFormData((prev) => ({ ...prev, status_pernikahan: 'Menikah' }));
+      alert('Mode Uji Coba: Kuncian status formulir berhasil direset!');
+      setLogoClicks(0);
+      window.location.reload();
+    } else {
+      setLogoClicks(next);
+      setTimeout(() => setLogoClicks(0), 1500);
+    }
+  };
 
   useEffect(() => {
     const handleLocationChange = () => {
@@ -302,11 +317,11 @@ export default function App() {
       <header className="w-full bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-2.5 sm:px-8 flex items-center justify-between">
         <div className="flex items-center gap-3.5 sm:gap-4">
           {/* Logo resmi IKNOWYOU by Miss Hiday */}
-          <div className="flex items-center">
+          <div className="flex items-center cursor-pointer select-none" onClick={handleLogoClick} title="IKNOWYOU (Ketuk 3x untuk reset uji coba)">
             <img
               src="/logo-iknowyou.png"
               alt="IKNOWYOU by Miss Hiday"
-              className="h-8 sm:h-9 w-auto object-contain select-none"
+              className="h-8 sm:h-9 w-auto object-contain pointer-events-none"
             />
           </div>
 

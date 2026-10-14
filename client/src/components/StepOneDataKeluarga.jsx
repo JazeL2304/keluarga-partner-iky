@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   RotateCcw,
   Users,
+  ShieldCheck,
 } from 'lucide-react';
 import { STIFIN_OPTIONS, GOLONGAN_DARAH_OPTIONS } from '../constants/stifin';
 import CustomSelect from './CustomSelect';
@@ -137,6 +138,29 @@ export default function StepOneDataKeluarga({ formData, updateFormData, onNext, 
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset ke Menikah</span>
+              </button>
+            </div>
+          )}
+          {/* Opsi Buka Kuncian via PIN Admin untuk Tester jika belum login */}
+          {!isAdminAuthed && (
+            <div className="max-w-lg mx-auto text-center pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  const pass = window.prompt('Masukkan Password Admin untuk mereset kuncian form:');
+                  if (pass === 'adminiky2026') {
+                    sessionStorage.setItem('iky_admin_auth', 'true');
+                    sessionStorage.removeItem('wif_marriage_locked');
+                    updateFormData({ status_pernikahan: 'Menikah' });
+                    window.location.reload();
+                  } else if (pass !== null) {
+                    alert('Password salah. Kuncian tetap aktif.');
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#1E3A8A] font-medium underline transition-colors cursor-pointer"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Uji Coba / Salah Pilih? Buka Kuncian via Password Admin</span>
               </button>
             </div>
           )}
