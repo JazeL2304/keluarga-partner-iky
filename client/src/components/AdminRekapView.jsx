@@ -23,6 +23,8 @@ import {
   FileSpreadsheet,
   Phone,
   Mail,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 
 export default function AdminRekapView({ onBackToForm, onLogout }) {
@@ -33,6 +35,30 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
   const [categoryFilter, setCategoryFilter] = useState('ALL'); // 'ALL' | 'Pribadi' | 'Instansi'
   const [expandedRowId, setExpandedRowId] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteSuccessMsg, setDeleteSuccessMsg] = useState(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      const res = await axios.delete(`/api/keluarga/${deleteTarget.id}`);
+      if (res.data && res.data.success) {
+        setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
+        setDeleteSuccessMsg(`Data keluarga "${deleteTarget.nama_keluarga}" berhasil dihapus.`);
+        setDeleteTarget(null);
+        setTimeout(() => setDeleteSuccessMsg(null), 4000);
+      } else {
+        throw new Error(res.data?.message || 'Gagal menghapus data.');
+      }
+    } catch (err) {
+      console.error('Error deleting keluarga:', err);
+      alert(err.response?.data?.message || err.message || 'Gagal menghapus data dari database.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -521,6 +547,23 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
         </div>
       )}
 
+      {/* Delete Success Alert */}
+      {deleteSuccessMsg && (
+        <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between gap-3 animate-in fade-in duration-200 shadow-xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="font-semibold">{deleteSuccessMsg}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDeleteSuccessMsg(null)}
+            className="text-emerald-700 hover:text-emerald-950 text-xs font-bold px-1.5 py-0.5 rounded hover:bg-emerald-100/60 cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Main Table Container */}
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         {isLoading ? (
@@ -707,6 +750,15 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
                                 <span>Buka</span>
                               </a>
                             )}
+                            <button
+                              type="button"
+                              onClick={() => setDeleteTarget(row)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 font-semibold text-[11px] shadow-sm transition-all active:scale-95 cursor-pointer"
+                              title={`Hapus data keluarga ${row.nama_keluarga}`}
+                            >
+                              <Trash2 className="w-3 h-3 text-rose-500" />
+                              <span>Hapus</span>
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -802,6 +854,64 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
           </div>
         )}
       </div>
+
+      {/* Modal Konfirmasi Hapus Data */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">
+                Hapus Data Mitra Keluarga?
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                Apakah Anda yakin ingin menghapus data mitra <strong className="text-slate-900 font-semibold">{deleteTarget.nama_keluarga}</strong> ({deleteTarget.nomor_sertifikat || 'Tanpa No. Seri'})?
+              </p>
+              <div className="text-[11px] text-rose-700 bg-rose-50/80 border border-rose-200/80 rounded-lg p-3 mt-3 space-y-1">
+                <div className="font-semibold flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                  <span>Tindakan ini permanen</span>
+                </div>
+                <p className="text-rose-600 leading-relaxed pl-5">
+                  Seluruh profil orang tua, kontak, dan riwayat profil genetika anak yang terdaftar akan dihapus dari database.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleDelete}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-sm active:scale-95 cursor-pointer disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Menghapus...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Ya, Hapus Data</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

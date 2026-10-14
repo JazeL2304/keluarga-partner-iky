@@ -289,5 +289,60 @@ router.post('/', async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/keluarga/:id
+ * Menghapus data keluarga beserta seluruh relasi anak dari database Supabase
+ */
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Koneksi Supabase belum dikonfigurasi'
+      });
+    }
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID keluarga wajib disertakan'
+      });
+    }
+
+    // 1. Hapus data anak yang terelasi terlebih dahulu untuk integritas referensial
+    const { error: anakDeleteErr } = await supabase
+      .from('anak')
+      .delete()
+      .eq('keluarga_id', id);
+
+    if (anakDeleteErr) {
+      console.warn('Peringatan saat menghapus relasi anak:', anakDeleteErr.message);
+    }
+
+    // 2. Hapus data utama keluarga
+    const { error: keluargaDeleteErr } = await supabase
+      .from('keluarga')
+      .delete()
+      .eq('id', id);
+
+    if (keluargaDeleteErr) {
+      throw keluargaDeleteErr;
+    }
+
+    return res.json({
+      success: true,
+      message: 'Data keluarga dan profil anak berhasil dihapus'
+    });
+  } catch (error) {
+    console.error('Error saat menghapus data keluarga:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Gagal menghapus data keluarga dari server'
+    });
+  }
+});
+
 export default router;
 
