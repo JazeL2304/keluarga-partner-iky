@@ -14,7 +14,6 @@ import {
   CheckCircle2,
   RotateCcw,
   Users,
-  ShieldCheck,
   Plus,
   Minus,
 } from 'lucide-react';

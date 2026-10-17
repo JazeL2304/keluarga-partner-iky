@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, KeyRound, Eye, EyeOff, ShieldCheck, ArrowLeft, AlertCircle } from 'lucide-react';
+import { KeyRound, Eye, EyeOff, ShieldCheck, ArrowLeft, AlertCircle } from 'lucide-react';
 
 const DEFAULT_ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'adminiky2026';
 

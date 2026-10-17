@@ -13,7 +13,7 @@ export default function CustomSelect({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
-  // Close when clicked outside
+  // Close when clicked outside (support mouse and mobile touch)
   useEffect(() => {
     function handleClickOutside(e) {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -21,7 +21,11 @@ export default function CustomSelect({
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   // Close on Escape
@@ -40,10 +44,14 @@ export default function CustomSelect({
   // Scroll into view if near bottom edge of viewport when opened downward
   useEffect(() => {
     if (isOpen && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      if (spaceBelow < 320) {
-        containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      try {
+        const rect = containerRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        if (spaceBelow < 320) {
+          containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } catch {
+        // Fallback for older browsers
       }
     }
   }, [isOpen]);

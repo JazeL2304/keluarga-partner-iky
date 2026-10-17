@@ -19,12 +19,14 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
     initialAnakList.push({ nama: '', stifin: '', golongan_darah: '' });
   }
 
-  const { register, control, setValue, handleSubmit } = useForm({
+  const { register, control, watch, setValue, handleSubmit } = useForm({
     defaultValues: {
       jumlah_anak: fixedJumlahAnak,
       anak: initialAnakList,
     },
   });
+
+  const watchedAnak = watch('anak') || [];
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -53,6 +55,7 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
     }
 
     setErrors((prev) => {
+      if (!prev || Object.keys(prev).length === 0) return prev;
       const next = {};
       for (const [k, v] of Object.entries(prev)) {
         const m = k.match(/^anak_(\d+)_/);
@@ -94,21 +97,22 @@ export default function StepTwoProfilAnak({ formData, updateFormData, onNext, on
         knownIdsRef.current.add(field.id);
         const el = cardRefs.current[field.id];
         if (el) {
-          gsap.fromTo(
-            el,
-            { opacity: 0, y: 26, scale: 0.95 },
-            {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.38,
-              ease: 'back.out(1.3)',
-              clearProps: 'transform',
-              onComplete: () => {
-                isAnimatingRef.current = false;
-              },
-            }
-          );
+          try {
+            gsap.fromTo(
+              el,
+              { opacity: 0, y: 26, scale: 0.95 },
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.38,
+                ease: 'back.out(1.3)',
+                clearProps: 'all',
+              }
+            );
+          } catch (e) {
+            console.warn('GSAP card animation skipped:', e);
+          }
         }
       }
     });

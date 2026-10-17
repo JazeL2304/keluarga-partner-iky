@@ -600,7 +600,6 @@ export default function AdminRekapView({ onBackToForm, onLogout }) {
                   const isExpanded = expandedRowId === row.id;
                   const isInstansi = (row.pribadi_instansi || '').toLowerCase().includes('instansi');
                   const anakList = Array.isArray(row.anak) ? row.anak : [];
-                  const certUrl = row.url_sertifikat || `/api/keluarga/${row.id}/pdf`;
 
                   return (
                     <React.Fragment key={row.id}>

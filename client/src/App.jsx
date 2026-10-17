@@ -9,6 +9,7 @@ import StepThreeKonfirmasi from './components/StepThreeKonfirmasi';
 import SuccessState from './components/SuccessState';
 import AdminRekapView from './components/AdminRekapView';
 import AdminAuthGate from './components/AdminAuthGate';
+import ErrorBoundary from './components/ErrorBoundary';
 import { AlertCircle, ShieldCheck } from 'lucide-react';
 
 const INITIAL_FORM_DATA = {
@@ -83,47 +84,49 @@ function PortalContainer({
 
         {/* Right Form Canvas */}
         <section className="flex-1 bg-white p-6 sm:p-8 lg:p-10 flex flex-col justify-between rounded-b-2xl lg:rounded-bl-none lg:rounded-r-2xl">
-          {submitError && (
-            <div className="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2.5">
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-              <span>{submitError}</span>
-            </div>
-          )}
+          <ErrorBoundary>
+            {submitError && (
+              <div className="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>{submitError}</span>
+              </div>
+            )}
 
-          {step === 1 && (
-            <StepOneDataKeluarga
-              formData={formData}
-              updateFormData={updateFormData}
-              onNext={onNext}
-              isAdminAuthed={isAdminAuthed}
-            />
-          )}
+            {step === 1 && (
+              <StepOneDataKeluarga
+                formData={formData}
+                updateFormData={updateFormData}
+                onNext={onNext}
+                isAdminAuthed={isAdminAuthed}
+              />
+            )}
 
-          {step === 2 && (
-            <StepTwoProfilAnak
-              formData={formData}
-              updateFormData={updateFormData}
-              onNext={onNext}
-              onPrev={onPrev}
-            />
-          )}
+            {step === 2 && (
+              <StepTwoProfilAnak
+                formData={formData}
+                updateFormData={updateFormData}
+                onNext={onNext}
+                onPrev={onPrev}
+              />
+            )}
 
-          {step === 3 && (
-            <StepThreeKonfirmasi
-              formData={formData}
-              onPrev={onPrev}
-              onEdit={() => setStep(1)}
-              onSubmit={onSubmit}
-              isSubmitting={isSubmitting}
-            />
-          )}
+            {step === 3 && (
+              <StepThreeKonfirmasi
+                formData={formData}
+                onPrev={onPrev}
+                onEdit={() => setStep(1)}
+                onSubmit={onSubmit}
+                isSubmitting={isSubmitting}
+              />
+            )}
 
-          {step === 4 && (
-            <SuccessState
-              resultData={resultData}
-              onReset={onReset}
-            />
-          )}
+            {step === 4 && (
+              <SuccessState
+                resultData={resultData}
+                onReset={onReset}
+              />
+            )}
+          </ErrorBoundary>
         </section>
       </main>
     </div>
